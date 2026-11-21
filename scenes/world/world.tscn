@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/world.gd" id="1_world"]
+[ext_resource type="TileSet" path="res://assets/tiles/terrain_tileset.tres" id="2_tiles"]
+[ext_resource type="Script" path="res://scripts/world/grid.gd" id="3_grid"]
+[ext_resource type="Script" path="res://scripts/world/camera_rig.gd" id="4_camera"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+tile_set = ExtResource("2_tiles")
+
+[node name="Grid" type="Node" parent="."]
+script = ExtResource("3_grid")
+
+[node name="CameraRig" type="Camera2D" parent="."]
+zoom = Vector2(0.5, 0.5)
+script = ExtResource("4_camera")
