@@ -48,5 +48,6 @@ scripts/  .gd scripts (autoload, world, buildings, units, systems, ui)
 data/     .tres balance data, edit in the Godot inspector
 assets/   sprites, tiles, audio, fonts
 tests/    headless tests (tests/test_*.gd)
+tools/    helper scripts (terrain generator, screenshots)
 docs/     design docs
 ```

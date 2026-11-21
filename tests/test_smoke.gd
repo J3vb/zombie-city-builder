@@ -20,6 +20,11 @@ func test_starter_map_loads() -> void:
 	assert_eq(map.size, Vector2i(128, 128), "map size")
 
 
+func test_world_scene_loads() -> void:
+	var scene := load("res://scenes/world/world.tscn") as PackedScene
+	assert_true(scene != null, "world.tscn did not load")
+
+
 func test_main_scene_loads() -> void:
 	var scene := load("res://scenes/main/main.tscn") as PackedScene
 	assert_true(scene != null, "main.tscn did not load")
