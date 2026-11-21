@@ -556,10 +556,10 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 |---|---|---|
 | `TerrainDef` (Create, `scripts/data/terrain_def.gd`) | `id: StringName`, `cost: int` (-1 = impassable), `color: Color`, `height: float` (m) | ground (1, olive, 0), rubble (3, grey-brown, 0), water (-1, dark green-blue, -0.3), border (-1, near black, 0) |
 | `TerrainSet` (Create, `scripts/data/terrain_set.gd`, `data/terrain/terrain_set.tres`) | `types: Array[TerrainDef]` as sub-resources (index = type id), `shade_variation: float` | ground 0, rubble 1, water 2, border 3; 0.06 |
-| `MapDef` (Modify) | add `view_scale: float`, `seed: int`; `tile_size` comment no longer mentions a TileSet | 0.125, 1 |
+| `MapDef` (Modify) | add `view_scale: float`, `map_seed: int`; `tile_size` comment no longer mentions a TileSet | 0.125, 1 |
 | `BalanceDef` (Modify) | camera group replaced: `camera_pan_speed` (m/s), `camera_rotate_speed` (rad/s), `camera_drag_rotate` (rad/px), `camera_tilt_speed` (deg/s), `camera_zoom_step` (factor), `camera_distance_min/max/start` (m), `camera_pitch_min/max/start` (deg); `edge_scroll_margin` stays | 40, 1.6, 0.01, 60, 1.15, 10 / 160 / 60, 30 / 75 / 55 |
-| `ZombieDef` (Modify) | add `mesh: Mesh`, `model_scale: float`, `turn_rate: float` (rad/s), `bob_amplitude: float` (m), `bob_speed: float` (rad/s) | capsule (radius 0.3, height 1.7) until PR C, 1.0, 6.0, 0.05, 6.0 |
-| `LightingDef` (Create, `scripts/data/lighting_def.gd`, `data/lighting.tres`) | `sun_color: Gradient`, `sun_energy: Curve`, `ambient_color: Gradient`, `ambient_min: float`, `fog_color: Gradient`, `fog_density: Curve`, `fog_density_max: float`, `moon_color: Color`, `moon_energy: float`, `moon_pitch: float` (deg), `zombie_night_emission: float`, `shadows: bool` (all sampled by `time_of_day`) | PR A: plain values (warm day, blue night, light fog, shadows on); PR C tunes them |
+| `ZombieDef` (Modify) | add `mesh: Mesh`, `mesh_y_offset: float` (m), `model_scale: float`, `turn_rate: float` (rad/s), `bob_amplitude: float` (m), `bob_speed: float` (rad/s) | `data/zombies/walker.tres` gets a `CapsuleMesh` sub-resource (radius 0.3, height 1.7, material with `vertex_color_use_as_albedo`) until PR C; 0.85 (capsule origin is its centre; 0 for the PR C mesh); 1.0, 6.0, 0.05, 6.0 |
+| `LightingDef` (Create, `scripts/data/lighting_def.gd`, `data/lighting.tres`) | `sun_color: Gradient`, `sun_energy: Curve`, `ambient_color: Gradient`, `ambient_min: float`, `fog_color: Gradient`, `fog_density: Curve`, `fog_density_max: float`, `moon_color: Color`, `moon_energy: float`, `moon_pitch: float` (deg), `zombie_night_emission: float`, `shadows: bool` (all sampled by `time_of_day`) | PR A: `sun_color` 0.0 `#ffcf9a`, 0.35 `#fff4e0`, 0.7 `#ff9a5a`; `sun_energy` 0.0 0.3, 0.35 1.0, 0.7 0.3; `ambient_color` `#b8c0c8` day to `#46507a` at 0.75; `ambient_min` 0.25 (energy); `fog_color` `#9aa39a`; `fog_density` 0.002 flat; `fog_density_max` 0.01; moon `#8fa0d8`, 0.25, 50; `zombie_night_emission` 0; shadows on. PR C tunes them |
 
 `project.godot` (Modify): add input actions `camera_rotate_left` (Q), `camera_rotate_right` (E), `camera_tilt_up` (R), `camera_tilt_down` (F). Middle-mouse drag is read directly in `CameraRig`.
 
@@ -577,20 +577,22 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 
 *   `class_name TerrainMesh extends Node3D`. `build(grid: Grid, terrain: TerrainSet, view_tile: float, rng: RandomNumberGenerator)` creates one `MeshInstance3D` child per 16 x 16 tile chunk.
 *   Per tile: two triangles (6 vertices, no index array) at `TerrainDef.height`, colour = `TerrainDef.color` darkened or lightened by up to `shade_variation`. Where a tile's height differs from its east or south neighbour, add a side quad between the two heights.
-*   One shared `StandardMaterial3D` with `vertex_color_use_as_albedo = true`, roughness 1.
+*   Built with `SurfaceTool`: top faces get normal UP; side quads face the lower tile (wound so they are visible from it). One shared `StandardMaterial3D` with `vertex_color_use_as_albedo = true`, roughness 1, `cull_mode = CULL_DISABLED` as a safety net for side quads.
 
 ##### A5. `scenes/world/world.tscn`, `scripts/world/world.gd` (Modify)
 
 *   Root is `Node3D`. Children: `Terrain` (TerrainMesh), `Grid`, `Buildings` (Node3D), `ZombieManager`, `HordeDirector`, `BuildTool`, `CameraRig`, `DayNight`, `DebugOverlay`. `NightTint` and `_update_tint()` are deleted.
-*   Owns `var rng := RandomNumberGenerator.new()`, seeded from `map_def.seed`.
-*   `_ready()` order: load `map_def` and the terrain set; `types = StarterMap.generate(map_def)`; `grid.setup(map_def.size, types, terrain_set, map_def.tile_size)`; `terrain.build(grid, terrain_set, view_tile(), rng)`; `camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * map_def.view_scale))` (view-space XZ, metres); `build_tool.world = self`; spawn the Command Post; `camera.look_at_sim(command_post.sim_center())`; connect `grid.changed`; build the flow field; `zombies.setup(self)`; `horde.setup(self, ...)`; `day_night.setup()`.
+*   Owns `var rng := RandomNumberGenerator.new()`, seeded from `map_def.map_seed`.
+*   `_ready()` order: load `map_def` and the terrain set; `view_scale = map_def.view_scale`; `rng.seed = map_def.map_seed`; `types = StarterMap.generate(map_def)`; `grid.setup(map_def.size, types, terrain_set, map_def.tile_size)`; `terrain.build(grid, terrain_set, view_tile(), rng)`; `camera.world = self`; `camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * view_scale))` (view-space XZ, metres); `build_tool.world = self`; spawn the Command Post; `camera.look_at_sim(command_post.sim_center())`; connect `grid.changed`; build the flow field; `zombies.setup(self)`; `horde.setup(self, Time.get_ticks_usec())` (unchanged from M1); `day_night.setup()`; `debug_overlay.world = self`.
 *   Adds `view_scale`, `to_view()`, `to_sim()`, `view_tile() -> float` (= `tile_size * view_scale` = 4). `tile_size()` returns `Vector2(map_def.tile_size, map_def.tile_size)` (sim units).
 *   `spawn_building(def, cell)` calls `building.setup(def, cell, self)`.
 *   Flow-field rebuild code unchanged.
 
 ##### A6. `scenes/world/camera_rig.tscn` (Create), `scripts/world/camera_rig.gd` (Replace)
 
-*   `CameraRig extends Node3D` (the point it looks at, on the ground) with a `Camera3D` child. Controls as in "3D view", numbers from `BalanceDef`; the rig position is clamped to `bounds` (view space). Start at `camera_distance_start`, `camera_pitch_start`, yaw 0.
+*   `CameraRig extends Node3D` (the point it looks at, on the ground) with a `Camera3D` child (`fov` 50, `far` 600). Controls as in "3D view", numbers from `BalanceDef`. Start at `camera_distance_start`, `camera_pitch_start`, yaw 0.
+*   State: `distance: float`, `pitch_deg: float` (positive, 30 to 75; the bench used negative pitch, so the camera offset is `Vector3(0, sin(pitch), cos(pitch)) * distance`), `bounds: Rect2`, `world: World`.
+*   API: `set_bounds(rect: Rect2)`, `pan(dir: Vector2, delta: float)` (dir in screen terms, rotated by yaw), `rotate_by(radians)`, `tilt_by(degrees)`, `zoom_by(factor)` (clamps `distance`), `_clamp()` (keeps the rig's XZ inside `bounds`). `_process` and `_unhandled_input` only call these.
 *   `look_at_sim(p: Vector2)` (needs `world`, set by World).
 *   `static func ray_to_ground(origin: Vector3, dir: Vector3) -> Variant`: point on `y = 0`, or `null` when `dir.y >= 0`.
 *   `mouse_ray() -> Array` (origin, dir) from `Camera3D.project_ray_origin/normal`.
@@ -600,34 +602,40 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 ##### A7. `scripts/world/build_tool.gd` (Modify)
 
 *   `extends Node3D`. Mouse cell: `world.camera.mouse_ray()` → `ray_to_ground()` → `world.to_sim()` → `grid.world_to_cell()`. Validation and `place()` unchanged.
-*   Ghost: child `MeshInstance3D` box of the footprint, 0.5 m high, unshaded transparent material (white 40 percent alpha valid, red 50 percent invalid), plus two crossed thin boxes on top shown only when invalid. No `_draw`.
+*   Ghost: child `MeshInstance3D` box of the footprint, 0.5 m high, unshaded transparent material (white 40 percent alpha valid, red 50 percent invalid), plus two crossed thin boxes on top shown only when invalid. No `_draw`. When the mouse ray misses the ground, the ghost is hidden and clicks do nothing.
 
 ##### A8. `scripts/buildings/building.gd`, `command_post.gd`, `scenes/buildings/*.tscn` (Modify)
 
 *   `extends Node3D`. `setup(def, anchor, world: World)`. `sim_center() -> Vector2` = footprint centre in sim space; `position = world.to_view(sim_center())`.
-*   Look in PR A: a `MeshInstance3D` box of the footprint (minus 0.3 m each side), 3 m high, colour from `def.color`. Health bar: `Sprite3D` billboard 1 m above the roof (two coloured quads), shown when damaged. No `_draw`.
+*   Look in PR A: a `MeshInstance3D` box of the footprint (minus 0.3 m each side), 3 m high, colour from `def.color`. Health bar 1 m above the roof, shown when damaged: two `MeshInstance3D` with `QuadMesh` (back dark, front red), unshaded material with `billboard_mode = ENABLED` and `no_depth_test = true`; the front quad's X scale = health fraction. No `_draw`.
 *   Callers switched to `sim_center()`: `zombie_manager.gd` (`target`), `world.gd` (camera start), `tests/test_zombie_manager.gd`.
 
 ##### A9. `scripts/units/zombie_manager.gd`, `scenes/units/zombie_manager.tscn` (Modify)
 
 *   `extends Node3D`, child `MultiMeshInstance3D` (`cast_shadow = off`). Movement code unchanged except `target` (A8).
-*   New arrays, resized in `setup`, set in `spawn`, moved in swap-remove: `_heading: PackedFloat32Array` (eased towards the move direction at `turn_rate`), `_phase: PackedFloat32Array` (random at spawn, from the manager's own seeded RNG).
+*   `setup()`: `transform_format = TRANSFORM_3D`, `FLOATS_PER_INSTANCE = 16`, mesh = `load("res://data/zombies/walker.tres").mesh` (load, not preload; see CLAUDE.md gotcha). `view_scale` copied from World. `_rng.seed = world.map_def.map_seed + 1`.
+*   New arrays, resized in `setup`, set in `spawn`, moved in swap-remove: `_heading: PackedFloat32Array` (radians; 0 = facing +Z, eased towards the move direction at `turn_rate`), `_phase: PackedFloat32Array` (random at spawn from `_rng`).
 *   `_time: float` advances by the scaled `dt`, so the bob stops when paused.
-*   `_upload()`: 16 floats per instance: basis = rotation about Y by heading, times `model_scale`; origin = `Vector3(p.x, 0, p.y) * view_scale` + bob `sin(_time * bob_speed + _phase[i]) * bob_amplitude` on Y; then colour. Mesh material uses `vertex_color_use_as_albedo`. `custom_aabb` covers the map in view space, y from -1 to 4 m.
+*   `_upload()`: 16 floats per instance: basis = rotation about Y by heading, times `model_scale`; origin = `Vector3(p.x, 0, p.y) * view_scale`, plus on Y `mesh_y_offset` + bob `sin(_time * bob_speed + _phase[i]) * bob_amplitude`; then colour. Mesh material uses `vertex_color_use_as_albedo`. `custom_aabb` covers the map in view space, y from -1 to 4 m.
 
 ##### A10. `scripts/world/day_night.gd`, `scenes/world/day_night.tscn` (Create)
 
-*   `DayNight extends Node3D` with `DirectionalLight3D` and `WorldEnvironment`. `setup()` loads `data/lighting.tres`.
-*   `time_of_day` 0 = sunrise in the east, `night_at` (0.7) = sunset in the west. Sun elevation `sin(PI * t / night_at)`, yaw from east to west across that span. From `night_at` to 1.0 the light is the moon: fixed `moon_pitch`, `moon_color`, `moon_energy`.
-*   Colours, energy and fog sampled from `LightingDef` each frame; ambient never below `ambient_min`; fog never above `fog_density_max`.
+*   `DayNight extends Node3D`; `day_night.tscn` holds a `DirectionalLight3D` and a `WorldEnvironment` whose Environment has `background_mode = COLOR`, `ambient_light_source = COLOR`, `fog_enabled = true`. `setup()` loads `data/lighting.tres`.
+*   `apply(t: float)` does all the work; `_process` calls `apply(GameClock.time_of_day)`. Tests call `apply()` directly.
+*   Axes: north = -Z, east = +X. `t` = 0 is sunrise in the east, `night_at` (0.7) is sunset in the west. Sun elevation in degrees = `70 * sin(PI * t / night_at)`, yaw goes from east (+X) through south to west (-X) across that span. From `night_at` to 1.0 the light is the moon: pitch `moon_pitch`, yaw fixed from the south-west, `moon_color`, `moon_energy`.
+*   Light colour, energy, background and fog colour sampled from `LightingDef`; `ambient_light_energy = maxf(ambient_min, sampled)`; fog density capped at `fog_density_max`.
 
 ##### A11. `scripts/ui/debug_overlay.gd` (Modify)
 
-*   Text stats unchanged. The 2D flow-arrow drawing is removed in PR A (arrows come back in B1).
+*   Root becomes a plain `Node`; F3 toggles visibility of its `Layer` (CanvasLayer) child only. Text stats unchanged. The 2D flow-arrow drawing is removed in PR A (arrows come back in B1 as a `MeshInstance3D` child).
 
 ##### A12. Remove
 
 *   `tools/make_terrain.gd`, `assets/tiles/terrain.png`, `assets/tiles/terrain.png.import`, `assets/tiles/terrain_tileset.tres`, `scenes/tests/light_test.tscn`, `scripts/debug/light_test.gd` (the 3D test scene replaces it).
+
+##### A13. Docs
+
+*   `docs/SYSTEMS.md`: Grid setup from terrain types, 3D camera controls, zombie drawing, day/night.
 
 #### PR B
 
@@ -689,17 +697,18 @@ Level 1 health equals the M1 values, so M1 balance does not change.
 ##### C3. `data/lighting.tres` (Modify)
 
 *   Final gritty curves: low warm sun, grey-green fog, dark blue nights, `zombie_night_emission`; one fire-orange `OmniLight3D` at the Command Post.
+*   `DayNight.apply()` sets the zombie material's emission energy from `zombie_night_emission` (zero by day).
 
 #### Tests (M1.5)
 
 | File | Cases |
 |---|---|
-| `test_grid.gd` (modify, PR A) | setup from a type array: water -1, rubble 3; `cell_to_world((1, 2))` = (48, 80); `world_to_cell` inverse; occupy/release as before. No TileSet preload |
+| `test_grid.gd` (modify, PR A) | setup from a type array: water -1, rubble 3; `cell_to_world((1, 2))` = (48, 80); `world_to_cell` inverse; occupy/release as before but with `Building.new()` (freed after) instead of `Node2D.new()`. No TileSet preload |
 | `test_terrain_mesh.gd` (create, A) | 32 x 32 map makes 4 chunks; a 4 x 4 all-ground map has 96 vertices (16 tiles x 6); a water tile next to ground adds side quads |
 | `test_world_view.gd` (create, A) | `to_sim(to_view(p))` equals `p` within 0.001; cell (0,0) centre maps to (2, 0, 2) m |
 | `test_camera_rig.gd` (create, A) | `ray_to_ground((0,10,0), (0,-1,1).normalized())` = (0,0,10); upward ray = `null`; zoom stays within min/max; rig clamped inside bounds |
 | `test_zombie_manager.gd` (modify, A) | positions from `cp.sim_center()`; after a kill and swap-remove, `_heading` and `_phase` stay with their zombie; `visible_instance_count == count()` |
-| `test_day_night.gd` (create, A) | sun energy at t = 0.35 > at t = 0.85; ambient never below `ambient_min` |
+| `test_day_night.gd` (create, A) | after `apply(0.35)` the light energy is higher than after `apply(0.85)`; `ambient_light_energy >= ambient_min` at every t in steps of 0.05 |
 | `test_building.gd` (modify, B) | uses `level_def(1).max_health` instead of `max_health` |
 | `test_building_upgrade.gd` (create, B) | upgrade spends, raises the level, keeps the health fraction (50/100 hp becomes 90/180), keeps cells; blocked with no change when poor, at max level, before `min_day`, or at night; blocker texts as in B3 |
 | `test_build_tool.gd` (modify, B) | with the camera at 30 degrees pitch, a ray through a 6.5 m brick house roof selects that house, not the cell behind it; clicking empty ground clears the selection |

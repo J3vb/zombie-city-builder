@@ -11,6 +11,7 @@
 |---|---|---|---|---|
 | Skeptical Architect | Direction sound, revise before PR A | 1 | 6 | 5 |
 | Implementation Readiness | PR A not buildable as written | 3 | 13 | 4 |
+| Implementation Readiness, round 2 | PR A almost ready | 0 | 6 | 8 |
 | Design Critic | Sim/view split holds; 5 major gaps | 0 | 7 | 6 |
 
 ## Consolidated actions
@@ -41,6 +42,16 @@ Priority: 🔴 Blocker, 🟡 Major, 🟢 Nit. Status: ✅ fixed in the plan, ⚖
 | R20 | 🟢 Level-1 health changed M1 balance | Critic, Readiness | ✅ Level 1 keeps M1 values |
 | R21 | 🟢 Zombies casting shadows | Critic | ✅ `cast_shadow = off` |
 | R22 | 🟢 Exact float compare in tests; "upgrade three times" wording; lights' gameplay role in GDD; occupant typing; file deletions; signal typing | Various | ✅ Fixed |
+
+## Round 2 (Implementation Readiness, PR A only)
+
+Verdict: almost ready, 0 blockers, 6 major, 8 nits. All fixed in the plan:
+
+- Zombie mesh source, capsule ground offset (`mesh_y_offset`), RNG seed, buffer format.
+- DayNight: `apply(t)` API, elevation formula, axes, moon direction, ambient as energy, Environment settings in the scene.
+- CameraRig: full API (`set_bounds`, `pan`, `rotate_by`, `tilt_by`, `zoom_by`, `_clamp`), positive pitch, fov and far.
+- `test_grid` uses `Building.new()`; terrain normals and side-quad facing; health bar as billboard quads.
+- Nits: `_ready` order completed, DebugOverlay root a `Node`, `MapDef.map_seed` (not `seed`), first lighting values, ghost hidden on a missed ray, heading 0 = +Z, SYSTEMS.md listed, owner of `zombie_night_emission`.
 
 ## Left for the owner
 
