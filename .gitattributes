@@ -1,0 +1,22 @@
+# Normalize line endings
+* text=auto eol=lf
+
+# Godot text formats
+*.gd text eol=lf
+*.tscn text eol=lf
+*.tres text eol=lf
+*.godot text eol=lf
+*.cfg text eol=lf
+*.uid text eol=lf
+
+# Binary assets (use Git LFS later if the repo gets big)
+*.png binary
+*.jpg binary
+*.webp binary
+*.svg text eol=lf
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+*.blend binary
