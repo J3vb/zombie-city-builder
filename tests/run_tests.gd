@@ -15,7 +15,7 @@ func _initialize() -> void:
 	for file_name in DirAccess.get_files_at(TEST_DIR):
 		if not file_name.begins_with("test_") or not file_name.ends_with(".gd"):
 			continue
-		if file_name == "test_case.gd":
+		if file_name == "test_case.gd" or file_name == "world_fixture.gd":
 			continue
 		var script: GDScript = load(TEST_DIR + file_name)
 		for method in script.get_script_method_list():
