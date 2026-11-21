@@ -41,6 +41,16 @@ Controls:
 
 A horde comes every night. In M1 you can't fight back yet (towers come in M3), so the game is about where you build before the Command Post falls.
 
+## Build a Windows .exe
+
+Needs the Godot 4.5.1 export templates (Editor > Manage Export Templates > Download).
+
+```sh
+godot --headless --export-release "Windows Desktop" build/windows/HoldTheGates.exe
+```
+
+The game files are packed inside the .exe, so you only share that one file.
+
 ## Tests and lint
 
 ```sh
