@@ -251,9 +251,9 @@ docs/        design docs, reviews/
 
 | Risk | Impact | Mitigation | When to revisit |
 |---|---|---|---|
-| Flow-field rebuild too slow in GDScript | Frame drops when the map changes | Bucket queue; at most one rebuild per frame; M1 benchmark | Rebuild > 8 ms at 128 x 128 |
+| Flow-field rebuild too slow in GDScript | Frame drops when the map changes | Bucket queue; at most one rebuild per frame; M1 benchmark. **Triggered:** first measure was 25 ms (Godot 4.5.1, headless), so rebuilds run on a worker thread (next row) | Rebuild > 8 ms at 128 x 128 |
 | Many walls break in one horde | Many rebuilds | One rebuild per frame covers all changes that frame | M3 playtest |
-| Rebuild moved to a worker thread causes data races | Wrong paths, crashes | Worker reads a copy of the cost array, writes a back buffer, main thread swaps; a change during a build sets "rebuild again" | Only if the first row triggers |
+| Rebuild moved to a worker thread causes data races | Wrong paths, crashes | Worker reads a copy of the cost array, writes a back buffer, main thread swaps; a change during a build sets "rebuild again" | Active since the M1 benchmark |
 | Zombie update too slow at 500 | Below 60 fps | Bulk MultiMesh buffer, flat spatial hash | M1: zombie update > 6 ms |
 | GDScript can't reach the target | Scope cut | Swap `ZombieManager` core to C#/GDExtension behind the same API | After M1 profile |
 | Crowds jam at gates and breaches | Zombies stuck | Clamp + separation; accept queueing; tune in M3 | M3 playtest |
