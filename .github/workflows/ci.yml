@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  GODOT_VERSION: 4.5.1-stable
+
+jobs:
+  lint:
+    name: Lint and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "gdtoolkit==4.*"
+      - run: gdlint scripts tests
+      - run: gdformat --check scripts tests
+
+  godot:
+    name: Import and test (Godot headless)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}
+      - name: Download Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}_linux.x86_64 ~/godot/godot
+      - name: Import project
+        run: |
+          ~/godot/godot --headless --import 2>&1 | tee import.log
+          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" import.log; then exit 1; fi
+      - name: Run tests
+        run: ~/godot/godot --headless --script res://tests/run_tests.gd
+      - name: Run main scene for a few frames
+        run: |
+          ~/godot/godot --headless --quit-after 120 2>&1 | tee run.log
+          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" run.log; then exit 1; fi
