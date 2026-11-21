@@ -62,7 +62,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
   - When done, the site swaps to the real building and the grid updates. Pathfinding gets a "dirty" signal.
   - Demolish refunds 50 percent.
 - **Depends on:** Grid, Resources.
-- **Upgrades (M1.5):** each `BuildingDef` has `levels` (`BuildingLevelDef`: model, health, upgrade cost, unlock day, capacity). Same footprint at every level. Select a building, press Upgrade. Instant in M1.5, done by builders from M2.
+- **Zones and upgrades (M1.5):** the player paints zones; the `Grower` grows the zone's building on free lots (nearest the Command Post first) and upgrades buildings through their `levels` (`BuildingLevelDef`: model, health, upgrade cost, unlock day). Same footprint at every level. Instant in M1.5, done by builders from M2. Walls, gates and towers stay hand-placed.
 - **Milestone:** M1 (instant build), M1.5 (3D, upgrades), M2 (builders).
 
 ## 4. Resources and economy

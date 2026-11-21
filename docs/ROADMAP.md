@@ -45,12 +45,13 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - City-builder camera: pan, rotate, zoom, tilt; mouse picking
 - Zombies drawn in 3D (one MultiMesh), facing where they walk
 - Day/night sun, fog and night lighting
-- Building levels (3 per building, so two upgrades), selection panel, Upgrade button
+- SimCity-style zones (housing, farmland, storage): paint zones, buildings grow and upgrade by themselves (3 levels each)
+- Selection panel that shows a building's level and what its next upgrade waits for
 - Temporary daily income so upgrades can be tested before M2's production
 - Gritty low-poly art kit: materials, building models per level, zombie mesh, props
 - Updated Windows x86_64 and ARM64 builds
 
-**Done when:** you can place a house, upgrade it to level 3, and watch a horde attack the town at night in 3D, at 30 fps or more on the owner's laptop.
+**Done when:** you can paint a housing zone, watch houses grow and reach level 3, and watch a horde attack the town at night in 3D, at 30 fps or more on the owner's laptop.
 
 ## M2: Living town
 

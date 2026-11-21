@@ -27,7 +27,7 @@ These are the rules we check every feature against.
 ## 3. Camera and look
 
 - 3D, with a city-builder camera like Cities: Skylines: pan, rotate, zoom and tilt. The game still runs on a tile grid underneath.
-- Buildings upgrade in visible steps (tent, shack, brick house), like SimCity.
+- You paint zones (housing, farmland, storage) like SimCity; buildings grow and upgrade on their own in visible steps (tent, shack, brick house).
 - Dark and gritty, mid-apocalypse: rust, scrap walls, wrecked cars, dead trees, fog, fires.
 - Readable first: zombies and walls always stand out, even at night.
 - Night is dark. Light sources (fires, floodlights) set the mood from M1.5 and start to matter for gameplay in M3/M4.
@@ -42,7 +42,7 @@ These are the rules we check every feature against.
    +-----------------------------------+
 ```
 
-- **Build:** place homes, farms, workshops, walls, gates, towers.
+- **Build:** paint zones (homes, farms, storage) and let buildings grow; place walls, gates and towers by hand.
 - **Gather:** citizens work jobs inside. Expedition teams scavenge outside.
 - **Manage:** food, water, health, morale, infection, power.
 - **Defend:** zombies roam and probe the walls. Big hordes hit at set times.
@@ -137,11 +137,11 @@ Behaviour:
 
 ## 13. Progression
 
-- **Building upgrades:** most buildings have 3 levels. Each level costs resources, unlocks on a set day, and gives more health and capacity (beds, storage, output).
+- **Zones and upgrades:** you paint zones; buildings grow on them and upgrade by themselves through 3 levels. Each level costs resources (paid automatically), unlocks on a set day, and gives more health and capacity (beds, storage, output). Walls, gates and towers are still placed by hand.
 
 - **Tech tree** unlocked with blueprints found outside plus scrap.
 - Tiers: Survive (wood, farms) -> Fortify (walls, towers, workshop) -> Rebuild (power, clinic, vehicles) -> Reclaim (clear zones, radio, rescue).
-- **Zones:** the map is split into zones. Clearing a zone removes its zombie spawns and opens new building land.
+- **Districts:** the map is split into districts. Clearing a district removes its zombie spawns and opens new building land.
 
 ## 14. Difficulty
 
