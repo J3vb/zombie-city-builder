@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BuildCatalog" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/building_def.gd" id="1_1a2l8"]
+[ext_resource type="Resource" path="res://data/buildings/house.tres" id="2_iix55"]
+[ext_resource type="Resource" path="res://data/buildings/farm.tres" id="3_bvotc"]
+[ext_resource type="Resource" path="res://data/buildings/storage.tres" id="4_q3q18"]
+[ext_resource type="Script" path="res://scripts/data/build_catalog.gd" id="5_d7rva"]
+
+[resource]
+script = ExtResource("5_d7rva")
+buildings = Array[ExtResource("1_1a2l8")]([ExtResource("2_iix55"), ExtResource("3_bvotc"), ExtResource("4_q3q18")])

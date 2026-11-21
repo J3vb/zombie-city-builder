@@ -1,6 +1,6 @@
 class_name Main
 extends Node
-## Owns the current World and the UI. Starts new games.
+## Owns the current World and the UI. Starts new games and handles game over.
 
 const WORLD_SCENE := preload("res://scenes/world/world.tscn")
 
@@ -8,30 +8,32 @@ var world: World
 
 var _balance: BalanceDef = preload("res://data/balance.tres")
 
-@onready var _info: Label = $UI/Info
+@onready var _hud: Hud = $Hud
+@onready var _game_over: GameOverScreen = $GameOver
 
 
 func _ready() -> void:
+	EventBus.game_over.connect(_on_game_over)
+	_game_over.new_game_pressed.connect(new_game)
 	new_game()
 
 
 func new_game() -> void:
 	if world:
-		world.queue_free()
 		remove_child(world)
+		world.queue_free()
+	_game_over.hide()
 	GameClock.reset()
 	Economy.reset(_balance.start_resources)
 	world = WORLD_SCENE.instantiate() as World
 	add_child(world)
 	move_child(world, 0)
+	_hud.bind(world.build_tool)
 
 
-func _process(_delta: float) -> void:
-	var phase := "Night" if GameClock.is_night() else "Day"
-	_info.text = (
-		"Day %d   %s   %d%%   Speed %dx"
-		% [GameClock.day, phase, int(GameClock.time_of_day * 100.0), GameClock.speed]
-	)
+func _on_game_over(_day: int) -> void:
+	GameClock.set_speed(0)
+	_game_over.show_result(GameClock.day)
 
 
 func _unhandled_input(event: InputEvent) -> void:
