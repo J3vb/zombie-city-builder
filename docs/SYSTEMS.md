@@ -45,7 +45,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 ## 2. Grid and map
 
 - **What:** the world is a grid of tiles. Each tile has terrain and maybe a building.
-- **Data:** `TileMapLayer` for terrain. A `Grid` node holds `Dictionary[Vector2i, Building]` for what stands where, plus a base terrain cost array (from TileSet custom data) and an overlay for buildings and walls. Grid is the single source of truth: the flow field (zombies) and `AStarGrid2D` (citizens) are both built from it.
+- **Data:** terrain types per tile from `StarterMap` (M1 used a `TileMapLayer`; M1.5 uses a type array plus `TerrainSet`). A `Grid` node holds `Dictionary[Vector2i, Building]` for what stands where, plus a base terrain cost array (from TileSet custom data) and an overlay for buildings and walls. Grid is the single source of truth: the flow field (zombies) and `AStarGrid2D` (citizens) are both built from it.
 - **How:** tile size 32 px (set in the TileSet). First map is 128 x 128 tiles, generated at start by `starter_map.gd` from a simple layout (border, water, rubble). Hand-painted maps can come later.
   Cell/world conversion uses the TileMapLayer (`local_to_map`, `map_to_local`). Helpers: `is_free(cells)`, `occupy()`, `release()`, `get_cost(cell)`, `building_at(cell)`.
 - **Depends on:** nothing.
@@ -62,7 +62,8 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
   - When done, the site swaps to the real building and the grid updates. Pathfinding gets a "dirty" signal.
   - Demolish refunds 50 percent.
 - **Depends on:** Grid, Resources.
-- **Milestone:** M1 (instant build), M2 (builders).
+- **Upgrades (M1.5):** each `BuildingDef` has `levels` (`BuildingLevelDef`: model, health, upgrade cost, unlock day, capacity). Same footprint at every level. Select a building, press Upgrade. Instant in M1.5, done by builders from M2.
+- **Milestone:** M1 (instant build), M1.5 (3D, upgrades), M2 (builders).
 
 ## 4. Resources and economy
 

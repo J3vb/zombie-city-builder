@@ -36,6 +36,22 @@ Goal: prove the core idea with ugly placeholder art.
 
 **Done when:** you can place buildings and watch a horde reach and destroy them at 60 fps with 500 zombies.
 
+## M1.5: 3D city
+
+Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. The owner chose this after playing M1.
+
+- 3D test scene on the owner's ARM laptop (30 fps with 500 zombies). Scene merged (#58)
+- World, terrain and buildings in 3D; simulation stays on the 2D grid
+- City-builder camera: pan, rotate, zoom, tilt; mouse picking
+- Zombies drawn in 3D (one MultiMesh), facing where they walk
+- Day/night sun, fog and night lighting
+- Building levels (3 per building, so two upgrades), selection panel, Upgrade button
+- Temporary daily income so upgrades can be tested before M2's production
+- Gritty low-poly art kit: materials, building models per level, zombie mesh, props
+- Updated Windows x86_64 and ARM64 builds
+
+**Done when:** you can place a house, upgrade it to level 3, and watch a horde attack the town at night in 3D, at 30 fps or more on the owner's laptop.
+
 ## M2: Living town
 
 Goal: citizens make the economy run.
@@ -98,7 +114,7 @@ Goal: a game you can keep playing.
 
 Goal: something you can share.
 
-- Real art (tiles, buildings, units)
+- Real art (replace the low-poly kit with final models)
 - Music and sound effects
 - Second map, or a map generator
 - Tutorial (first 3 days guided)
@@ -112,6 +128,5 @@ Goal: something you can share.
 ## Not planned (for now)
 
 - Multiplayer
-- 3D graphics
 - Direct control of expedition teams
 - Mod support

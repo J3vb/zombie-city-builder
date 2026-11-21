@@ -4,7 +4,7 @@ Guide for Claude Code working in this repo.
 
 ## Project
 
-2D top-down zombie city builder. Godot 4.5, GDScript only.
+3D zombie city builder (Cities: Skylines-style camera) on a 2D simulation grid. Godot 4.5, GDScript only.
 Read before big changes: `docs/DESIGN.md` (architecture), `docs/SYSTEMS.md` (per-system spec), `docs/ROADMAP.md` (milestones). Story and names for text: `docs/LORE.md`.
 
 ## The owner
@@ -32,6 +32,7 @@ Run tests and lint before every commit.
 - Autoloads: `EventBus`, `GameClock`, `Economy` (later `SaveManager`, `AudioManager`, `Settings`). `GameClock` and `Economy` hold per-game state, so a new game must call their `reset()`. All other game systems live under the World scene.
 - `EventBus` is for low-rate events only (a few per second). Combat (hits, shots) never goes through it.
 - Zombies are rows in packed arrays inside `ZombieManager`, not nodes. Never store a zombie index across frames.
+- Game logic runs in 2D sim space (`Vector2`, 32 units per tile). Only `World.to_view()` / `to_sim()` convert to and from the 3D view (1 tile = 4 m).
 - `Grid` is the single source of truth for what stands where and tile costs. Flow field and citizen A* read from it.
 - All randomness goes through a system's own seeded `RandomNumberGenerator`. No global `randf()`/`randi()`.
 - Never load save files as Resources (`.tres`/`.res`). JSON only.
