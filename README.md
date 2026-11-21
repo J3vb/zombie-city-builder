@@ -49,6 +49,8 @@ Needs the Godot 4.5.1 export templates (Editor > Manage Export Templates > Downl
 godot --headless --export-release "Windows Desktop" build/windows/HoldTheGates.exe
 ```
 
+For ARM laptops (Snapdragon), use the "Windows ARM64" preset instead.
+
 The game files are packed inside the .exe, so you only share that one file.
 
 ## Tests and lint
