@@ -1,6 +1,6 @@
 # Game Design Document
 
-Working title: **Zombie City Builder** (rename later).
+Game name: **Hold the Gates**.
 
 Short sections. Read top to bottom once, then use it as a lookup.
 Story, world and names: [LORE.md](LORE.md).
