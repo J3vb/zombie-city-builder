@@ -1,4 +1,4 @@
-# Zombie City Builder: Technical Design
+# Hold the Gates: Technical Design
 
 *   **Author:** J3vb (drafted with Claude)
 *   **Status:** Proposed (Goldfish review rounds 1 and 2 resolved, see [reviews](reviews/review-report.md))
@@ -274,7 +274,7 @@ docs/        design docs, reviews/
 
 *   **Map size:** is 128 x 128 right? Decide after the M1 benchmark.
 *   **Art style:** pixel art or clean vector shapes? Decide before M6.
-*   **Game name:** decide before M6.
+*   **Game name:** decided: Hold the Gates.
 
 ## Future Improvements
 
@@ -291,7 +291,7 @@ These files exist and pass CI. They are the contract the M1 work builds on.
 
 | File | What it does |
 |---|---|
-| `project.godot` | Name "Zombie City Builder", main scene `scenes/main/main.tscn`, Compatibility renderer, 1920x1080 `canvas_items` stretch, autoloads, input actions (below) |
+| `project.godot` | Name "Hold the Gates", main scene `scenes/main/main.tscn`, Compatibility renderer, 1920x1080 `canvas_items` stretch, autoloads, input actions (below) |
 | `scripts/autoload/event_bus.gd` | Signals: `building_placed(building)`, `building_destroyed(building)`, `resource_changed(id, value)`, `day_started(day)`, `dusk_started(day)`, `night_started(day)`, `game_over(day)` |
 | `scripts/autoload/game_clock.gd` | `day` (starts at 1), `time_of_day` (0.0 dawn to 1.0), `speed` (0 to 3), `set_speed()`, `reset()`, `is_night()`. Fixed-step accumulator: `sim_tick(dt)` with fixed dt = 1 / `sim_ticks_per_second`, more ticks at higher speed, max `max_catch_up_ticks * speed` per frame (remainder dropped). Time advances per tick. At 1.0 it wraps, `day` += 1, `day_started` fires |
 | `scripts/autoload/economy.gd` | `stock: Dictionary[StringName, int]`, `reset(start)`, `get_amount()`, `add()` (clamps at 0), `can_afford(cost)`, `spend(cost)` (all or nothing). Every change emits `resource_changed` |

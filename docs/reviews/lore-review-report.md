@@ -60,7 +60,7 @@ Priority: 🔴 Blocker, 🟡 Major, 🟢 Nit. Status: ✅ fixed, ⚖️ kept wit
 |---|---|---|---|
 | O1 | 🟡 Looping "safe zone, food and doctors, maybe a trap" broadcast is a well-known film and TV plot | Critic | ✅ Replaced by the Tally: a nightly list of names who reached safety. No trap twist |
 | O2 | 🟡 Written law + people leaving + final siege + "was it worth it" choice is close to a known city builder | Critic (round 2) | ✅ Closing choice dropped. Ending names the survivors instead |
-| O3 | 🟡 "Screamer" with a calling scream exists in several zombie games | Critic | ❓ Left for you (needs a GDD change) |
+| O3 | 🟡 "Screamer" with a calling scream exists in several zombie games | Critic | ⚖️ Kept by the author: plain, common word |
 | O4 | 🟢 "Kessel" brings a famous sci-fi film to mind | Critic | ✅ Town renamed Halder Ford |
 | O5 | 🟢 "Lights Out" is a horror film title | Critic (round 2) | ✅ Removed from game name ideas (kept as an in-world event) |
 | O6 | 🟢 Slow by day, fast at night is a known genre rule | Critic (round 2) | ⚖️ Kept: it is already a game rule (GDD section 4) and common in the genre |
@@ -97,6 +97,6 @@ Priority: 🔴 Blocker, 🟡 Major, 🟢 Nit. Status: ✅ fixed, ⚖️ kept wit
 
 ## Left for the author
 
-- **Screamer's name** (O3): keep it, or rename (for example *Caller*) in the GDD and lore.
-- **Game name:** *Halder Ford*, *Keep the Ford* or *The Gate Law*, or something else.
+- **Screamer's name** (O3): decided, keep "Screamer".
+- **Game name:** decided: *Hold the Gates*.
 - **Proposed items** in LORE.md section 14 (town events, 3-night ending, scavenger checks) need GDD entries before they are built.

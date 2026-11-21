@@ -1,8 +1,8 @@
-# Zombie City Builder
+# Hold the Gates
 
 A 2D top-down city builder set in a zombie outbreak. Build a walled town, keep your survivors alive, scavenge the ruins, and hold the walls when the hordes come.
 
-Working title. Made with **Godot 4.5** and **GDScript**.
+Made with **Godot 4.5** and **GDScript**.
 
 ## Status
 

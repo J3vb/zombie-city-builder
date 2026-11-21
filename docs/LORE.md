@@ -286,7 +286,7 @@ What in this doc is already a game rule, what is only flavour, and what would ne
 
 ## 15. Open for the author
 
-- **Game name.** Ideas that fit: *Halder Ford*, *Keep the Ford*, *The Gate Law*.
-- **The Screamer's name.** Other zombie games use "Screamer" for this exact type. Keep it, or rename it (for example *Caller*) in the GDD and here.
+- **Game name.** Decided: **Hold the Gates**.
+- **The Screamer's name.** Decided: keep "Screamer". It is a plain, common word for this type.
 - **The siren.** Use the Station 4 siren as a one-time "pull the dead here" lure? It overlaps the noise lure trap in GDD section 10, so it may be the same feature.
 - **GDD wording.** GDD section 5 calls the Command Post a "town hall". Change it to "Station 4 (Command Post)"?
