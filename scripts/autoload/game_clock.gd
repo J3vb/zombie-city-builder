@@ -33,6 +33,10 @@ func set_speed(value: int) -> void:
 	speed = clampi(value, 0, 3)
 
 
+func skip_to_night() -> void:
+	time_of_day = maxf(time_of_day, _balance.night_at - 0.005)
+
+
 func is_night() -> bool:
 	return time_of_day >= _balance.night_at
 

@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/debug_overlay.gd" id="1_dbg"]
+
+[node name="DebugOverlay" type="Node2D"]
+z_index = 20
+script = ExtResource("1_dbg")
+
+[node name="Layer" type="CanvasLayer" parent="."]
+layer = 4
+
+[node name="Stats" type="Label" parent="Layer"]
+offset_left = 16.0
+offset_top = 64.0
+offset_right = 420.0
+offset_bottom = 220.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6

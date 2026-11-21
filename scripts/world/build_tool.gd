@@ -42,12 +42,10 @@ func place(cell: Vector2i) -> bool:
 
 
 func _zombie_in(cells: Array[Vector2i]) -> bool:
-	if world.zombies == null:
-		return false
 	var tile := world.tile_size()
 	for c in cells:
 		var centre := world.grid.cell_to_world(c)
-		if world.zombies.call("query", centre, tile.x * 0.71, _query) > 0:
+		if world.zombies.query(centre, tile.x * 0.71, _query) > 0:
 			return true
 	return false
 
