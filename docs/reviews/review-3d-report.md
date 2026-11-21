@@ -57,3 +57,30 @@ Verdict: almost ready, 0 blockers, 6 major, 8 nits. All fixed in the plan:
 
 - **Zoning or hand placement** (R6), before PR B.
 - **FPS numbers** from the 3D test on the ARM laptop, before PR A.
+
+## Zoning round (2026-11-21)
+
+The owner chose SimCity-style zones. The zoning plan was reviewed by fresh-context goldfish (design critic and implementation reviewer). All findings were applied:
+
+| Finding | Fix in DESIGN.md |
+|---|---|
+| Cheap houses could starve farms, storage and upgrades | Fixed turn order (Upgrade, Housing, Farmland, Storage); an unaffordable action waits and keeps the turn, an impossible one is skipped the same tick |
+| Upgrade pick was unclear | Nearest to the Command Post first, any level, ties to lowest index |
+| Pacing too slow with old income | `daily_income` 40 wood + 15 scrap; pacing check and test (level 3 house by day 5) |
+| Paint rules unclear around buildings and water | Paint checks bounds and passable terrain only; zones may lie under buildings; removing clears any cell |
+| M3 walls could be starved of scrap | `grower_reserve` in `BalanceDef` (empty in M1.5) |
+| Player can't see why nothing grows | Status line per zone on the HUD and in the InfoPanel |
+| Buildings packed with no walking room | 1-cell building-free ring around each lot |
+| "Zones" clashed with GDD progression zones | GDD progression renamed to "Districts" |
+| Growing next to zombies | `grow_zombie_clearance` 3 tiles |
+| Save files missed new state | Save holds `ZoneMap` and Grower state |
+| Grower time source unclear | Driven by `GameClock.sim_tick` scaled by `hours_per_day / day_length_seconds`; resets at night and when paused |
+| Hard to test | Public `tick`, `step`, `grow_step`, `upgrade_step`, `find_lot` with DONE/WAIT/SKIP results |
+| World wiring missing | B7 lists children and setup order |
+| BuildTool state mixed | `Mode` enum with `mode_changed` signal |
+| Old build buttons left over | B11 removes `BuildCatalog`, `catalog.tres` and HUD build buttons |
+| `max_health` callers break | B12 lists them |
+| Selection kept after destroy | Cleared on `building_destroyed` |
+| Overlay rebuild triggers unclear | Full rebuild on `ZoneMap.changed`, `Grid.changed`, `mode_changed` |
+| Drag edge cases | Clamp to map, last valid hover cell when the ray misses, cancel ends drag |
+

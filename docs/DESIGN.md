@@ -178,16 +178,35 @@ The owner chose a full 3D view with a city-builder camera (decided 2026-11-21, a
 *   **Renderer:** Compatibility, kept for low-end laptops. The owner's Windows ARM laptop is the reference machine for M1.5.
 *   **3D test scene** (`scenes/tests/bench_3d.tscn`, merged in #58, exported with the "Windows ARM64 3D bench" preset): walled town, 30 street lights, shadows, 500 to 2000 zombies in one MultiMesh. It measures draw cost only (its zombies walk straight to the centre).
 
+### Zones and growth (M1.5)
+
+The owner chose SimCity-style zoning (2026-11-21): the player paints zones and buildings grow and upgrade by themselves.
+
+*   **Zones:** Housing (grows houses), Farmland (grows farms), Storage (grows storage). Each is a `ZoneDef` in `ZoneCatalog`. Painting and removing zones is free; resources are paid when something grows or upgrades.
+*   **`ZoneMap`** (World-owned, sim space): one zone id per cell (`PackedByteArray`, 0 = none). Painting checks only bounds and passable terrain, so a zone can lie under a building (the overlay hides it there) and the lot regrows after the building is destroyed. Removing a zone clears any cell; a building on it stays standing. Zones never change tile costs or pathing, so `Grid` stays the single source of truth for what stands where.
+*   **Hand-placed:** the Command Post (at start) and, from M3, walls, gates and towers. `BuildTool.place()` stays for these.
+*   **`Grower`** (World-owned, sim) acts once every `grow_interval_hours` of game time, by day only, unless the player paused growth. It works through a fixed **turn order**: Upgrade, Housing, Farmland, Storage, then Upgrade again.
+    *   The action whose turn it is **waits and saves up** if it cannot afford its cost yet (the turn does not move on), so cheap houses cannot starve farms, storage or upgrades.
+    *   The turn **is skipped** (moves on at once, same tick) only when the action is impossible: no free lot, nothing to upgrade, or its daily limit reached.
+    *   **Grow:** spend `def.cost` and spawn the zone's building at level 1 on the best lot. At most `growth_per_day` new buildings per day.
+    *   **Upgrade:** the building nearest to the Command Post whose `upgrade_blocker()` is empty, any level, so one house visibly finishes early. At most `upgrades_per_day` per day.
+    *   **Reserve:** the Grower never spends a resource below `grower_reserve` (`BalanceDef`, empty in M1.5). M3 raises it so walls and towers always have scrap.
+*   **Lot:** an anchor cell where every footprint cell has that zone, passes the normal placement check (`BuildTool.can_place` without the cost check, so the zombie check stays), no other building stands in the ring of cells around the footprint (a 1-cell gap, so M2 citizens and zombies can walk between buildings), and no zombie is within `grow_zombie_clearance` tiles. The candidate nearest to the Command Post wins, ties to the lowest cell index. Towns grow outwards from the centre and the result is the same every time (no randomness).
+*   **Why it didn't grow:** the Grower keeps one status line per zone ("Growing", "Saving up: needs 30 wood", "No room for a 3x3 farm", "Daily limit reached", "Paused", "Waits for daylight"). The HUD shows it on each zone button.
+*   **Player control in M1.5:** paint and remove zones, pause or resume growth. Where you paint matters: zombies attack the nearest goal building, so outer buildings shield the centre. M1.5 is mostly a look-and-feel milestone; demand (homeless citizens, food shortage) drives growth from M2.
+*   **Pacing check (start 100 wood + 40 scrap, `daily_income` 40 wood + 15 scrap, housing only):** day 1 three tents (60 wood); day 2 first tent to Shack (30 wood + 10 scrap) and a fourth tent; day 4 the first Brick house (40 wood + 30 scrap). `test_grower` runs this with income only and expects a level 3 house by day 5 and at least one building in each of the three zones by day 3 when all three are painted.
+
 ### Building upgrades (M1.5)
 
-*   `BuildingDef.levels: Array[BuildingLevelDef]`. Level 1 is what you place; its cost is the placement cost.
+*   `BuildingDef.levels: Array[BuildingLevelDef]`. Level 1 is what grows; its cost is `BuildingDef.cost`.
 *   Rule: every level of a building has the same footprint.
-*   **The rules live on `Building`** (`upgrade_blocker() -> String`, `upgrade() -> bool`), so M2's job board can call them too. `BuildTool.upgrade(building)` is only the UI command and calls `building.upgrade()`.
-*   **Allowed when:** a next level exists, it is not night (`GameClock.is_night()` is false), `GameClock.day >= next.min_day`, and `Economy.can_afford(next.upgrade_cost)`. Blocking at night stops upgrades being used as an instant heal during an attack.
+*   **The rules live on `Building`** (`upgrade_blocker() -> String`, `upgrade() -> bool`). The `Grower` calls them in M1.5; M2's builders will call them too.
+*   **Allowed when:** a next level exists, it is not night (`GameClock.is_night()` is false), `GameClock.day >= next.min_day`, and `Economy.can_afford(next.upgrade_cost)`.
 *   **On success:** spend, `level += 1`, keep the same health fraction (`health = roundi(float(health) * new_max / old_max)`), swap the look, emit `EventBus.building_upgraded(building)`. On failure nothing changes.
 *   Upgrades are instant in M1.5. From M2, an upgrade becomes a construction job for builders, and level stats like beds and storage get effects.
-*   **Temporary income:** M1 has no production, so M1.5 adds a flat `daily_income` (`BalanceDef`) paid at each `day_started`. M2 replaces it with real production. Without it, one house upgrade would eat the whole start stock.
-*   **Selecting:** with no building chosen in the build bar, clicking a building selects it and opens the `InfoPanel`. Clicking empty ground, pressing Esc, or choosing a build-bar entry clears the selection.
+*   **Temporary income:** M1 has no production, so M1.5 adds a flat `daily_income` (`BalanceDef`) paid at each `day_started` (not at a new game; the start stock covers day 1). M2 replaces it with real production.
+*   **Upgrading keeps the health fraction**, so it is the only way to heal in M1.5. Intended; repairs by builders come in M3.
+*   **Selecting:** with no tool chosen in the build bar, clicking a building selects it and opens the `InfoPanel` (what it is, its level, and what its next upgrade waits for, including Grower reasons like "Daily limit reached" or "Waiting for its turn"). Clicking empty ground, pressing Esc, choosing a tool, or the building being destroyed clears the selection.
 
 ### Art direction
 
@@ -233,6 +252,7 @@ Each frame (in `_process`, using `delta * GameClock.speed`; nothing moves at spe
 
 *   One JSON file per slot, with `version`, per-system RNG states, and one section per system.
 *   Packed arrays are stored as base64 of `var_to_bytes()`.
+*   From M1.5 the save also holds `ZoneMap` (zone ids) and the `Grower` state (turn, today's counters, hours).
 *   Saves are never loaded as Godot Resources (`.tres`/`.res`), because those can contain scripts.
 
 ### Folders
@@ -344,8 +364,9 @@ docs/        design docs, reviews/
 
 *   **Map size:** is 128 x 128 right? Decide after the M1 benchmark.
 *   **Art style:** decided: 3D, dark and gritty (see Art direction).
-*   **Zoning:** SimCity-style zones where buildings grow by themselves, or place and upgrade each building by hand? Asked 2026-11-21; must be answered before PR B starts. The plan below assumes by hand.
-*   **Roads:** do buildings need road access (for upgrades or citizens)? Not in M1.5.
+*   **Zoning:** decided 2026-11-21: SimCity-style zones (see Zones and growth).
+*   **Demand:** what makes zones grow from M2 (homeless citizens, food shortage)? Decide in the M2 plan.
+*   **Roads:** do zoned lots need road access, like SimCity? Not in M1.5; decide in the M2 plan.
 *   **Game name:** decided: Hold the Gates.
 
 ## Future Improvements
@@ -529,13 +550,13 @@ Tests that need nodes add them to the tree root, and free them at the end.
 
 ### M1.5: 3D view and building upgrades
 
-Goal: the M1 game in 3D with a city-builder camera, buildings with three levels (two upgrades each), and the dark gritty look. M1 gameplay rules stay the same except where listed.
+Goal: the M1 game in 3D with a city-builder camera, SimCity-style zones where buildings grow and upgrade by themselves (three levels each), and the dark gritty look. M1 gameplay rules stay the same except where listed.
 
 | PR | Contents | Playable after it? |
 |---|---|---|
 | 0 | 3D test scene and ARM64 test export. **Merged (#58).** Owner reports fps before PR A | n/a |
 | A | Terrain from data, World/camera/picking/build ghost/buildings/zombies/day-night in 3D, debug overlay text only | Yes: box buildings, capsule zombies |
-| B | Flow arrows in 3D, building levels, selection, InfoPanel, upgrades, temporary income | Yes: upgrades work, levels shown as taller boxes |
+| B | Flow arrows in 3D, building levels, zones, growth and auto-upgrades, selection and InfoPanel, temporary income | Yes: paint zones, the town grows and upgrades, levels shown as taller boxes |
 | C | Gritty art kit: materials, models per level, zombie mesh, props, final lighting | Yes: final M1.5 look |
 
 After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps on the ARM laptop (Performance floor).
@@ -641,12 +662,12 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 
 ##### B1. Flow arrows (`scripts/ui/debug_overlay.gd`)
 
-*   Adds a child `MeshInstance3D` with an `ImmediateMesh`: one line per tile with a direction, 0.1 m above the ground, only within `debug_arrow_radius` (`BalanceDef`, 40 m) of `world.camera.target()`.
+*   Adds a child `MeshInstance3D` with an `ImmediateMesh`: one line per tile from `flow_field.direction_at(cell)`, 0.1 m above the ground, only within `debug_arrow_radius` (`BalanceDef`, 40 m) of `world.camera.target()`. Rebuilt every 0.25 s while the overlay is visible.
 
 ##### B2. `scripts/data/building_level_def.gd` (Create), `building_def.gd` (Modify)
 
 *   `BuildingLevelDef`: `name: String`, `model: PackedScene` (may be null until PR C), `height: float` (m, used for the placeholder box and for picking), `max_health: int`, `upgrade_cost: Dictionary[StringName, int]` (empty for level 1), `min_day: int`.
-*   `BuildingDef`: add `levels: Array[BuildingLevelDef]`; remove `max_health` (now per level). `cost` stays the placement cost; `color` stays for the placeholder. Helpers `level_def(n) -> BuildingLevelDef` (1-based), `max_level() -> int`.
+*   `BuildingDef`: add `levels: Array[BuildingLevelDef]`; remove `max_health` (now per level). `cost` stays the level 1 cost; `color` stays for the placeholder. Helpers `level_def(n) -> BuildingLevelDef` (1-based), `max_level() -> int`.
 *   Levels are sub-resources inside the four building files: `data/buildings/command_post.tres`, `house.tres`, `farm.tres`, `storage.tres`.
 
 | Building | Level 1 | Level 2 | Level 3 |
@@ -658,29 +679,62 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 
 Level 1 health equals the M1 values, so M1 balance does not change.
 
-`BalanceDef` adds `daily_income: Dictionary[StringName, int]` = 20 wood, 10 scrap (temporary, removed in M2). `World` pays it on `EventBus.day_started`.
-
 ##### B3. `scripts/buildings/building.gd` (Modify)
 
 *   `level: int = 1`. `max_health()` reads the current level. Look: `level_def.model` if set, else the placeholder box with `level_def.height`.
-*   `upgrade_blocker() -> String`, first failing check wins: "Max level", "Can't build at night", "Unlocks on day N", "Needs " + every missing resource as "N name" joined by ", ". Empty string = allowed.
+*   `upgrade_blocker() -> String`, first failing check wins: "Max level", "Waits for daylight", "Unlocks on day N", "Needs " + every short resource as "N name" (N = the missing amount, cost minus stock) joined by ", ". Empty string = allowed.
 *   `upgrade() -> bool`: if `upgrade_blocker()` is empty: `Economy.spend(next.upgrade_cost)`, `level += 1`, health as in "Building upgrades", swap the look, emit `EventBus.building_upgraded(self)`, return true. Else change nothing, return false.
 *   `pick_box() -> AABB`: footprint x current height in view space, used for selection.
 
-##### B4. `scripts/world/build_tool.gd` (Modify)
+##### B4. Zones: `scripts/data/zone_def.gd`, `zone_catalog.gd`, `data/zones/housing.tres`, `farmland.tres`, `storage.tres`, `zone_catalog.tres` (Create); `scripts/world/zone_map.gd` (Create)
 
-*   `signal selection_changed(building: Building)`. `selected_building: Building`.
-*   Left click with no def selected: test the mouse ray against every building's `pick_box()`, nearest hit wins; no hit clears the selection. `select(def)` and `cancel` also clear it.
-*   `upgrade(building) -> bool` calls `building.upgrade()` (UI command).
+*   `ZoneDef`: `id: int` (1 housing, 2 farmland, 3 storage; 0 is "none"), `display_name: String`, `building: BuildingDef`, `color: Color` (housing `#c8a060`, farmland `#7da04a`, storage `#6f86a8`). `ZoneCatalog`: `zones: Array[ZoneDef]`, in `data/zones/zone_catalog.tres`. Always loaded with `load()`, not `preload()` (CLAUDE.md gotcha).
+*   `ZoneMap extends Node`: `setup(grid: Grid)`, `zone_at(cell) -> int`, `paint(rect: Rect2i, zone_id: int) -> int` (rect clamped to the map; with `zone_id != 0` sets every cell with `base_cost > 0`, with 0 clears every cell; returns how many cells changed), `cells_of(zone_id) -> PackedInt32Array`. Signal `changed` (once per `paint` call that changed something).
 
-##### B5. `scenes/ui/info_panel.tscn`, `scripts/ui/info_panel.gd` (Create); `scenes/main/main.tscn`, `scripts/main/main.gd` (Modify)
+##### B5. `scripts/world/zone_overlay.gd` (Create)
 
-*   Bottom-left panel shown while `selected_building` is set: name, "Level 2 of 3", health, next level name, height and health, cost, Upgrade button (disabled, with the blocker text under it). Button calls `BuildTool.upgrade()`.
-*   `main.tscn` holds the InfoPanel next to the HUD; `main.gd` calls `info_panel.bind(world.build_tool)` after each `new_game()`, like `_hud.bind`.
+*   `ZoneOverlay extends MultiMeshInstance3D`: one flat quad per zoned cell without a building, 0.05 m above the ground, zone colour at `zone_overlay_alpha` (`BalanceDef`, 0.25), or `zone_overlay_alpha_active` (0.45) while `BuildTool.mode` is a zone mode. Full rebuild (no partial updates) on `ZoneMap.changed`, `Grid.changed` and `BuildTool.mode_changed`.
 
-##### B6. `scripts/autoload/event_bus.gd` (Modify)
+##### B6. `scripts/systems/grower.gd` (Create)
+
+*   `Grower extends Node`, World child. `setup(world)` loads the zone catalog. State: `paused: bool`, `turn: int` (index into the turn order), `_hours: float`, `grown_today`, `upgraded_today`, `status: Dictionary[int, String]` (zone id to status line). Counters reset on `EventBus.day_started`.
+*   Time: connects to `GameClock.sim_tick(dt)` (already stops when paused, faster at higher speed) and calls `tick(dt * balance.hours_per_day / balance.day_length_seconds)`. `hours_per_day` (24) moves into `BalanceDef`; the HUD clock uses it too.
+*   `tick(hours: float)`: at night or when paused, set `_hours = 0`, update statuses, return. Else add `hours`; each time `_hours >= grow_interval_hours`, subtract it and call `step()`.
+*   `step() -> bool`: runs the action of the current turn. If the action is impossible, move to the next turn and try again (at most one full round per step). If it is only unaffordable, stay on this turn and return false. On success, move to the next turn and return true.
+*   `grow_step(zone: ZoneDef) -> int` and `upgrade_step() -> int` return `DONE`, `WAIT` (cannot afford, or below `grower_reserve`) or `SKIP` (impossible). Public so tests can drive them.
+*   `find_lot(zone: ZoneDef) -> Vector2i` (or `Vector2i(-1, -1)`): every cell of that zone as an anchor, rules as in "Lot". Upgrade ties after distance go to the lowest anchor index.
+*   `BalanceDef` adds `hours_per_day` 24, `grow_interval_hours` 1.0, `growth_per_day` 4, `upgrades_per_day` 2, `grow_zombie_clearance` 3 (tiles), `grower_reserve` (empty), `daily_income` (40 wood, 15 scrap; temporary, removed in M2), `zone_overlay_alpha` 0.25, `zone_overlay_alpha_active` 0.45, `debug_arrow_radius` 40.
+
+##### B7. `scenes/world/world.tscn`, `scripts/world/world.gd` (Modify)
+
+*   New children: `ZoneMap`, `ZoneOverlay`, `Grower` (with `@onready var zone_map`, `zone_overlay`, `grower`).
+*   `_ready()`: after `grid.setup`: `zone_map.setup(grid)`; after the Command Post spawns: `zone_overlay.setup(self)`, `grower.setup(self)`.
+*   Connects `EventBus.day_started` to pay `daily_income` (`Economy.add` per entry).
+
+##### B8. `scripts/world/build_tool.gd` (Modify)
+
+*   `enum Mode { NONE, BUILD, ZONE_PAINT, ZONE_REMOVE }`, `mode`, `zone: ZoneDef`, `signal mode_changed`. `select(def)` sets BUILD, `select_zone(zone)` sets ZONE_PAINT, `select_remove_zone()` sets ZONE_REMOVE, `clear()` sets NONE. Each emits `mode_changed`.
+*   `can_place(def, cell, check_cost := true)`: the cost check becomes optional; footprint, grid and zombie checks always run.
+*   Zone drag: press `place` stores the start cell; while held, the ghost is the footprint box scaled to the rectangle; release paints the rectangle (clamped to the map) with `ZoneMap.paint()`. If the ray misses the ground at press or release, the last valid hover cell is used. `cancel` ends the drag without painting.
+*   Selection: `signal selection_changed(building: Building)`, `selected_building: Building`. In mode NONE a left click tests the mouse ray against every building's `pick_box()`, nearest hit wins; no hit clears. Changing mode, `cancel`, or `EventBus.building_destroyed` for the selected building clears it.
+
+##### B9. UI: `scripts/ui/hud.gd` (Modify); `scenes/ui/info_panel.tscn`, `scripts/ui/info_panel.gd` (Create); `scenes/main/main.tscn`, `scripts/main/main.gd` (Modify)
+
+*   HUD bottom bar: one button per zone (calls `select_zone`, shows the zone's Grower status under its name), "Remove zone" (`select_remove_zone()`), and "Growth: on/off" (toggles `world.grower.paused`). Buttons show as pressed from `BuildTool.mode`. The UI command list gains `BuildTool.select_zone()`, `select_remove_zone()` and `Grower.paused`.
+*   InfoPanel, bottom left, refreshed every frame while `selected_building` is set: name, "Level 2 of 3", health, next level name, and "Upgrades by itself when: " + the blocker text, or the Grower reason ("Daily limit reached", "Waiting for its turn"). No buttons.
+*   `main.tscn` holds the InfoPanel next to the HUD; `main.gd` calls `info_panel.bind(world)` after each `new_game()`, like `_hud.bind`.
+
+##### B10. `scripts/autoload/event_bus.gd` (Modify)
 
 *   `signal building_upgraded(building: Node)`.
+
+##### B11. Remove
+
+*   `scripts/data/build_catalog.gd`, `data/buildings/catalog.tres`, and in `hud.gd` the build buttons, their highlight/disable loop and `_on_build_pressed`. `BuildingDef.cost_text()` stays (the InfoPanel uses it).
+
+##### B12. Callers of `BuildingDef.max_health` (Modify)
+
+*   `building.gd`, `tests/test_building.gd`, `tests/test_zombie_manager.gd` (`cp.def.max_health`) switch to `max_health()` / `level_def(1).max_health`.
 
 #### PR C
 
@@ -711,15 +765,17 @@ Level 1 health equals the M1 values, so M1 balance does not change.
 | `test_day_night.gd` (create, A) | after `apply(0.35)` the light energy is higher than after `apply(0.85)`; `ambient_light_energy >= ambient_min` at every t in steps of 0.05 |
 | `test_building.gd` (modify, B) | uses `level_def(1).max_health` instead of `max_health` |
 | `test_building_upgrade.gd` (create, B) | upgrade spends, raises the level, keeps the health fraction (50/100 hp becomes 90/180), keeps cells; blocked with no change when poor, at max level, before `min_day`, or at night; blocker texts as in B3 |
-| `test_build_tool.gd` (modify, B) | with the camera at 30 degrees pitch, a ray through a 6.5 m brick house roof selects that house, not the cell behind it; clicking empty ground clears the selection |
-| `test_economy.gd` (modify, B) | `daily_income` is paid once per `day_started` |
+| `test_zone_map.gd` (create, B) | painting a rect over ground and water zones only the ground cells and returns that count; cells under a building get zoned; painting 0 clears cells under a building too; a rect past the map edge is clamped; `changed` fires once per call |
+| `test_grower.gd` (create, B) | `find_lot` picks the valid anchor nearest the Command Post; no lot when the footprint crosses a zone edge or water, touches another building's ring, or has a zombie within the clearance; `grow_step` spends and spawns a level 1 house (DONE), returns WAIT when too poor or below the reserve, SKIP with no lot or after `growth_per_day`; a WAIT keeps the turn, a SKIP moves it in the same step; `tick` does nothing at night or when paused; `upgrade_step` picks the nearest upgradeable building and stops after `upgrades_per_day`; pacing: with only `daily_income` and all three zones painted, each zone has a building by day 3 and a level 3 house exists by day 5; two runs from the same state give the same result |
+| `test_world_income.gd` (create, B) | `daily_income` is paid once per `day_started`, not at a new game |
+| `test_build_tool.gd` (modify, B) | `can_place(def, cell, false)` ignores cost; a zone drag from (5,5) to (7,6) paints 6 cells; with the camera at 30 degrees pitch, a ray through a 6.5 m brick house roof selects that house, not the cell behind it; clicking empty ground clears the selection |
 
 #### Verification (M1.5)
 
 *   CI as before (lint, format, import, tests, main scene 120 frames).
 *   Before PR A: the owner reports the 3D test scene's fps on the ARM laptop. 30 or more with 500 zombies at some setting = go; otherwise stop and revisit Alternative C2.
 *   After PR A and after PR C: exported ARM64 build, owner reads fps with 500 zombies (F3 overlay). Below 30: lower settings first, then cut art.
-*   After PR C, by hand: CUJ 1 in 3D; place a house and upgrade it to level 3 over a few days; rotate and zoom at night; the night readability screenshot (Art direction). Screenshots in the PR.
+*   After PR C, by hand: CUJ 1 in 3D; paint a housing zone and watch houses grow and reach level 3 over a few days; rotate and zoom at night; the night readability screenshot (Art direction). Screenshots in the PR.
 
 --------------------------------------------------------------------------------
 
