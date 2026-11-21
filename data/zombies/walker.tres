@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ZombieDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/zombie_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"walker"
+speed = 40.0
+health = 30
+building_damage = 5
+attack_cooldown = 1.0
+radius = 10.0
+color = Color(0.55, 0.72, 0.42, 1)

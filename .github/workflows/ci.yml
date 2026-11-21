@@ -44,7 +44,11 @@ jobs:
           ~/godot/godot --headless --import 2>&1 | tee import.log
           if grep -E "SCRIPT ERROR|Parse Error|ERROR:" import.log; then exit 1; fi
       - name: Run tests
-        run: ~/godot/godot --headless --script res://tests/run_tests.gd
+        run: |
+          set -o pipefail
+          ~/godot/godot --headless --script res://tests/run_tests.gd 2>&1 | tee tests.log
+          # A script error stops a test early without failing it, so fail on it here.
+          if grep -E "SCRIPT ERROR" tests.log; then exit 1; fi
       - name: Run main scene for a few frames
         run: |
           ~/godot/godot --headless --quit-after 120 2>&1 | tee run.log

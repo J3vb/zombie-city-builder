@@ -13,3 +13,7 @@ func assert_true(value: bool, message: String = "expected true") -> void:
 func assert_eq(actual: Variant, expected: Variant, message: String = "") -> void:
 	if actual != expected:
 		failures.append("%s expected %s, got %s" % [message, str(expected), str(actual)])
+
+
+func fail(message: String) -> void:
+	failures.append(message)

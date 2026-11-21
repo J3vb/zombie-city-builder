@@ -5,13 +5,12 @@ extends Node2D
 
 const MAP_PATH := "res://data/maps/starter_map.tres"
 const COMMAND_POST := preload("res://data/buildings/command_post.tres")
+const NIGHT_COLOR := Color(0.55, 0.6, 0.8)
 
 var map_def: MapDef
 var flow_field := FlowField.new()
 var command_post: Building
 var last_build_ms: float = 0.0
-## ZombieManager, added in the zombie step. Null until then.
-var zombies: Node2D
 
 var _dirty := false
 var _task_id := -1
@@ -23,6 +22,10 @@ var _task_started_usec := 0
 @onready var buildings: Node2D = $Buildings
 @onready var build_tool: BuildTool = $BuildTool
 @onready var camera: CameraRig = $CameraRig
+@onready var zombies: ZombieManager = $ZombieManager
+@onready var horde: HordeDirector = $HordeDirector
+@onready var debug_overlay: DebugOverlay = $DebugOverlay
+@onready var _night_tint: CanvasModulate = $NightTint
 
 
 func _ready() -> void:
@@ -35,6 +38,9 @@ func _ready() -> void:
 	camera.position = command_post.position + Vector2(COMMAND_POST.size) * tile_size() / 2.0
 	grid.changed.connect(_on_grid_changed)
 	_build_now()
+	zombies.setup(self)
+	horde.setup(self, Time.get_ticks_usec())
+	debug_overlay.world = self
 
 
 func _exit_tree() -> void:
@@ -74,6 +80,7 @@ func _on_grid_changed() -> void:
 
 
 func _process(_delta: float) -> void:
+	_update_tint()
 	if _task_id != -1 and WorkerThreadPool.is_task_completed(_task_id):
 		WorkerThreadPool.wait_for_task_completion(_task_id)
 		_task_id = -1
@@ -82,6 +89,12 @@ func _process(_delta: float) -> void:
 		last_build_ms = (Time.get_ticks_usec() - _task_started_usec) / 1000.0
 	if _dirty and _task_id == -1:
 		_start_build()
+
+
+func _update_tint() -> void:
+	var t := GameClock.time_of_day
+	var dark := smoothstep(0.62, 0.72, t) * (1.0 - smoothstep(0.94, 1.0, t))
+	_night_tint.color = Color.WHITE.lerp(NIGHT_COLOR, dark)
 
 
 func _start_build() -> void:

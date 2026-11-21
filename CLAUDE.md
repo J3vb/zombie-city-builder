@@ -37,6 +37,12 @@ Run tests and lint before every commit.
 - Never load save files as Resources (`.tres`/`.res`). JSON only.
 - Minimal comments. A `##` doc line on top of each script saying what it is for.
 
+## Gotchas
+
+- A script error inside a test stops that test silently. CI fails on any `SCRIPT ERROR` line, so check the full test output, not only the pass count.
+- Scripts that are part of the World scene should `load()` Def resources at runtime instead of `preload()`ing them if they are also used as typed function arguments. Preloading during the scene's compile created a second copy of the `ZombieDef` script, and typed checks then failed.
+- Tool scripts run with `--script` can't use autoload names directly; use `root.get_node("GameClock")`.
+
 ## Tests
 
 - Put tests in `tests/test_<thing>.gd`, extend `TestCase`, name methods `test_*`.

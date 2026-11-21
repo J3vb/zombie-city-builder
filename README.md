@@ -24,7 +24,22 @@ M0 (project setup). See [docs/ROADMAP.md](docs/ROADMAP.md).
 2. Open Godot, click **Import**, pick `project.godot` in this folder.
 3. Press **F5**.
 
-Keys: `Space` pause, `1` `2` `3` game speed.
+Controls:
+
+| Key | Action |
+|---|---|
+| WASD / screen edge | Move the camera |
+| Mouse wheel | Zoom |
+| Build bar button, then left click | Place a building |
+| Right click / Esc | Cancel building |
+| Space | Pause |
+| 1 / 2 / 3 | Game speed |
+| F3 | Debug overlay (FPS, zombie count, flow arrows) |
+| F5 | Spawn 100 zombies (debug) |
+| F6 | +100 of every resource (debug) |
+| F7 | Skip to night (debug) |
+
+A horde comes every night. In M1 you can't fight back yet (towers come in M3), so the game is about where you build before the Command Post falls.
 
 ## Tests and lint
 
