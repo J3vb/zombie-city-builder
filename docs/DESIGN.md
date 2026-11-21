@@ -1,12 +1,14 @@
 # Hold the Gates: Technical Design
 
 *   **Author:** J3vb (drafted with Claude)
-*   **Status:** Proposed (Goldfish review rounds 1 and 2 resolved, see [reviews](reviews/review-report.md))
+*   **Status:** M0 and M1 built. M1.5 (3D view and building upgrades) proposed, reviewed once, see [reviews](reviews/review-report.md) and [3D review](reviews/review-3d-report.md)
 *   **Date:** 2026-11-21
 
 ## Overview
 
-A 2D top-down city builder set in a zombie outbreak. Built in Godot 4.5 with GDScript.
+A 3D city builder set in a zombie outbreak, with a rotating city-builder camera like Cities: Skylines. Built in Godot 4.5 with GDScript.
+
+The simulation stays on a flat 2D tile grid. Only the view is 3D (see "3D view" below).
 
 The player:
 
@@ -26,7 +28,8 @@ This document is the technical plan. Related docs:
 | Milestone | Result |
 |---|---|
 | M0 | Project runs (placeholder map + clock) and passes CI. **Done.** |
-| M1 | Prototype: place buildings, a horde attacks, game over |
+| M1 | Prototype: place buildings, a horde attacks, game over. **Done (2D).** |
+| M1.5 | 3D view, building upgrades, dark gritty look |
 | M2 | Citizens, jobs, production |
 | M3 | Walls, gates, towers, horde nights |
 | M4 | Expeditions, infection, checkpoints, power |
@@ -43,6 +46,9 @@ This document is the technical plan. Related docs:
 *   **Horde night:** a night when a large wave attacks (every 3rd night from M3).
 *   **Flow field:** a map that stores, for every tile, which way to walk to reach the city.
 *   **Def:** a data file (`.tres` Resource) holding numbers for one thing, for example `ZombieDef`.
+*   **Sim space:** the flat 2D space the game logic runs in. Positions are `Vector2`, one tile is 32 sim units.
+*   **View space:** the 3D scene the player sees. One tile is 4 metres. `World.to_view()` converts sim space to view space.
+*   **Building level:** the upgrade stage of a building (for example Tent, Shack, Brick house). Each level has its own model, health and stats.
 
 ## Problem Statement
 
@@ -55,7 +61,7 @@ We expect one scene node plus one path query per zombie to be too slow for 500 z
 Proposed solution:
 
 *   Zombies are rows in arrays, not scene nodes.
-*   All zombies are drawn in one batch (`MultiMeshInstance2D`).
+*   All zombies are drawn in one batch (`MultiMeshInstance3D` from M1.5).
 *   All zombies steer by one shared flow field, rebuilt only when the map changes.
 *   Citizens are few (max 100), so they are simple nodes with grid A* pathfinding.
 
@@ -70,7 +76,9 @@ Proposed solution:
 ## Non-Goals
 
 *   Multiplayer.
-*   3D graphics.
+*   Hills and terrain height that affect gameplay. The ground is flat; height is only visual.
+*   Physics-based units or ragdolls.
+*   Skeletal animation for zombies (they are one batched mesh; see Risks).
 *   Mobile or console builds.
 *   Mod support.
 *   Exact replay after loading a save (zombie movement is not deterministic).
@@ -155,6 +163,47 @@ Proposed solution:
 *   **Data as Resources:** all `*Def` scripts live in `scripts/data/`, their `.tres` files in `data/`. The author edits numbers in the Godot inspector.
 *   **Randomness:** each system owns its own seeded `RandomNumberGenerator`. No global `randf()`.
 
+### 3D view (M1.5)
+
+The owner chose a full 3D view with a city-builder camera (decided 2026-11-21, after M1).
+
+*   **Logic stays 2D.** Grid, flow field, zombie movement, spatial hash and build rules keep working in sim space (`Vector2`, 32 units per tile). Their maths does not change for 3D.
+*   **One definition of the conversion.** `World` owns `view_scale` (from `MapDef`, 0.125, so one tile = 4 m) and defines `to_view(p: Vector2) -> Vector3 = Vector3(p.x, 0, p.y) * view_scale` and `to_sim(v: Vector3) -> Vector2 = Vector2(v.x, v.z) / view_scale`. Systems may copy `view_scale` once at setup for hot loops (`ZombieManager`), but must use the same formula.
+*   **Picking without physics.** `CameraRig.ray_to_ground(origin, dir)` intersects the mouse ray with the ground plane `y = 0`. For placing, that point gives the cell. For selecting, the ray is first tested against each building's footprint box (its height comes from its level), nearest hit wins, so clicking a tall roof selects that building and not the ground behind it.
+*   **Terrain** is built in chunks of 16 x 16 tiles, one `ArrayMesh` each (vertex colours, small per-tile shade change). Chunks keep each mesh under the Compatibility renderer's per-object light limit and help culling. Water is drawn 0.3 m lower, with side quads so there are no gaps. The `TileMapLayer` is removed.
+*   **Buildings** are `Node3D`. Each building level has its own look. The footprint never changes between levels, so upgrades never touch the Grid or the flow field.
+*   **Zombies** are drawn by one `MultiMeshInstance3D` (shadows off). Each zombie turns towards where it walks and bobs a little, so the crowd does not look frozen.
+*   **Camera:** pan (WASD, screen edges), rotate (Q/E, middle mouse drag), zoom (wheel), tilt (R/F; right mouse stays "cancel"), pitch 30 to 75 degrees, the point it looks at kept inside the map.
+*   **Light:** a `DayNight` node moves the sun and changes light colour, fog and ambient light from `GameClock.time_of_day` (curves in `LightingDef`). It replaces the 2D `NightTint`. Lights are visual only until floodlights matter for gameplay (M3/M4).
+*   **Renderer:** Compatibility, kept for low-end laptops. The owner's Windows ARM laptop is the reference machine for M1.5.
+*   **3D test scene** (`scenes/tests/bench_3d.tscn`, merged in #58, exported with the "Windows ARM64 3D bench" preset): walled town, 30 street lights, shadows, 500 to 2000 zombies in one MultiMesh. It measures draw cost only (its zombies walk straight to the centre).
+
+### Building upgrades (M1.5)
+
+*   `BuildingDef.levels: Array[BuildingLevelDef]`. Level 1 is what you place; its cost is the placement cost.
+*   Rule: every level of a building has the same footprint.
+*   **The rules live on `Building`** (`upgrade_blocker() -> String`, `upgrade() -> bool`), so M2's job board can call them too. `BuildTool.upgrade(building)` is only the UI command and calls `building.upgrade()`.
+*   **Allowed when:** a next level exists, it is not night (`GameClock.is_night()` is false), `GameClock.day >= next.min_day`, and `Economy.can_afford(next.upgrade_cost)`. Blocking at night stops upgrades being used as an instant heal during an attack.
+*   **On success:** spend, `level += 1`, keep the same health fraction (`health = roundi(float(health) * new_max / old_max)`), swap the look, emit `EventBus.building_upgraded(building)`. On failure nothing changes.
+*   Upgrades are instant in M1.5. From M2, an upgrade becomes a construction job for builders, and level stats like beds and storage get effects.
+*   **Temporary income:** M1 has no production, so M1.5 adds a flat `daily_income` (`BalanceDef`) paid at each `day_started`. M2 replaces it with real production. Without it, one house upgrade would eat the whole start stock.
+*   **Selecting:** with no building chosen in the build bar, clicking a building selects it and opens the `InfoPanel`. Clicking empty ground, pressing Esc, or choosing a build-bar entry clears the selection.
+
+### Art direction
+
+Dark and gritty, mid-apocalypse (owner, 2026-11-21).
+
+*   **Palette:** desaturated olive, brown, grey and rust. Accents: fire orange (light sources), blood red, sickly green-grey for zombies.
+*   **Mood:** low sun, fog, long dusk, dark nights. Wrecked cars, rubble, dead trees, boarded windows, scrap walls.
+*   **Readable chaos (pillar 4) wins over mood, as hard rules:**
+    *   `LightingDef` has a minimum ambient light level and a maximum fog density near the camera.
+    *   At night zombies get a faint emissive tint (strength in `LightingDef`), so they read against the dark ground.
+    *   Damaged buildings show a health bar; the selected building shows an outline.
+    *   UI text is never dark on dark.
+    *   Check before each art PR merges: a night screenshot at 30 degrees pitch where every zombie group and every damaged building is visible.
+*   **Upgrades must be visible:** each level is taller or more solid than the last (tent, then shack, then brick house).
+*   **How the art is made until M6:** low-poly models built in Godot scenes from simple shapes (boxes, prisms, cylinders) with a few shared materials that use Godot's built-in `NoiseTexture2D` for grime (no texture generator script). In M6 they are replaced by Blender models or restyled CC0 kits (licence checked per kit).
+
 ### Zombies as data
 
 *   `ZombieManager` holds parallel packed arrays: position, health, type, state, attack cooldown.
@@ -213,11 +262,25 @@ docs/        design docs, reviews/
 *   **Missing**: editor, UI system, tilemaps, pathfinding, audio buses, export pipeline.
 *   **Reason for Rejection**: a city builder needs a lot of UI and tools. Godot has these built in.
 
-#### Alternative C: 3D
+### View
 
-*   **Pros**: more depth and lighting options.
-*   **Cons**: more art work, higher performance cost, harder camera and mouse picking.
-*   **Reason for Rejection**: 3D is a non-goal for this project.
+#### Alternative C: keep 2D top-down (the M1 view)
+
+*   **Pros**: already built, cheapest art, fastest.
+*   **Cons**: looks like a map, not a city. Upgrades are hard to show.
+*   **Reason for Rejection**: the owner wants a Cities: Skylines / SimCity feel after playing M1.
+
+#### Alternative C2: 2D isometric (SimCity 2000/3000 style)
+
+*   **Pros**: city look with less performance risk; sprites instead of models.
+*   **Cons**: fixed camera angle (no rotation), every building needs sprites drawn for the angle, depth sorting work.
+*   **Reason for Rejection**: the owner chose full 3D. Kept as the fallback if the 3D test fails on the target laptop.
+
+#### Alternative C3: move the simulation to metres in 3D space
+
+*   **Pros**: one coordinate system everywhere.
+*   **Cons**: touches every Def, test and system that M1 finished, for no gameplay gain.
+*   **Reason for Rejection**: the 2D sim plus one `to_view()` conversion keeps M1's tested logic unchanged.
 
 ### Crowd simulation
 
@@ -257,7 +320,13 @@ docs/        design docs, reviews/
 | Zombie update too slow at 500 | Below 60 fps | Bulk MultiMesh buffer, flat spatial hash | M1: zombie update > 6 ms |
 | GDScript can't reach the target | Scope cut | Swap `ZombieManager` core to C#/GDExtension behind the same API | After M1 profile |
 | Crowds jam at gates and breaches | Zombies stuck | Clamp + separation; accept queueing; tune in M3 | M3 playtest |
-| Many 2D lights slow on the Compatibility renderer | Night runs slow | M1 light test scene: 30 lights + 500 zombies | M1 |
+| Many 2D lights slow on the Compatibility renderer | Night runs slow | M1 light test scene: 30 lights + 500 zombies. Replaced by the 3D test scene in M1.5 | M1 |
+| 3D too slow on the owner's low-end ARM laptop | Unplayable on the test machine | 3D test scene before the rebuild (draw cost only); exported ARM64 build re-measured after PR A (real zombie update) and PR C (final art); shadow and light settings; fall back to isometric 2D (Alternative C2) | Fewer than 30 fps with 500 zombies at any check |
+| Compatibility renderer light limits (8 lights per object by default) | Night lights pop or look wrong | Terrain in 16 x 16 tile chunks; few real lights (Command Post, fires); fake glow with emissive meshes | M1.5 night test |
+| Zombies look stiff without skeletal animation | Crowd looks fake | Turn to heading, height bob, per-zombie colour and size variation; vertex-shader shamble later | M1.5 playtest |
+| No artist: placeholder 3D looks cheap | Owner loses interest | Low-poly kit with shared gritty materials, fog and lighting carry the mood; real models in M6 | After M1.5 screenshots |
+| Picking errors at shallow camera angles | Wrong building selected | Pitch 30 degrees or steeper; selection tests footprint boxes before the ground; tested at 30 degrees with a tall building | M1.5 |
+| Tall buildings hide zombies and breaches | Player misses attacks | Night screenshot check at 30 degrees; if it fails, fade buildings between camera and zombies | M1.5 art PR |
 | Saves not restoring correctly | Lost progress | Round-trip test per system | M5 |
 | Loading a malicious save file | Code execution | JSON only, never load saves as Resources | Always |
 
@@ -267,13 +336,16 @@ docs/        design docs, reviews/
     *   flow-field rebuild: 8 ms or less
     *   zombie update + draw: 6 ms or less per frame
     *   M2 adds 50 citizens with the same 60 fps target.
+*   **Performance floor (M1.5, 3D):** 30 fps with 500 zombies on the owner's low-end Windows ARM laptop (the reference machine from M1.5 on) at the lowest settings. Measured with exported ARM64 builds: the 3D test scene before PR A, the game after PR A and after PR C. The 60 fps target stays for a mid-range laptop and is checked again in M6.
 *   **Saves:** carry a version number from M5 on.
 *   **Accessibility:** UI scale setting, OpenDyslexic font option. No information by colour alone: the blocked ghost also shows a cross icon, and zombie types differ in size and shape, not only colour.
 
 ## Open Questions
 
 *   **Map size:** is 128 x 128 right? Decide after the M1 benchmark.
-*   **Art style:** pixel art or clean vector shapes? Decide before M6.
+*   **Art style:** decided: 3D, dark and gritty (see Art direction).
+*   **Zoning:** SimCity-style zones where buildings grow by themselves, or place and upgrade each building by hand? Asked 2026-11-21; must be answered before PR B starts. The plan below assumes by hand.
+*   **Roads:** do buildings need road access (for upgrades or citizens)? Not in M1.5.
 *   **Game name:** decided: Hold the Gates.
 
 ## Future Improvements
@@ -453,6 +525,192 @@ Tests that need nodes add them to the tree root, and free them at the end.
     *   Light test scene holds 60 fps, or the result is recorded and a renderer decision is made.
     *   CUJ 1 played by hand.
 *   Results go in the M1 benchmark issue.
+
+
+### M1.5: 3D view and building upgrades
+
+Goal: the M1 game in 3D with a city-builder camera, buildings with three levels (two upgrades each), and the dark gritty look. M1 gameplay rules stay the same except where listed.
+
+| PR | Contents | Playable after it? |
+|---|---|---|
+| 0 | 3D test scene and ARM64 test export. **Merged (#58).** Owner reports fps before PR A | n/a |
+| A | Terrain from data, World/camera/picking/build ghost/buildings/zombies/day-night in 3D, debug overlay text only | Yes: box buildings, capsule zombies |
+| B | Flow arrows in 3D, building levels, selection, InfoPanel, upgrades, temporary income | Yes: upgrades work, levels shown as taller boxes |
+| C | Gritty art kit: materials, models per level, zombie mesh, props, final lighting | Yes: final M1.5 look |
+
+After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps on the ARM laptop (Performance floor).
+
+#### Rules every M1.5 file follows
+
+*   Conversion as in "3D view": `World.to_view()` / `to_sim()`; hot loops may cache `view_scale`.
+*   Sim code (`Grid`, `FlowField`, `SpatialHash`, `HordeDirector`, `ZombieManager` movement, `BuildTool` validation) uses no 3D types.
+*   `Building.sim_center() -> Vector2` is the building's position in sim space. Sim code uses it, never `position`.
+*   A building model's origin is the centre of its footprint, on the ground.
+*   New numbers go in a Def (`BalanceDef`, `MapDef`, `LightingDef`, `BuildingLevelDef`, `TerrainSet`, `ZombieDef`).
+
+#### PR A
+
+##### A1. Defs and data (Create / Modify)
+
+| Def | Fields | First values |
+|---|---|---|
+| `TerrainDef` (Create, `scripts/data/terrain_def.gd`) | `id: StringName`, `cost: int` (-1 = impassable), `color: Color`, `height: float` (m) | ground (1, olive, 0), rubble (3, grey-brown, 0), water (-1, dark green-blue, -0.3), border (-1, near black, 0) |
+| `TerrainSet` (Create, `scripts/data/terrain_set.gd`, `data/terrain/terrain_set.tres`) | `types: Array[TerrainDef]` as sub-resources (index = type id), `shade_variation: float` | ground 0, rubble 1, water 2, border 3; 0.06 |
+| `MapDef` (Modify) | add `view_scale: float`, `seed: int`; `tile_size` comment no longer mentions a TileSet | 0.125, 1 |
+| `BalanceDef` (Modify) | camera group replaced: `camera_pan_speed` (m/s), `camera_rotate_speed` (rad/s), `camera_drag_rotate` (rad/px), `camera_tilt_speed` (deg/s), `camera_zoom_step` (factor), `camera_distance_min/max/start` (m), `camera_pitch_min/max/start` (deg); `edge_scroll_margin` stays | 40, 1.6, 0.01, 60, 1.15, 10 / 160 / 60, 30 / 75 / 55 |
+| `ZombieDef` (Modify) | add `mesh: Mesh`, `model_scale: float`, `turn_rate: float` (rad/s), `bob_amplitude: float` (m), `bob_speed: float` (rad/s) | capsule (radius 0.3, height 1.7) until PR C, 1.0, 6.0, 0.05, 6.0 |
+| `LightingDef` (Create, `scripts/data/lighting_def.gd`, `data/lighting.tres`) | `sun_color: Gradient`, `sun_energy: Curve`, `ambient_color: Gradient`, `ambient_min: float`, `fog_color: Gradient`, `fog_density: Curve`, `fog_density_max: float`, `moon_color: Color`, `moon_energy: float`, `moon_pitch: float` (deg), `zombie_night_emission: float`, `shadows: bool` (all sampled by `time_of_day`) | PR A: plain values (warm day, blue night, light fog, shadows on); PR C tunes them |
+
+`project.godot` (Modify): add input actions `camera_rotate_left` (Q), `camera_rotate_right` (E), `camera_tilt_up` (R), `camera_tilt_down` (F). Middle-mouse drag is read directly in `CameraRig`.
+
+##### A2. `scripts/world/starter_map.gd` (Modify)
+
+*   `generate(def: MapDef) -> PackedByteArray`: one terrain type id per tile, same layout rules as M1. No TileMapLayer.
+
+##### A3. `scripts/world/grid.gd` (Modify)
+
+*   `setup(map_size: Vector2i, terrain_types: PackedByteArray, terrain: TerrainSet, tile: float)`: stores `types`, fills `base_cost` from `terrain.types[type].cost`.
+*   `occupant: Dictionary[Vector2i, Building]`; `occupy(cells, building: Building)`; `building_at(cell) -> Building`.
+*   `cell_to_world(cell) = (Vector2(cell) + Vector2(0.5, 0.5)) * tile` (cell centre, same as M1). `world_to_cell(pos) = Vector2i(floor(pos / tile))`. `world_size() = Vector2(size) * tile`.
+
+##### A4. `scripts/world/terrain_mesh.gd` (Create)
+
+*   `class_name TerrainMesh extends Node3D`. `build(grid: Grid, terrain: TerrainSet, view_tile: float, rng: RandomNumberGenerator)` creates one `MeshInstance3D` child per 16 x 16 tile chunk.
+*   Per tile: two triangles (6 vertices, no index array) at `TerrainDef.height`, colour = `TerrainDef.color` darkened or lightened by up to `shade_variation`. Where a tile's height differs from its east or south neighbour, add a side quad between the two heights.
+*   One shared `StandardMaterial3D` with `vertex_color_use_as_albedo = true`, roughness 1.
+
+##### A5. `scenes/world/world.tscn`, `scripts/world/world.gd` (Modify)
+
+*   Root is `Node3D`. Children: `Terrain` (TerrainMesh), `Grid`, `Buildings` (Node3D), `ZombieManager`, `HordeDirector`, `BuildTool`, `CameraRig`, `DayNight`, `DebugOverlay`. `NightTint` and `_update_tint()` are deleted.
+*   Owns `var rng := RandomNumberGenerator.new()`, seeded from `map_def.seed`.
+*   `_ready()` order: load `map_def` and the terrain set; `types = StarterMap.generate(map_def)`; `grid.setup(map_def.size, types, terrain_set, map_def.tile_size)`; `terrain.build(grid, terrain_set, view_tile(), rng)`; `camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * map_def.view_scale))` (view-space XZ, metres); `build_tool.world = self`; spawn the Command Post; `camera.look_at_sim(command_post.sim_center())`; connect `grid.changed`; build the flow field; `zombies.setup(self)`; `horde.setup(self, ...)`; `day_night.setup()`.
+*   Adds `view_scale`, `to_view()`, `to_sim()`, `view_tile() -> float` (= `tile_size * view_scale` = 4). `tile_size()` returns `Vector2(map_def.tile_size, map_def.tile_size)` (sim units).
+*   `spawn_building(def, cell)` calls `building.setup(def, cell, self)`.
+*   Flow-field rebuild code unchanged.
+
+##### A6. `scenes/world/camera_rig.tscn` (Create), `scripts/world/camera_rig.gd` (Replace)
+
+*   `CameraRig extends Node3D` (the point it looks at, on the ground) with a `Camera3D` child. Controls as in "3D view", numbers from `BalanceDef`; the rig position is clamped to `bounds` (view space). Start at `camera_distance_start`, `camera_pitch_start`, yaw 0.
+*   `look_at_sim(p: Vector2)` (needs `world`, set by World).
+*   `static func ray_to_ground(origin: Vector3, dir: Vector3) -> Variant`: point on `y = 0`, or `null` when `dir.y >= 0`.
+*   `mouse_ray() -> Array` (origin, dir) from `Camera3D.project_ray_origin/normal`.
+*   `target() -> Vector3` (rig position, used by the debug overlay).
+*   Written from `scripts/debug/bench_camera_3d.gd`.
+
+##### A7. `scripts/world/build_tool.gd` (Modify)
+
+*   `extends Node3D`. Mouse cell: `world.camera.mouse_ray()` → `ray_to_ground()` → `world.to_sim()` → `grid.world_to_cell()`. Validation and `place()` unchanged.
+*   Ghost: child `MeshInstance3D` box of the footprint, 0.5 m high, unshaded transparent material (white 40 percent alpha valid, red 50 percent invalid), plus two crossed thin boxes on top shown only when invalid. No `_draw`.
+
+##### A8. `scripts/buildings/building.gd`, `command_post.gd`, `scenes/buildings/*.tscn` (Modify)
+
+*   `extends Node3D`. `setup(def, anchor, world: World)`. `sim_center() -> Vector2` = footprint centre in sim space; `position = world.to_view(sim_center())`.
+*   Look in PR A: a `MeshInstance3D` box of the footprint (minus 0.3 m each side), 3 m high, colour from `def.color`. Health bar: `Sprite3D` billboard 1 m above the roof (two coloured quads), shown when damaged. No `_draw`.
+*   Callers switched to `sim_center()`: `zombie_manager.gd` (`target`), `world.gd` (camera start), `tests/test_zombie_manager.gd`.
+
+##### A9. `scripts/units/zombie_manager.gd`, `scenes/units/zombie_manager.tscn` (Modify)
+
+*   `extends Node3D`, child `MultiMeshInstance3D` (`cast_shadow = off`). Movement code unchanged except `target` (A8).
+*   New arrays, resized in `setup`, set in `spawn`, moved in swap-remove: `_heading: PackedFloat32Array` (eased towards the move direction at `turn_rate`), `_phase: PackedFloat32Array` (random at spawn, from the manager's own seeded RNG).
+*   `_time: float` advances by the scaled `dt`, so the bob stops when paused.
+*   `_upload()`: 16 floats per instance: basis = rotation about Y by heading, times `model_scale`; origin = `Vector3(p.x, 0, p.y) * view_scale` + bob `sin(_time * bob_speed + _phase[i]) * bob_amplitude` on Y; then colour. Mesh material uses `vertex_color_use_as_albedo`. `custom_aabb` covers the map in view space, y from -1 to 4 m.
+
+##### A10. `scripts/world/day_night.gd`, `scenes/world/day_night.tscn` (Create)
+
+*   `DayNight extends Node3D` with `DirectionalLight3D` and `WorldEnvironment`. `setup()` loads `data/lighting.tres`.
+*   `time_of_day` 0 = sunrise in the east, `night_at` (0.7) = sunset in the west. Sun elevation `sin(PI * t / night_at)`, yaw from east to west across that span. From `night_at` to 1.0 the light is the moon: fixed `moon_pitch`, `moon_color`, `moon_energy`.
+*   Colours, energy and fog sampled from `LightingDef` each frame; ambient never below `ambient_min`; fog never above `fog_density_max`.
+
+##### A11. `scripts/ui/debug_overlay.gd` (Modify)
+
+*   Text stats unchanged. The 2D flow-arrow drawing is removed in PR A (arrows come back in B1).
+
+##### A12. Remove
+
+*   `tools/make_terrain.gd`, `assets/tiles/terrain.png`, `assets/tiles/terrain.png.import`, `assets/tiles/terrain_tileset.tres`, `scenes/tests/light_test.tscn`, `scripts/debug/light_test.gd` (the 3D test scene replaces it).
+
+#### PR B
+
+##### B1. Flow arrows (`scripts/ui/debug_overlay.gd`)
+
+*   Adds a child `MeshInstance3D` with an `ImmediateMesh`: one line per tile with a direction, 0.1 m above the ground, only within `debug_arrow_radius` (`BalanceDef`, 40 m) of `world.camera.target()`.
+
+##### B2. `scripts/data/building_level_def.gd` (Create), `building_def.gd` (Modify)
+
+*   `BuildingLevelDef`: `name: String`, `model: PackedScene` (may be null until PR C), `height: float` (m, used for the placeholder box and for picking), `max_health: int`, `upgrade_cost: Dictionary[StringName, int]` (empty for level 1), `min_day: int`.
+*   `BuildingDef`: add `levels: Array[BuildingLevelDef]`; remove `max_health` (now per level). `cost` stays the placement cost; `color` stays for the placeholder. Helpers `level_def(n) -> BuildingLevelDef` (1-based), `max_level() -> int`.
+*   Levels are sub-resources inside the four building files: `data/buildings/command_post.tres`, `house.tres`, `farm.tres`, `storage.tres`.
+
+| Building | Level 1 | Level 2 | Level 3 |
+|---|---|---|---|
+| House (2x2) | Tent, 100 hp, 2.0 m | Shack, 180 hp, 3.5 m, 30 wood + 10 scrap, day 2 | Brick house, 300 hp, 6.5 m, 40 wood + 30 scrap, day 4 |
+| Farm (3x3) | Plot, 80 hp, 0.5 m | Fenced field, 140 hp, 1.5 m, 25 wood, day 2 | Greenhouse, 220 hp, 4.0 m, 20 wood + 30 scrap, day 4 |
+| Storage (2x2) | Tarp pile, 120 hp, 2.0 m | Shed, 200 hp, 3.5 m, 30 wood, day 2 | Warehouse, 350 hp, 7.0 m, 30 wood + 40 scrap, day 4 |
+| Command Post (3x3) | Command Post, 500 hp, 6.0 m | (levels later) | |
+
+Level 1 health equals the M1 values, so M1 balance does not change.
+
+`BalanceDef` adds `daily_income: Dictionary[StringName, int]` = 20 wood, 10 scrap (temporary, removed in M2). `World` pays it on `EventBus.day_started`.
+
+##### B3. `scripts/buildings/building.gd` (Modify)
+
+*   `level: int = 1`. `max_health()` reads the current level. Look: `level_def.model` if set, else the placeholder box with `level_def.height`.
+*   `upgrade_blocker() -> String`, first failing check wins: "Max level", "Can't build at night", "Unlocks on day N", "Needs " + every missing resource as "N name" joined by ", ". Empty string = allowed.
+*   `upgrade() -> bool`: if `upgrade_blocker()` is empty: `Economy.spend(next.upgrade_cost)`, `level += 1`, health as in "Building upgrades", swap the look, emit `EventBus.building_upgraded(self)`, return true. Else change nothing, return false.
+*   `pick_box() -> AABB`: footprint x current height in view space, used for selection.
+
+##### B4. `scripts/world/build_tool.gd` (Modify)
+
+*   `signal selection_changed(building: Building)`. `selected_building: Building`.
+*   Left click with no def selected: test the mouse ray against every building's `pick_box()`, nearest hit wins; no hit clears the selection. `select(def)` and `cancel` also clear it.
+*   `upgrade(building) -> bool` calls `building.upgrade()` (UI command).
+
+##### B5. `scenes/ui/info_panel.tscn`, `scripts/ui/info_panel.gd` (Create); `scenes/main/main.tscn`, `scripts/main/main.gd` (Modify)
+
+*   Bottom-left panel shown while `selected_building` is set: name, "Level 2 of 3", health, next level name, height and health, cost, Upgrade button (disabled, with the blocker text under it). Button calls `BuildTool.upgrade()`.
+*   `main.tscn` holds the InfoPanel next to the HUD; `main.gd` calls `info_panel.bind(world.build_tool)` after each `new_game()`, like `_hud.bind`.
+
+##### B6. `scripts/autoload/event_bus.gd` (Modify)
+
+*   `signal building_upgraded(building: Node)`.
+
+#### PR C
+
+##### C1. Materials (`assets/materials/*.tres`, Create)
+
+*   `StandardMaterial3D` files using `NoiseTexture2D` for grime: concrete, rust metal, old wood, brick, tarp, dirt, asphalt, zombie skin. No generator script.
+
+##### C2. Models (Create)
+
+*   `scenes/models/<building>_<level>.tscn`: 10 scenes built from primitive meshes with the shared materials, following Art direction; set as `BuildingLevelDef.model`. Heights match the B2 table.
+*   `tools/make_zombie_mesh.gd`: merges body, head and reaching arms into one `ArrayMesh` at `assets/models/zombie_walker.res` (a MultiMesh needs one mesh). Set as `walker.tres` `mesh`.
+*   Props: wrecked car, rubble pile, dead tree. Placed by `StarterMap` rules on rubble tiles and on ground near the border, drawn with one `MultiMeshInstance3D` per prop type (visual only, no grid cost).
+
+##### C3. `data/lighting.tres` (Modify)
+
+*   Final gritty curves: low warm sun, grey-green fog, dark blue nights, `zombie_night_emission`; one fire-orange `OmniLight3D` at the Command Post.
+
+#### Tests (M1.5)
+
+| File | Cases |
+|---|---|
+| `test_grid.gd` (modify, PR A) | setup from a type array: water -1, rubble 3; `cell_to_world((1, 2))` = (48, 80); `world_to_cell` inverse; occupy/release as before. No TileSet preload |
+| `test_terrain_mesh.gd` (create, A) | 32 x 32 map makes 4 chunks; a 4 x 4 all-ground map has 96 vertices (16 tiles x 6); a water tile next to ground adds side quads |
+| `test_world_view.gd` (create, A) | `to_sim(to_view(p))` equals `p` within 0.001; cell (0,0) centre maps to (2, 0, 2) m |
+| `test_camera_rig.gd` (create, A) | `ray_to_ground((0,10,0), (0,-1,1).normalized())` = (0,0,10); upward ray = `null`; zoom stays within min/max; rig clamped inside bounds |
+| `test_zombie_manager.gd` (modify, A) | positions from `cp.sim_center()`; after a kill and swap-remove, `_heading` and `_phase` stay with their zombie; `visible_instance_count == count()` |
+| `test_day_night.gd` (create, A) | sun energy at t = 0.35 > at t = 0.85; ambient never below `ambient_min` |
+| `test_building.gd` (modify, B) | uses `level_def(1).max_health` instead of `max_health` |
+| `test_building_upgrade.gd` (create, B) | upgrade spends, raises the level, keeps the health fraction (50/100 hp becomes 90/180), keeps cells; blocked with no change when poor, at max level, before `min_day`, or at night; blocker texts as in B3 |
+| `test_build_tool.gd` (modify, B) | with the camera at 30 degrees pitch, a ray through a 6.5 m brick house roof selects that house, not the cell behind it; clicking empty ground clears the selection |
+| `test_economy.gd` (modify, B) | `daily_income` is paid once per `day_started` |
+
+#### Verification (M1.5)
+
+*   CI as before (lint, format, import, tests, main scene 120 frames).
+*   Before PR A: the owner reports the 3D test scene's fps on the ARM laptop. 30 or more with 500 zombies at some setting = go; otherwise stop and revisit Alternative C2.
+*   After PR A and after PR C: exported ARM64 build, owner reads fps with 500 zombies (F3 overlay). Below 30: lower settings first, then cut art.
+*   After PR C, by hand: CUJ 1 in 3D; place a house and upgrade it to level 3 over a few days; rotate and zoom at night; the night readability screenshot (Art direction). Screenshots in the PR.
 
 --------------------------------------------------------------------------------
 

@@ -26,12 +26,13 @@ These are the rules we check every feature against.
 
 ## 3. Camera and look
 
-- 2D top-down, tile grid (simple to build, fast with many units).
-- Zoom and pan camera, like a classic city builder.
-- Simple readable art first. Placeholder shapes until M6.
-- Night is dark. Light sources (torches, floodlights) matter.
+- 3D, with a city-builder camera like Cities: Skylines: pan, rotate, zoom and tilt. The game still runs on a tile grid underneath.
+- Buildings upgrade in visible steps (tent, shack, brick house), like SimCity.
+- Dark and gritty, mid-apocalypse: rust, scrap walls, wrecked cars, dead trees, fog, fires.
+- Readable first: zombies and walls always stand out, even at night.
+- Night is dark. Light sources (fires, floodlights) set the mood from M1.5 and start to matter for gameplay in M3/M4.
 
-> Why 2D and not 3D? Hundreds of zombies plus a city is far easier and faster in 2D. 3D can come later as a visual layer if wanted.
+> Why 3D? The owner played the 2D prototype (M1) and wanted a real city feel with buildings you can watch grow. The logic stays 2D, so the zombie numbers still work.
 
 ## 4. Core loop
 
@@ -135,6 +136,8 @@ Behaviour:
 - Later option: control the team directly on the map (stretch goal).
 
 ## 13. Progression
+
+- **Building upgrades:** most buildings have 3 levels. Each level costs resources, unlocks on a set day, and gives more health and capacity (beds, storage, output).
 
 - **Tech tree** unlocked with blueprints found outside plus scrap.
 - Tiers: Survive (wood, farms) -> Fortify (walls, towers, workshop) -> Rebuild (power, clinic, vehicles) -> Reclaim (clear zones, radio, rescue).
