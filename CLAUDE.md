@@ -5,7 +5,7 @@ Guide for Claude Code working in this repo.
 ## Project
 
 2D top-down zombie city builder. Godot 4.5, GDScript only.
-Read before big changes: `docs/DESIGN.md` (architecture), `docs/SYSTEMS.md` (per-system spec), `docs/ROADMAP.md` (milestones).
+Read before big changes: `docs/DESIGN.md` (architecture), `docs/SYSTEMS.md` (per-system spec), `docs/ROADMAP.md` (milestones). Story and names for text: `docs/LORE.md`.
 
 ## The owner
 

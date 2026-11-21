@@ -3,6 +3,7 @@
 Working title: **Zombie City Builder** (rename later).
 
 Short sections. Read top to bottom once, then use it as a lookup.
+Story, world and names: [LORE.md](LORE.md).
 
 ---
 
@@ -128,7 +129,7 @@ Behaviour:
 ## 12. Expeditions
 
 - Pick a team (2 to 4 citizens), gear and a map location.
-- Locations: supermarket, hospital, police station, gas station, farm, radio tower...
+- Locations: supermarket, hospital, police station, gas station, farm, relay station (radio parts)...
 - Outcome is simulated off-screen with a risk roll and short text events ("They found a survivor. Bring her back?").
 - Risks: injury, bites, death, getting followed home by a horde.
 - Later option: control the team directly on the map (stretch goal).
