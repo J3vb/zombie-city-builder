@@ -75,7 +75,7 @@ func preview(points: PackedVector2Array) -> Street:
 	var covered: Dictionary[Vector2i, bool] = {}
 	for strip in road.strips:
 		for cell in GroundShape.cells_of(strip, grid.tile_size):
-			if grid.get_cost(cell) <= 0 or grid.parcel_cells.has(cell):
+			if grid.get_cost(cell) <= 0 or grid.parcel_cells.has(cell) or grid.barriers.has(cell):
 				road.error = "The street crosses blocked land."
 				return road
 			covered[cell] = true

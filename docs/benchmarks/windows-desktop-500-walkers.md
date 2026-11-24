@@ -56,3 +56,18 @@ The frontage test scene places two homes on opposite sides of a curved street wi
 On the reference Windows desktop (Ryzen 9 7950X3D, RTX 4080 Super), the staffed town averaged **153.8 FPS**, with a **7.05 ms** 95th-percentile frame in Godot 4.7.2 at 1920 × 1080 uncapped. The trial used 50 housed workers, the Station 4 builder and 500 active Walkers. After a two-second warm-up, it sampled six seconds of rendered frames. The benchmark’s Walkers use zero civilian damage to keep the population fixed. Pursuit, collision and flight run normally.
 
 In a separate rendered encounter with normal damage, Noor left the well and reached home with 40/40 health. The inspector showed her departure and the HUD displayed the shelter alert. [Windows capture](civilian-shelter.webp).
+
+
+## First defense
+
+On the same Windows desktop at 1920 × 1080, the existing fixed-population crowd benchmark averaged **153.1 FPS** with a **7.18 ms** 95th-percentile frame. That benchmark measures 50 housed workers, a builder and 500 Walkers. A separate rendered check ordered ten perimeter tiles through the build menu, operated the finished gate in its inspector, posted Mara and observed one shot consume one round. [In-game capture](first-defense.webp).
+
+The seed-4 opening replay uses ordinary paid construction, starting resources, reachable defender jobs and normal Walker damage. The undefended supply-first opening loses on the first night. The defended opening uses two watchtowers, three barricade tiles and two gate tiles. It packs ammo before dusk and uses its starting rations. CI runs the defended opening through dawn six.
+
+| Night | Walkers | Ammo before attack | Ammo at dawn | Station 4 health |
+|---|---:|---:|---:|---:|
+| 1 | 30 | 36 | 6 | 500 |
+| 2 | 40 | 54 | 14 | 500 |
+| 3 | 50 | 62 | 12 | 500 |
+| 4 | 60 | 60 | 0 | 500 |
+| 5 | 70 | 72 | 2 | 500 |

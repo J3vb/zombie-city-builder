@@ -71,6 +71,10 @@ func spawn(pos: Vector2, def: ZombieDef) -> bool:
 	return true
 
 
+func is_alive(index: int) -> bool:
+	return index >= 0 and index < _count and _health[index] > 0
+
+
 func damage(index: int, amount: int) -> void:
 	if index < 0 or index >= _count or _health[index] <= 0:
 		return
@@ -83,6 +87,13 @@ func kill(index: int) -> void:
 	damage(index, _health[index])
 
 
+func occupies_cell(cell: Vector2i) -> bool:
+	for i in _count:
+		if _health[i] > 0 and world.grid.world_to_cell(_pos[i]) == cell:
+			return true
+	return false
+
+
 func query(pos: Vector2, radius: float, out: PackedInt32Array) -> int:
 	return _hash.query(pos, radius, out)
 
@@ -93,6 +104,8 @@ func _process(delta: float) -> void:
 	var dt := delta * GameClock.speed
 	_hash.rebuild(_pos, _count)
 	if dt > 0.0:
+		for tower in world.perimeter.towers:
+			tower.fire_tick(world, dt)
 		_step_all(dt)
 	_remove_dead()
 	crowd_updated.emit(_pos, _type, _state, _defs, _count)
@@ -163,6 +176,12 @@ func _step_all(dt: float) -> void:
 			dir = (target - p).normalized()
 		var ahead := p + dir * _tile * 0.5
 		var ahead_cell := Vector2i(floori(ahead.x / _tile), floori(ahead.y / _tile))
+		var segment: BarrierSegment = grid.barriers.get(ahead_cell)
+		if segment != null and segment.blocks():
+			_state[i] = State.ATTACK
+			if _can_strike(i, dt, def):
+				world.perimeter.hit(segment, def.building_damage)
+			continue
 		var building := grid.building_at(ahead_cell)
 		if building:
 			_state[i] = State.ATTACK
@@ -216,7 +235,7 @@ func _move(p: Vector2, motion: Vector2, grid: Grid) -> Vector2:
 	var step := motion / steps
 	for s in steps:
 		var next := p + step
-		if _walkable(next, grid):
+		if _walkable(next, grid) and _clear_contact(p, next, grid):
 			p = next
 		elif _walkable(Vector2(next.x, p.y), grid):
 			p.x = next.x

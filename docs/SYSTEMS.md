@@ -142,6 +142,12 @@ Run the staffing and crowd benchmark on the reference PC with `godot --path . --
 - **Depends on:** Grid, Building placement, Flow field, Citizens.
 - **Milestone:** M3 (walls, gates), M4 (checkpoint).
 
+### Playable perimeter
+
+The grid holds one segment record per claimed cell. A shared mesh draws the whole line. Barricades cost 2 wood per tile, palisades cost 4 wood and 1 scrap, and gates cost 3 wood and 1 scrap. The builder works at a reachable neighbor. Stakes reserve the land immediately and allow traffic until the segment is complete. Use Demolish to cancel an unfinished segment and reclaim the unused fraction. Enemy destruction gives no refund.
+
+A completed gate starts open. Manual closing and the optional dusk close both wait for the crossing to clear. Opening or breaching a gate restores the road or ground cost. Citizens use live passability. Walkers plan against a separate snapshot with fixed breach costs of 18 for barricades, 30 for gates and 48 for palisades. Live collision and damage still use the actual grid while a replacement flow field builds.
+
 ## 7. Towers and defenders
 
 - **What:** shoot zombies from walls.
@@ -153,6 +159,12 @@ Run the staffing and crowd benchmark on the reference PC with `godot --path . --
   - Defender citizens can also stand on a wall tile and fight melee/short range.
 - **Depends on:** Zombie spatial hash, Economy (ammo), Citizens.
 - **Milestone:** M3.
+
+### Playable watchtower
+
+One completed tower offers one job. An assigned resident walks to the platform, stays on duty at dusk, and gives up their production slot. The post protects its occupant until it falls. Each available shot targets the nearest living Walker within 16 tiles using the current crowd update. The watchtower deals 30 damage, has a 0.6-second cooldown and consumes one round. An empty post, empty magazine or empty range consumes nothing. The inspector shows the defender, range, shots fired and supply problems.
+
+A new town starts with 36 ammo. The Station 4 inspector exchanges 2 scrap for a batch of 24 only when there is room for the full batch. The defended opening makes supplies and assignments before the night starts.
 
 ## 8. Zombie AI
 

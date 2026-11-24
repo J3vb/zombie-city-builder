@@ -7,6 +7,7 @@ var _feedback := ""
 
 
 func _ready() -> void:
+	%Ammo.pressed.connect(_pack_ammo)
 	%CancelProject.pressed.connect(_cancel_project)
 	%Assignment.about_to_popup.connect(_populate_workers)
 	%Assignment.get_popup().id_pressed.connect(_choose_worker)
@@ -29,6 +30,17 @@ func refresh(building: Building, grower: TownGrower) -> void:
 	visible = is_instance_valid(building) and not building.is_queued_for_deletion()
 	if not visible:
 		return
+	%Ammo.visible = building == grower.world.command_post
+	if %Ammo.visible:
+		var rules := grower.rules
+		%Ammo.text = (
+			"Pack %d ammo · %s" % [rules.ammo_batch, BuildingDef.format_cost(rules.ammo_batch_cost)]
+		)
+		%Ammo.disabled = (
+			not Economy.can_afford(rules.ammo_batch_cost)
+			or Economy.get_amount(&"ammo") + rules.ammo_batch > Economy.capacity
+		)
+		%Ammo.tooltip_text = "Requires scrap and room for the whole batch."
 	var building_work := building.target_level != 0
 	%CancelProject.visible = building_work
 	%Project.visible = building_work
@@ -96,20 +108,32 @@ func refresh(building: Building, grower: TownGrower) -> void:
 		_refresh_staff(building)
 
 
+func _pack_ammo() -> void:
+	if is_instance_valid(_site) and _site == _jobs.world.command_post:
+		Economy.pack_ammo(_jobs.rules)
+
+
 func _cancel_project() -> void:
 	if is_instance_valid(_site):
 		_site.cancel_construction()
 
 
 func _refresh_staff(building: Building) -> void:
-	var productive := building.shift_output() > 0
+	var productive := building is DefenseTower or building.shift_output() > 0
 	%Assignment.visible = productive
 	%Staff.visible = productive or building.plot != null
 	if not %Staff.visible:
 		return
 	var resident := _jobs.worker_at(building) if productive else _jobs.tenant(building)
 	var lines := PackedStringArray()
-	if productive:
+	if building is DefenseTower:
+		var tower := building.def as TowerDef
+		lines.append(
+			"Range   %d tiles   ·   Shots fired   %d" % [roundi(tower.range_tiles), building.shots]
+		)
+		if resident != null and building.duty_status(resident) != "On watch":
+			lines.append(building.duty_status(resident))
+	elif productive:
 		lines.append("Per shift   %d %s" % [building.shift_output(), building.def.output_resource])
 	if resident == null:
 		if productive:
@@ -129,7 +153,7 @@ func _refresh_staff(building: Building) -> void:
 			lines.append("Station 4 builder")
 		elif resident.worked_day == GameClock.day:
 			lines.append("Shift complete · pays at dawn")
-		elif resident.state == Resident.State.WORKING:
+		elif resident.state == Resident.State.WORKING and not resident.on_watch():
 			lines.append(
 				"Shift   %d%%" % int(100.0 * resident.shift_seconds / _jobs.rules.shift_seconds)
 			)

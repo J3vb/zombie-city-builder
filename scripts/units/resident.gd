@@ -45,8 +45,19 @@ func sim_position() -> Vector2:
 	return _sim_position
 
 
+func stand_watch() -> void:
+	if not on_watch():
+		shelter = job
+		position = _world.to_view(job.sim_center()) + Vector3.UP * (job.def as TowerDef).deck_height
+		show()
+
+
+func on_watch() -> bool:
+	return job is DefenseTower and shelter == job and state == State.WORKING
+
+
 func exposed() -> bool:
-	return health > 0 and state != State.HOME and state != State.SHELTERED
+	return health > 0 and state != State.HOME and state != State.SHELTERED and not on_watch()
 
 
 func take_hit(amount: int) -> void:
@@ -58,7 +69,9 @@ func take_hit(amount: int) -> void:
 
 
 func update_retreat() -> bool:
-	var should_retreat := threat_near or (retreating and state == State.TO_HOME)
+	var should_retreat := (
+		(threat_near and not on_watch()) or (retreating and state == State.TO_HOME)
+	)
 	if should_retreat == retreating:
 		return false
 	retreating = should_retreat
@@ -91,6 +104,7 @@ func occupies(tiles: Array[Vector2i]) -> bool:
 
 
 func send(path: Array[Vector2i], to_work: bool) -> void:
+	position = _world.to_view(_sim_position)
 	if to_work:
 		shelter = null
 	var origin := route_origin()
@@ -149,7 +163,7 @@ func activity() -> String:
 		State.TO_WORK:
 			return "Walking to work"
 		State.WORKING:
-			return "Working"
+			return "On watch" if on_watch() else "Working"
 		State.TO_HOME:
 			if retreating:
 				return "Fleeing to Station 4" if at_station else "Fleeing home"

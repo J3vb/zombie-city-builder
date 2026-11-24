@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/building_info.tscn" id="2_info"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/perimeter_info.tscn" id="3_perimeter"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -80,3 +82,5 @@ theme_override_constants/outline_size = 6
 theme_override_colors/font_color = Color(1, 0.82, 0.56, 1)
 
 [node name="BuildingInfo" parent="." instance=ExtResource("2_info")]
+
+[node name="PerimeterInfo" parent="." instance=ExtResource("3_perimeter")]

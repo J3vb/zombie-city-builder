@@ -2,8 +2,10 @@ class_name PlotTool
 extends Node3D
 ## Places residential parcels, paints work zones and handles explicit removal tools.
 
-enum Mode { NONE, HOME, ZONE, UNZONE, DEMOLISH, REMOVE_PLOT, REMOVE_ROAD }
+enum Mode { NONE, HOME, ZONE, UNZONE, DEMOLISH, REMOVE_PLOT, REMOVE_ROAD, PERIMETER }
 
+var selected_segment: BarrierSegment
+var barrier: BarrierDef
 var selected_building: Building
 var mode := Mode.NONE
 var hint := ""
@@ -50,6 +52,15 @@ func select(next: Mode, zone_def: BuildingDef = null) -> void:
 			hint = "Click a street to remove it."
 
 
+func select_barrier(def: BarrierDef) -> void:
+	select(Mode.PERIMETER)
+	barrier = def
+	hint = (
+		"Drag a straight %s line. %s per tile. Esc cancels."
+		% [def.title, BuildingDef.format_cost(def.cost)]
+	)
+
+
 func _building_destroyed(building: Building) -> void:
 	if building == selected_building:
 		_select_building(null)
@@ -71,6 +82,7 @@ func _selection_exiting() -> void:
 
 
 func clear() -> void:
+	selected_segment = null
 	_select_building(null)
 	mode = Mode.NONE
 	_drag = BuildTool.NO_CELL
@@ -85,7 +97,7 @@ func _area(end: Vector2i) -> Rect2i:
 
 
 func _process(_delta: float) -> void:
-	if mode != Mode.HOME and _drag == BuildTool.NO_CELL:
+	if mode != Mode.HOME and mode != Mode.PERIMETER and _drag == BuildTool.NO_CELL:
 		return
 	var screen := world.get_viewport().get_mouse_position()
 	var hit: Variant = world.camera.ground_at(screen)
@@ -105,6 +117,24 @@ func _process(_delta: float) -> void:
 			if plot.error.is_empty()
 			else plot.error
 		)
+	elif mode == Mode.PERIMETER:
+		var end := world.grid.world_to_cell(point)
+		if not world.grid.in_bounds(end):
+			_view.clear_preview()
+			return
+		var cells := Perimeter.line(end if _drag == BuildTool.NO_CELL else _drag, end)
+		var error := world.perimeter.blocker(barrier, cells)
+		var cost := Perimeter.price(barrier, cells.size())
+		var affordable := Economy.can_afford(cost)
+		hint = "%s · %d tiles · %s" % [barrier.title, cells.size(), BuildingDef.format_cost(cost)]
+		if not error.is_empty() or not affordable:
+			hint += " · " + (error if not error.is_empty() else "Insufficient stock")
+		_view.show_area(
+			Rect2i(
+				cells.front().min(cells.back()), (cells.front() - cells.back()).abs() + Vector2i.ONE
+			),
+			not error.is_empty() or not affordable
+		)
 	elif _drag != BuildTool.NO_CELL:
 		_view.show_area(_area(world.grid.world_to_cell(point)))
 
@@ -117,8 +147,16 @@ func _input(event: InputEvent) -> void:
 	):
 		return
 	var end := world.build_tool.cell_at_screen(event.position)
-	if end != BuildTool.NO_CELL:
-		world.grower.paint(_area(end), zone)
+	var over_ui := get_viewport().gui_get_hovered_control() != null
+	if end != BuildTool.NO_CELL and not over_ui:
+		if mode == Mode.PERIMETER:
+			hint = (
+				"Construction ordered."
+				if world.perimeter.order(barrier, _drag, end)
+				else "Line unavailable. No materials spent."
+			)
+		else:
+			world.grower.paint(_area(end), zone)
 	_drag = BuildTool.NO_CELL
 	_view.clear_preview()
 	get_viewport().set_input_as_handled()
@@ -130,7 +168,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if mode == Mode.NONE:
 		if event.is_action_pressed("place") and event is InputEventMouseButton:
 			_select_building(_building_at_screen(event.position))
-		elif selected_building != null and event.is_action_pressed("cancel"):
+			selected_segment = (
+				world.grid.barriers.get(world.build_tool.cell_at_screen(event.position))
+				if selected_building == null
+				else null
+			)
+		elif (
+			(selected_building != null or selected_segment != null)
+			and event.is_action_pressed("cancel")
+		):
 			_select_building(null)
 		else:
 			return
@@ -155,7 +201,7 @@ func _click(point: Vector2, screen: Vector2) -> void:
 				if plot != null
 				else world.plots.preview(point, rules.plot_frontage).error
 			)
-		Mode.ZONE, Mode.UNZONE:
+		Mode.ZONE, Mode.UNZONE, Mode.PERIMETER:
 			var cell := world.grid.world_to_cell(point)
 			if world.grid.in_bounds(cell):
 				_drag = cell
@@ -178,7 +224,11 @@ func _click(point: Vector2, screen: Vector2) -> void:
 					hint = "Street removed."
 		Mode.DEMOLISH:
 			var building := _building_at_screen(screen)
-			if building == null or building == world.command_post:
+			var segment: BarrierSegment = world.grid.barriers.get(world.grid.world_to_cell(point))
+			if building == null and segment != null:
+				world.perimeter.remove(segment, true)
+				hint = "Perimeter tile removed."
+			elif building == null or building == world.command_post:
 				hint = "Choose a building other than Station 4."
 			else:
 				building.demolish()

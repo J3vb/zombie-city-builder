@@ -32,7 +32,12 @@ func _init() -> void:
 		_unit_dirs.append(Vector2(offset).normalized())
 
 
-func build(cost: PackedInt32Array, grid_size: Vector2i, goals: PackedInt32Array) -> void:
+func build(
+	cost: PackedInt32Array,
+	grid_size: Vector2i,
+	goals: PackedInt32Array,
+	physical: PackedInt32Array = PackedInt32Array()
+) -> void:
 	size = grid_size
 	var count := size.x * size.y
 	integration.resize(count)
@@ -41,7 +46,7 @@ func build(cost: PackedInt32Array, grid_size: Vector2i, goals: PackedInt32Array)
 	direction.fill(NONE)
 	if goals.is_empty():
 		return
-	_integrate(cost, goals)
+	_integrate(cost, goals, cost if physical.is_empty() else physical)
 
 
 func direction_at(cell: Vector2i) -> Vector2:
@@ -53,7 +58,9 @@ func direction_at(cell: Vector2i) -> Vector2:
 
 ## Each tile records the direction back to the tile that gave it its best value,
 ## so no second pass is needed.
-func _integrate(cost: PackedInt32Array, goals: PackedInt32Array) -> void:
+func _integrate(
+	cost: PackedInt32Array, goals: PackedInt32Array, physical: PackedInt32Array
+) -> void:
 	var w := size.x
 	var h := size.y
 	var max_step := 1
@@ -97,7 +104,7 @@ func _integrate(cost: PackedInt32Array, goals: PackedInt32Array) -> void:
 				var step_cost := cost[n]
 				if step_cost <= 0:
 					continue
-				if d & 1 and (cost[i + side_a[d]] <= 0 or cost[i + side_b[d]] <= 0):
+				if d & 1 and (physical[i + side_a[d]] <= 0 or physical[i + side_b[d]] <= 0):
 					continue
 				var nd := current + step_cost * step_mult[d]
 				if nd < integration[n]:

@@ -53,3 +53,9 @@ jobs:
         run: |
           ~/godot/godot --headless --quit-after 120 2>&1 | tee run.log
           if grep -E "SCRIPT ERROR|Parse Error|ERROR:" run.log; then exit 1; fi
+
+      - name: Hold Station 4 through the fifth night
+        run: |
+          set -o pipefail
+          ~/godot/godot --headless --script res://tests/play_opening.gd 2>&1 | tee opening.log
+          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" opening.log; then exit 1; fi

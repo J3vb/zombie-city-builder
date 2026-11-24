@@ -1,0 +1,111 @@
+[gd_scene load_steps=7 format=3]
+
+[sub_resource type="StandardMaterial3D" id="MatTimber"]
+albedo_color = Color(0.27,0.19,0.14,1)
+
+[sub_resource type="StandardMaterial3D" id="MatWood"]
+albedo_color = Color(0.56,0.39,0.22,1)
+
+[sub_resource type="StandardMaterial3D" id="MatTin"]
+albedo_color = Color(0.22,0.35,0.34,1)
+
+[sub_resource type="BoxMesh" id="Timber"]
+material = SubResource("MatTimber")
+
+[sub_resource type="BoxMesh" id="Wood"]
+material = SubResource("MatWood")
+
+[sub_resource type="BoxMesh" id="Tin"]
+material = SubResource("MatTin")
+
+[node name="Watchtower" type="Node3D"]
+
+[node name="Pillar0" type="MeshInstance3D" parent="."]
+position = Vector3(-1,2.4,-1)
+scale = Vector3(0.24,4.8,0.24)
+mesh = SubResource("Timber")
+
+[node name="Pillar1" type="MeshInstance3D" parent="."]
+position = Vector3(-1,2.4,1)
+scale = Vector3(0.24,4.8,0.24)
+mesh = SubResource("Timber")
+
+[node name="Pillar2" type="MeshInstance3D" parent="."]
+position = Vector3(1,2.4,-1)
+scale = Vector3(0.24,4.8,0.24)
+mesh = SubResource("Timber")
+
+[node name="Pillar3" type="MeshInstance3D" parent="."]
+position = Vector3(1,2.4,1)
+scale = Vector3(0.24,4.8,0.24)
+mesh = SubResource("Timber")
+
+[node name="Deck" type="MeshInstance3D" parent="."]
+position = Vector3(0,2.8,0)
+scale = Vector3(2.9,0.2,2.9)
+mesh = SubResource("Timber")
+
+[node name="Rail5" type="MeshInstance3D" parent="."]
+position = Vector3(0,3.34,-1.25)
+scale = Vector3(2.6,0.55,0.16)
+mesh = SubResource("Wood")
+
+[node name="Rail6" type="MeshInstance3D" parent="."]
+position = Vector3(0,3.34,1.25)
+scale = Vector3(2.6,0.55,0.16)
+mesh = SubResource("Wood")
+
+[node name="Rail7" type="MeshInstance3D" parent="."]
+position = Vector3(-1.25,3.34,0)
+scale = Vector3(0.16,0.55,2.6)
+mesh = SubResource("Wood")
+
+[node name="Rail8" type="MeshInstance3D" parent="."]
+position = Vector3(1.25,3.34,0)
+scale = Vector3(0.16,0.55,2.6)
+mesh = SubResource("Wood")
+
+[node name="Canopy" type="MeshInstance3D" parent="."]
+position = Vector3(0,4.9,0)
+scale = Vector3(3.3,0.24,3.3)
+mesh = SubResource("Tin")
+
+[node name="Ladder10" type="MeshInstance3D" parent="."]
+position = Vector3(-0.39,1.35,1.33)
+scale = Vector3(0.12,2.7,0.14)
+mesh = SubResource("Wood")
+
+[node name="Ladder11" type="MeshInstance3D" parent="."]
+position = Vector3(0.39,1.35,1.33)
+scale = Vector3(0.12,2.7,0.14)
+mesh = SubResource("Wood")
+
+[node name="Rung0" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.27,1.35)
+scale = Vector3(0.85,0.1,0.12)
+mesh = SubResource("Wood")
+
+[node name="Rung1" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.67,1.35)
+scale = Vector3(0.85,0.1,0.12)
+mesh = SubResource("Wood")
+
+[node name="Rung2" type="MeshInstance3D" parent="."]
+position = Vector3(0,1.07,1.35)
+scale = Vector3(0.85,0.1,0.12)
+mesh = SubResource("Wood")
+
+[node name="Rung3" type="MeshInstance3D" parent="."]
+position = Vector3(0,1.4700000000000002,1.35)
+scale = Vector3(0.85,0.1,0.12)
+mesh = SubResource("Wood")
+
+[node name="Rung4" type="MeshInstance3D" parent="."]
+position = Vector3(0,1.87,1.35)
+scale = Vector3(0.85,0.1,0.12)
+mesh = SubResource("Wood")
+
+[node name="Rung5" type="MeshInstance3D" parent="."]
+position = Vector3(0,2.27,1.35)
+scale = Vector3(0.85,0.1,0.12)
+mesh = SubResource("Wood")

@@ -53,6 +53,8 @@ extends Resource
 @export var debug_spawn_count: int = 100
 
 @export_group("Economy")
+@export var ammo_batch_cost: Dictionary[StringName, int] = {&"scrap": 2}
+@export var ammo_batch := 24
 @export var station_capacity: int = 100
 @export var start_resources: Dictionary[StringName, int] = {
 	&"food": 50,
@@ -61,7 +63,7 @@ extends Resource
 	&"scrap": 40,
 	&"fuel": 0,
 	&"medicine": 5,
-	&"ammo": 0,
+	&"ammo": 36,
 }
 
 @export_group("Residents")

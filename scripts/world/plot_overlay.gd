@@ -59,12 +59,12 @@ func show_plot(plot: FrontagePlot) -> void:
 	_plot(_preview, plot, true)
 
 
-func show_area(rect: Rect2i) -> void:
+func show_area(rect: Rect2i, blocked: bool = false) -> void:
 	clear_preview()
 	var p := Vector2(rect.position) * world.grid.tile_size
 	var s := Vector2(rect.size) * world.grid.tile_size
 	var poly := PackedVector2Array([p, p + Vector2.RIGHT * s.x, p + s, p + Vector2.DOWN * s.y])
-	_surface(_preview, [poly], LAND, 0.09)
+	_surface(_preview, [poly], BLOCKED if blocked else LAND, 0.09)
 
 
 func clear_preview() -> void:

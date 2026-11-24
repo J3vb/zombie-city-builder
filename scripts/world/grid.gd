@@ -14,6 +14,7 @@ var base_cost: PackedInt32Array
 var cost: PackedInt32Array
 var parcel_cells: Dictionary[Vector2i, int] = {}
 var road_cells: Dictionary[Vector2i, int] = {}
+var barriers: Dictionary[Vector2i, BarrierSegment] = {}
 var occupant: Dictionary[Vector2i, Building] = {}
 
 
@@ -26,6 +27,7 @@ func setup(map: MapDef, types: PackedByteArray, terrain: TerrainSet) -> void:
 		base_cost[i] = terrain.types[terrain_types[i]].cost
 	cost = base_cost.duplicate()
 	occupant.clear()
+	barriers.clear()
 	road_cells.clear()
 	parcel_cells.clear()
 
@@ -48,6 +50,7 @@ func is_free(cells: Array[Vector2i], parcel_id: int = 0) -> bool:
 			not in_bounds(cell)
 			or cost[index(cell)] <= 0
 			or occupant.has(cell)
+			or barriers.has(cell)
 			or road_cells.has(cell)
 			or parcel_cells.get(cell, 0) != parcel_id
 		):
@@ -61,10 +64,9 @@ func mark_road(cells: Array[Vector2i], delta: int) -> void:
 		var uses: int = road_cells.get(cell, 0) + delta
 		if uses > 0:
 			road_cells[cell] = uses
-			cost[index(cell)] = 1
 		else:
 			road_cells.erase(cell)
-			cost[index(cell)] = base_cost[index(cell)]
+		restore_ground(cell)
 	changed.emit()
 
 
@@ -89,10 +91,26 @@ func release(cells: Array[Vector2i], owner_building: Building) -> void:
 	for cell in cells:
 		if occupant.get(cell) == owner_building:
 			occupant.erase(cell)
-			cost[index(cell)] = base_cost[index(cell)]
+			restore_ground(cell)
 			released = true
 	if released:
 		changed.emit()
+
+
+func restore_ground(cell: Vector2i) -> void:
+	var segment: BarrierSegment = barriers.get(cell)
+	if occupant.has(cell) or (segment != null and segment.blocks()):
+		cost[index(cell)] = BLOCKED
+	else:
+		cost[index(cell)] = 1 if road_cells.has(cell) else base_cost[index(cell)]
+
+
+func horde_costs() -> PackedInt32Array:
+	var result := cost.duplicate()
+	for segment: BarrierSegment in barriers.values():
+		if segment.blocks():
+			result[index(segment.cell)] = segment.def.break_cost
+	return result
 
 
 func building_at(cell: Vector2i) -> Building:
