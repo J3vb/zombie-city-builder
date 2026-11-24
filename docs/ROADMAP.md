@@ -40,10 +40,10 @@ Goal: prove the core idea with ugly placeholder art.
 
 Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. The owner chose this after playing M1.
 
-- 3D test scene on the owner's ARM laptop (30 fps with 500 zombies). Scene merged (#58)
-- World, terrain and buildings in 3D; simulation stays on the 2D grid
-- City-builder camera: pan, rotate, zoom, tilt; mouse picking
-- Zombies drawn in 3D (one MultiMesh), facing where they walk
+- Desktop render benchmark complete ([#64](https://github.com/J3vb/zombie-city-builder/pull/64)). The sole hardware target is Windows x64 on the owner's Ryzen 9 7950X3D and RTX 4080 Super.
+- Playable now: 3D terrain, building placeholders and 2D simulation grid.
+- Playable now: camera pan, orbit, tilt, zoom and ground picking for placement.
+- Walkers use one 3D MultiMesh. Add directional movement animation with the Walker art pass.
 - Day/night sun, fog and night lighting
 - Draw a curved street from Station 4 ([#67](https://github.com/J3vb/zombie-city-builder/issues/67)). Preview, cancel and commit the curve, join two ends or make a T-junction. Validate the full road width against terrain and occupied cells.
 - Mark a residential plot on either side of a bend ([#68](https://github.com/J3vb/zombie-city-builder/issues/68)). Face the entrance toward the street, reserve space for the backyard and reject overlapping plots. Allow an empty plot to be removed and explain why an occupied plot prevents road removal.
@@ -51,9 +51,9 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - Selection panel that shows a building's level and what its next upgrade waits for
 - Temporary daily income so upgrades can be tested before M2's production
 - Gritty low-poly art kit: materials, building models per level, zombie mesh, props
-- Updated Windows x86_64 and ARM64 builds
+- Verify the Windows x64 game after the art pass.
 
-**Done when:** you can draw a bend, mark two road-facing plots on it, watch a home reach level 3, and watch a horde attack the town at night in 3D, at 30 fps or more on the owner's laptop.
+**Done when:** you can draw a bend, mark two road-facing plots on it, watch a home reach level 3, and watch a horde attack the town at night in 3D, at 60 fps with 500 active Walkers on the reference desktop at 1080p.
 
 ## M2: Living town
 
@@ -121,7 +121,7 @@ Goal: something you can share.
 - Music and sound effects
 - Second map, or a map generator
 - Tutorial (first 3 days guided)
-- Windows and Linux export in CI
+- Package the Windows x64 game in CI ([#48](https://github.com/J3vb/zombie-city-builder/issues/48)).
 - Performance pass (target 1000 zombies)
 
 **Done when:** a stranger can download, learn and play it.

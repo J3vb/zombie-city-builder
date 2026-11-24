@@ -1,10 +1,18 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/buildings/building.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/buildings/building_view_2d.gd" id="2_view"]
+[ext_resource type="Script" path="res://scripts/buildings/building_view_3d.gd" id="2_view"]
 
-[node name="Building" type="Node2D"]
+[node name="Building" type="Node3D"]
 script = ExtResource("1_script")
 
-[node name="View" type="Node2D" parent="."]
+[node name="View" type="Node3D" parent="."]
 script = ExtResource("2_view")
+
+[node name="Body" type="MeshInstance3D" parent="View"]
+
+[node name="Label" type="Label3D" parent="View"]
+billboard = 1
+font_size = 40
+pixel_size = 0.023
+outline_size = 8

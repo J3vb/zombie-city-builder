@@ -65,3 +65,28 @@ func test_competing_claim_refunds_the_whole_purchase() -> void:
 	assert_eq(winner.size(), 1, "one competing placement")
 	assert_eq(world.grid.building_at(anchor), winner[0], "original owner remains")
 	fx.destroy()
+
+
+func test_mouse_places_on_the_same_grid_after_orbit() -> void:
+	var fx := WorldFixture.new()
+	var world := fx.create()
+	var cell := world.map_def.command_post_cell + Vector2i(-3, 1)
+	var ground := world.to_view(world.grid.cell_to_world(cell))
+	world.build_tool.select(HOUSE)
+	for angle in [0.0, 1.3]:
+		world.camera.rotation.y = angle
+		world.camera.lens.force_update_transform()
+		var screen := world.camera.lens.unproject_position(ground)
+		assert_eq(world.build_tool.cell_at_screen(screen), cell, "picked cell after orbit")
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	click.position = world.camera.lens.unproject_position(ground)
+	world.build_tool._unhandled_input(click)
+	assert_eq(world.grid.building_at(cell).def, HOUSE, "mouse placed a house")
+	assert_eq(
+		world.build_tool.cell_at_screen(Vector2(-100, -100)), BuildTool.NO_CELL, "outside the view"
+	)
+	assert_eq(CameraRig.ray_to_ground(Vector3.UP, Vector3.RIGHT), null, "horizon")
+	assert_eq(CameraRig.ray_to_ground(Vector3.UP, Vector3.UP), null, "sky")
+	fx.destroy()

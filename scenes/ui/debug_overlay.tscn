@@ -2,8 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ui/debug_overlay.gd" id="1_dbg"]
 
-[node name="DebugOverlay" type="Node2D"]
-z_index = 20
+[node name="DebugOverlay" type="Node3D"]
 script = ExtResource("1_dbg")
 
 [node name="Layer" type="CanvasLayer" parent="."]

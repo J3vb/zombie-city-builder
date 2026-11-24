@@ -4,6 +4,8 @@ extends Resource
 
 @export var size: Vector2i = Vector2i(128, 128)
 @export_range(1, 4096, 1, "or_greater") var tile_size: int = 32
+@export_range(0.001, 1.0) var view_scale: float = 0.125
+@export var map_seed: int = 1
 @export var border_width: int = 1
 @export var water_rects: Array[Rect2i] = []
 @export var rubble_rects: Array[Rect2i] = []

@@ -17,21 +17,12 @@ func _ready() -> void:
 	world.debug_overlay.visible = true
 	world.debug_overlay.get_node("Layer").visible = true
 	world.horde.queue_spawn(ZOMBIES)
-	var tex := GradientTexture2D.new()
-	tex.fill = GradientTexture2D.FILL_RADIAL
-	tex.fill_from = Vector2(0.5, 0.5)
-	tex.fill_to = Vector2(0.5, 0.0)
-	tex.width = 256
-	tex.height = 256
-	var gradient := Gradient.new()
-	gradient.set_color(0, Color.WHITE)
-	gradient.set_color(1, Color(1, 1, 1, 0))
-	tex.gradient = gradient
-	var centre := world.command_post.sim_center()
+	var centre := world.to_view(world.command_post.sim_center())
 	for i in LIGHTS:
-		var light := PointLight2D.new()
-		light.texture = tex
-		light.energy = 1.2
-		light.color = Color(1.0, 0.85, 0.6)
-		light.position = centre + Vector2.RIGHT.rotated(TAU * i / LIGHTS) * (200 + 40 * (i % 5))
+		var light := OmniLight3D.new()
+		light.light_energy = 1.2
+		light.light_color = Color(1.0, 0.85, 0.6)
+		light.omni_range = 12.0
+		var offset := Vector3.RIGHT.rotated(Vector3.UP, TAU * i / LIGHTS) * (25 + 5 * (i % 5))
+		light.position = centre + offset + Vector3.UP * 4
 		world.add_child(light)

@@ -33,8 +33,14 @@ func test_main_scene_loads() -> void:
 func test_playable_world_draws_generated_terrain() -> void:
 	var fixture := WorldFixture.new()
 	var world := fixture.create()
-	assert_eq(world.terrain.get_used_rect(), Rect2i(Vector2i.ZERO, world.grid.size), "map extent")
-	for cell in [Vector2i.ZERO, Vector2i(3, 2), Vector2i(40, 30), Vector2i(10, 90)]:
-		var kind := world.grid.terrain_types[world.grid.index(cell)]
-		assert_eq(world.terrain.get_cell_atlas_coords(cell), Vector2i(kind, 0), "tile %s" % cell)
+	var chunks := world.terrain.get_children()
+	assert_eq(chunks.size(), 64, "128 × 128 tiles in 16 × 16 chunks")
+	var last := (chunks.back() as MeshInstance3D).mesh.get_aabb()
+	assert_eq(last.end.x, world.grid.size.x * world.view_tile(), "full width")
+	assert_eq(last.end.z, world.grid.size.y * world.view_tile(), "full depth")
+	var has_water := false
+	for chunk: MeshInstance3D in chunks:
+		if chunk.mesh.get_aabb().position.y < -0.25:
+			has_water = true
+	assert_true(has_water, "water is recessed in the playable mesh")
 	fixture.destroy()

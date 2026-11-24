@@ -1,12 +1,12 @@
 # Hold the Gates
 
-A 2D top-down city builder set in a zombie outbreak. Build a walled town, keep your survivors alive, scavenge the ruins, and hold the walls when the hordes come.
+A 3D city builder set in a zombie outbreak. Build a walled town, keep your survivors alive, scavenge the ruins, and hold the walls when the hordes come.
 
 Made with **Godot 4.5** and **GDScript**.
 
 ## Status
 
-M0 (project setup). See [docs/ROADMAP.md](docs/ROADMAP.md).
+The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Curved streets and road-facing housing plots are next. See [the roadmap](docs/ROADMAP.md).
 
 ## Docs
 
@@ -29,6 +29,8 @@ Controls:
 | Key | Action |
 |---|---|
 | WASD / screen edge | Move the camera |
+| Q / E or middle-mouse drag | Orbit |
+| R / F | Tilt up / down |
 | Mouse wheel | Zoom |
 | Build bar button, then left click | Place a building |
 | Right click / Esc | Cancel building |
@@ -49,7 +51,7 @@ Needs the Godot 4.5.1 export templates (Editor > Manage Export Templates > Downl
 godot --headless --export-release "Windows Desktop" build/windows/HoldTheGates.exe
 ```
 
-For ARM laptops (Snapdragon), use the "Windows ARM64" preset instead.
+The reference PC is a Windows x64 desktop with a Ryzen 9 7950X3D and RTX 4080 Super. The playable target is 60 FPS with 500 Walkers at 1080p.
 
 The game files are packed inside the .exe, so you only share that one file.
 

@@ -46,7 +46,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 
 - **What:** the world is a grid of tiles. Each tile has terrain and maybe a building.
 - **Data:** `StarterMap.generate(map_def)` returns one terrain ID per cell. `Grid` holds those IDs, their travel costs from `data/terrain/terrain_set.tres`, and the occupancy overlay used by building placement and horde routing.
-- **How:** the starter map has 128 × 128 cells of 32 simulation units. MapDef supplies the dimensions, tile size and terrain rectangles. Borders take precedence over water, then rubble, then ground. The 2D world paints the tile atlas from Grid's terrain IDs. The atlas X coordinate matches the terrain ID.
+- **How:** the starter map has 128 × 128 cells of 32 simulation units. MapDef supplies the dimensions, tile size and terrain rectangles. Borders take precedence over water, then rubble, then ground. The playable world builds colored terrain meshes from Grid's terrain IDs in 16 × 16 chunks. Each tile spans four metres in the view.
   Grid maps a cell to its center and maps a simulation position back with floor division. Grid accepts a whole building footprint at once. An overlap or blocked cell rejects the claim. Releasing a footprint restores the terrain cost only on cells owned by that building.
 - **Depends on:** nothing.
 - **Milestone:** M1.
@@ -121,7 +121,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 ## 8. Zombie AI
 
 - **What:** hundreds of zombies, cheap per unit.
-- **Data:** one `ZombieManager` node holds arrays of position, velocity, health, type, state. The manager publishes the living rows in one batch after removing deaths. A scene child draws the batch with `MultiMeshInstance2D`.
+- **Data:** one `ZombieManager` node holds arrays of position, velocity, health, type, state. The manager publishes the living rows in one batch after removing deaths. A scene child draws the packed batch with one `MultiMeshInstance3D`.
 - **How:**
   - Zombies are **not** individual nodes. They are rows in arrays. This is the key performance choice.
   - States: `Horde` (follow flow field), `Attack` (hit a blocked tile), `Chase` (citizen nearby, M2), `Investigate` (heard noise, M3), `Roam` (wander, M3).
@@ -131,7 +131,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
   - From M2: if a citizen is within the chase radius, the zombie chases it directly instead of following the field.
   - Types (Walker, Runner, Brute, Screamer, Crawler) are `ZombieDef` resources with speed, health, damage, wall damage multiplier.
   - Type-specific movement uses the same shared flow field. Differences live in the blocked check (for example, a Crawler treats barricade tiles as passable). No field per type.
-  - Target: 500 zombies at 60 fps on a mid laptop. Stretch: 1000 (M6).
+  - Target: 500 zombies at 60 fps on the reference Windows desktop. Stretch: 1000 (M6).
 - **Depends on:** Flow field, Grid.
 - **Milestone:** M1 (Walker, horde + attack buildings), M2 (chase), M3 (walls, roam, investigate), M5 (all types).
 
@@ -199,7 +199,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
   - Noisy things call `ZombieManager.alert(position, radius)` (gunfire, building, generators).
   - Zombies in radius switch to `Investigate` and steer straight to the noise point (same blocked check as chase). No extra flow field.
   - Light sources register with the night system. At night, roaming zombies drift towards lit areas inside a range.
-  - Night visuals: `CanvasModulate` darkens the scene, `PointLight2D` for torches and floodlights.
+  - The clock drives the 3D sun, ambient lighting and fog. Torches and floodlights are later visual and gameplay work.
 - **Milestone:** M3 (noise), M4 (light).
 
 ## 15. Tech tree

@@ -1,12 +1,11 @@
 class_name World
-extends Node2D
+extends Node3D
 ## One game's world: terrain, grid, buildings, flow field, zombies, tools.
 ## Owns the flow field and rebuilds it on a worker thread when the grid changes.
 
 const MAP_PATH := "res://data/maps/starter_map.tres"
 const TERRAIN_SET_PATH := "res://data/terrain/terrain_set.tres"
-const COMMAND_POST := preload("res://data/buildings/command_post.tres")
-const NIGHT_COLOR := Color(0.55, 0.6, 0.8)
+const COMMAND_POST_PATH := "res://data/buildings/command_post.tres"
 
 var map_def: MapDef
 var flow_field := FlowField.new()
@@ -19,26 +18,25 @@ var _task_id := -1
 var _pending_field: FlowField
 var _task_started_usec := 0
 
-@onready var terrain: TileMapLayer = $Terrain
+@onready var terrain: TerrainMesh = $Terrain
 @onready var grid: Grid = $Grid
-@onready var buildings: Node2D = $Buildings
+@onready var buildings: Node3D = $Buildings
 @onready var build_tool: BuildTool = $BuildTool
 @onready var camera: CameraRig = $CameraRig
 @onready var zombies: ZombieManager = $ZombieManager
 @onready var horde: HordeDirector = $HordeDirector
 @onready var debug_overlay: DebugOverlay = $DebugOverlay
-@onready var _night_tint: CanvasModulate = $NightTint
 
 
 func _ready() -> void:
 	map_def = load(MAP_PATH) as MapDef
 	var terrain_set := load(TERRAIN_SET_PATH) as TerrainSet
 	grid.setup(map_def, StarterMap.generate(map_def), terrain_set)
-	_draw_terrain_tiles()
-	camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size()))
+	terrain.build(grid, terrain_set, view_tile(), map_def.map_seed)
+	camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * map_def.view_scale))
 	build_tool.world = self
-	command_post = spawn_building(COMMAND_POST, map_def.command_post_cell)
-	camera.position = command_post.sim_center()
+	command_post = spawn_building(load(COMMAND_POST_PATH) as BuildingDef, map_def.command_post_cell)
+	camera.position = to_view(command_post.sim_center())
 	grid.changed.connect(_on_grid_changed)
 	_build_now()
 	zombies.setup(self)
@@ -56,14 +54,16 @@ func tile_size() -> Vector2:
 	return Vector2.ONE * grid.tile_size
 
 
-func _draw_terrain_tiles() -> void:
-	terrain.clear()
-	terrain.scale = tile_size() / Vector2(terrain.tile_set.tile_size)
-	for y in grid.size.y:
-		for x in grid.size.x:
-			var cell := Vector2i(x, y)
-			var atlas_x := grid.terrain_types[grid.index(cell)]
-			terrain.set_cell(cell, 0, Vector2i(atlas_x, 0))
+func view_tile() -> float:
+	return grid.tile_size * map_def.view_scale
+
+
+func to_view(point: Vector2) -> Vector3:
+	return Vector3(point.x, 0, point.y) * map_def.view_scale
+
+
+func to_sim(point: Vector3) -> Vector2:
+	return Vector2(point.x, point.z) / map_def.view_scale
 
 
 func can_place_building(def: BuildingDef, cell: Vector2i) -> bool:
@@ -118,7 +118,6 @@ func _on_grid_changed() -> void:
 
 
 func _process(_delta: float) -> void:
-	_update_tint()
 	if _task_id != -1 and WorkerThreadPool.is_task_completed(_task_id):
 		WorkerThreadPool.wait_for_task_completion(_task_id)
 		_task_id = -1
@@ -127,12 +126,6 @@ func _process(_delta: float) -> void:
 		last_build_ms = (Time.get_ticks_usec() - _task_started_usec) / 1000.0
 	if _dirty and _task_id == -1:
 		_start_build()
-
-
-func _update_tint() -> void:
-	var t := GameClock.time_of_day
-	var dark := smoothstep(0.62, 0.72, t) * (1.0 - smoothstep(0.94, 1.0, t))
-	_night_tint.color = Color.WHITE.lerp(NIGHT_COLOR, dark)
 
 
 func _start_build() -> void:
