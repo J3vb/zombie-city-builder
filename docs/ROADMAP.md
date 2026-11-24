@@ -45,7 +45,7 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - Playable now: camera pan, orbit, tilt, zoom and ground picking for placement.
 - Walkers use one 3D MultiMesh. Add directional movement animation with the Walker art pass.
 - Day/night sun, fog and night lighting
-- Draw a curved street from Station 4 ([#67](https://github.com/J3vb/zombie-city-builder/issues/67)). Preview, cancel and commit the curve, join two ends or make a T-junction. Validate the full road width against terrain and occupied cells.
+- Playable now: draw a curved street from Station 4 ([#67](https://github.com/J3vb/zombie-city-builder/issues/67)). Preview, cancel and commit the curve, join two ends or make a T-junction. Validate the full road width against terrain and occupied cells.
 - Mark a residential plot on either side of a bend ([#68](https://github.com/J3vb/zombie-city-builder/issues/68)). Face the entrance toward the street, reserve space for the backyard and reject overlapping plots. Allow an empty plot to be removed and explain why an occupied plot prevents road removal.
 - Grow a tent, shack and brick house on the same confirmed plot. Keep farmland and storage as painted zones with automatic growth and upgrades.
 - Selection panel that shows a building's level and what its next upgrade waits for

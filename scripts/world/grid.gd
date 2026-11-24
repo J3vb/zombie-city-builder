@@ -12,6 +12,7 @@ var tile_size: int
 var terrain_types: PackedByteArray
 var base_cost: PackedInt32Array
 var cost: PackedInt32Array
+var road_cells: Dictionary[Vector2i, int] = {}
 var occupant: Dictionary[Vector2i, Building] = {}
 
 
@@ -24,6 +25,7 @@ func setup(map: MapDef, types: PackedByteArray, terrain: TerrainSet) -> void:
 		base_cost[i] = terrain.types[terrain_types[i]].cost
 	cost = base_cost.duplicate()
 	occupant.clear()
+	road_cells.clear()
 
 
 func index(cell: Vector2i) -> int:
@@ -40,9 +42,27 @@ func get_cost(cell: Vector2i) -> int:
 
 func is_free(cells: Array[Vector2i]) -> bool:
 	for cell in cells:
-		if not in_bounds(cell) or cost[index(cell)] <= 0 or occupant.has(cell):
+		if (
+			not in_bounds(cell)
+			or cost[index(cell)] <= 0
+			or occupant.has(cell)
+			or road_cells.has(cell)
+		):
 			return false
 	return true
+
+
+## Shared junction cells remain reserved until their last street is removed.
+func mark_road(cells: Array[Vector2i], delta: int) -> void:
+	for cell in cells:
+		var uses: int = road_cells.get(cell, 0) + delta
+		if uses > 0:
+			road_cells[cell] = uses
+			cost[index(cell)] = 1
+		else:
+			road_cells.erase(cell)
+			cost[index(cell)] = base_cost[index(cell)]
+	changed.emit()
 
 
 func occupy(cells: Array[Vector2i], building: Building) -> bool:

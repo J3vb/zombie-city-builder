@@ -21,6 +21,8 @@ var _task_started_usec := 0
 @onready var terrain: TerrainMesh = $Terrain
 @onready var grid: Grid = $Grid
 @onready var buildings: Node3D = $Buildings
+@onready var roads: RoadNetwork = $RoadNetwork
+@onready var road_tool: RoadTool = $RoadTool
 @onready var build_tool: BuildTool = $BuildTool
 @onready var camera: CameraRig = $CameraRig
 @onready var zombies: ZombieManager = $ZombieManager
@@ -36,6 +38,8 @@ func _ready() -> void:
 	camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * map_def.view_scale))
 	build_tool.world = self
 	command_post = spawn_building(load(COMMAND_POST_PATH) as BuildingDef, map_def.command_post_cell)
+	roads.setup(grid, command_post, load("res://data/balance.tres") as BalanceDef)
+	road_tool.setup(self)
 	camera.position = to_view(command_post.sim_center())
 	grid.changed.connect(_on_grid_changed)
 	_build_now()

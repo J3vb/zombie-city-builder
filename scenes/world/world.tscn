@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/world/terrain_mesh.gd" id="2_terrain"]
@@ -9,6 +9,9 @@
 [ext_resource type="Script" path="res://scripts/systems/horde_director.gd" id="7_horde"]
 [ext_resource type="PackedScene" path="res://scenes/ui/debug_overlay.tscn" id="8_debug"]
 [ext_resource type="Script" path="res://scripts/world/day_night.gd" id="9_light"]
+
+[ext_resource type="Script" path="res://scripts/world/road_network.gd" id="10_roads"]
+[ext_resource type="Script" path="res://scripts/world/road_tool.gd" id="11_roads"]
 
 [sub_resource type="Environment" id="Environment"]
 resource_local_to_scene = true
@@ -32,6 +35,12 @@ script = ExtResource("3_grid")
 
 [node name="HordeDirector" type="Node" parent="."]
 script = ExtResource("7_horde")
+
+[node name="RoadNetwork" type="Node" parent="."]
+script = ExtResource("10_roads")
+
+[node name="RoadTool" type="Node3D" parent="."]
+script = ExtResource("11_roads")
 
 [node name="BuildTool" type="Node3D" parent="."]
 script = ExtResource("5_build")

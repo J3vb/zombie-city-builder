@@ -4,3 +4,6 @@
 
 [resource]
 script = ExtResource("1_balance")
+road_width = 32.0
+road_min_length = 48.0
+road_snap_radius = 16.0

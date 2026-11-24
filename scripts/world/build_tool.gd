@@ -33,6 +33,7 @@ func _ready() -> void:
 
 
 func select(def: BuildingDef) -> void:
+	world.road_tool.clear()
 	selected = def
 	var size := Vector2(def.size) * world.view_tile()
 	_box.size = Vector3(size.x, 0.4, size.y)
