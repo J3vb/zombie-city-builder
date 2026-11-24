@@ -57,11 +57,13 @@ Select Street and click control points on the ground. Enter commits the preview,
 
 ### Road-facing plots and automatic growth
 
-Each confirmed home plot stores its street ID, attachment point, frontage polygon, oriented house footprint, entrance cell and backyard. The preview marks the entrance in gold. Confirming a plot is free. Its reserved cells exclude other construction, while only the house itself blocks walkers. A home faces the street through every upgrade. A disconnected street cannot supply a new plot.
+Each confirmed home plot stores its street ID, attachment point, frontage polygon, oriented house footprint and entrance cell. The preview marks the entrance in gold. Confirming a plot is free. Its reserved cells exclude other construction, while only the house itself blocks walkers. A home faces the street through every upgrade. A disconnected street cannot supply a new plot.
 
-The grower rotates through upgrades, housing, farms and storage during daylight. It skips an unavailable site and saves up on a valid turn that lacks resources. A tent costs 20 wood. From day two, a shack costs another 30 wood and 10 scrap. From day four, brick costs another 40 wood and 30 scrap. Upgrades keep the same footprint and health fraction. The temporary economy adds 40 wood and 15 scrap at dawn. Farm and storage zones grow their first-stage buildings.
+The grower rotates through upgrades, housing, farms and storage during daylight. It skips an unavailable site and saves up on a valid turn that lacks resources. A tent costs 20 wood. From day two, a shack costs another 30 wood and 10 scrap. From day four, brick costs another 40 wood and 30 scrap. Upgrades keep the same footprint and health fraction. The temporary economy adds 40 wood and 15 scrap at dawn. Paint at least a 3 × 3 area for a farm or a 2 × 2 area for storage. Both can grow through three stages.
 
-Demolishing refunds half the initial construction cost once and leaves the plot reserved. Remove Plot releases empty land. Removing a street clears its vacant plots. The game prevents removal of any road that would leave an occupied home without access to Station 4. Unzone leaves existing farm and storage buildings standing.
+Select Garden or Scrap workshop and click a clear footprint to build immediately. A garden occupies one tile and costs 10 wood. A workshop takes 2 × 2 tiles and costs 20 wood and 10 scrap. Both can be placed before the first home. They have their own health, footprint and demolition refund. Staffed output arrives in M2.
+
+Demolishing refunds half the initial construction cost once. A demolished home leaves its residential plot reserved. Remove Plot releases empty land. Removing a street clears its vacant plots. The game prevents removal of any road that would leave an occupied home without access to Station 4. Unzone leaves existing farm and storage buildings standing.
 
 Run `res://scenes/tests/frontage_town.tscn` for a playable bend with a junction, two accepted home plots and a rejected overlap.
 

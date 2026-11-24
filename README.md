@@ -6,7 +6,7 @@ Made with **Godot 4.5** and **GDScript**.
 
 ## Status
 
-The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Farms grow from plots into fenced fields and greenhouses. Storage grows from tarp piles into sheds and warehouses. Click a building to check its health or see what its next upgrade needs. See [the roadmap](docs/ROADMAP.md).
+The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Place small gardens and scrap workshops on individual sites. Farms grow from plots into fenced fields and greenhouses. Storage grows from tarp piles into sheds and warehouses. Click a building to check its health or see what its next upgrade needs. See [the roadmap](docs/ROADMAP.md).
 
 ## Docs
 
@@ -32,8 +32,9 @@ Controls:
 | Q / E or middle-mouse drag | Orbit |
 | R / F | Tilt up / down |
 | Mouse wheel | Zoom |
-| Home plot, then left click beside a connected street | Reserve the shown house footprint and backyard |
+| Home plot, then left click beside a connected street | Reserve the house and its street entrance |
 | Left click a building with no tool active | Inspect its level, health, next upgrade and current blocker |
+| Garden / Scrap workshop, then left click | Build a 1 × 1 garden or 2 × 2 workshop on clear land. Click again to place another. |
 | Farm zone / Storage zone, then drag | Paint land for automatic construction |
 | Land tools | Demolish a building, release an empty plot, remove a street or erase zoning |
 | Pause growth / Resume growth | Control automatic building and upgrades |
@@ -47,7 +48,7 @@ Controls:
 | F6 | +100 of every resource (debug) |
 | F7 | Skip to night (debug) |
 
-Open `scenes/tests/frontage_town.tscn` and press F6 in the Godot editor to try a prebuilt bend, T-junction and two occupied roadside plots. [See a shack awaiting its brick upgrade](docs/benchmarks/building-inspection.webp). [View the town with 500 Walkers](docs/benchmarks/frontage-town.webp).
+Open `scenes/tests/frontage_town.tscn` and press F6 in the Godot editor to try a prebuilt bend, T-junction and two occupied roadside plots. [See a shack awaiting its brick upgrade](docs/benchmarks/building-inspection.webp). [See gardens, a farm and a workshop on separate sites](docs/benchmarks/independent-sites.webp). [View the town with 500 Walkers](docs/benchmarks/frontage-town.webp).
 
 A horde comes every night. In M1 you can't fight back yet (towers come in M3), so the game is about where you build before the Command Post falls.
 

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/building_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/building.tscn" id="2_building"]
+[ext_resource type="PackedScene" path="res://scenes/models/garden.tscn" id="3_model"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"garden"
+display_name = "Garden"
+size = Vector2i(1, 1)
+cost = Dictionary[StringName, int]({&"wood": 10})
+max_health = 60
+view_height = 1.1
+scene = ExtResource("2_building")
+model = ExtResource("3_model")

@@ -36,6 +36,7 @@ model_path = "res://scenes/models/storage_3.tscn"
 [resource]
 script = ExtResource("1_def")
 id = &"storage"
+placement = 2
 display_name = "Storage"
 size = Vector2i(2, 2)
 cost = Dictionary[StringName, int]({&"wood": 25, &"scrap": 10})

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/building_def.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/building.tscn" id="2_building"]
+[ext_resource type="PackedScene" path="res://scenes/models/scrap_workshop.tscn" id="3_model"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"scrap_workshop"
+display_name = "Scrap workshop"
+size = Vector2i(2, 2)
+cost = Dictionary[StringName, int]({&"wood": 20, &"scrap": 10})
+max_health = 150
+view_height = 3.3
+scene = ExtResource("2_building")
+model = ExtResource("3_model")

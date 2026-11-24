@@ -1,0 +1,108 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="Timber"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="Paint"]
+[ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="Concrete"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="Metal"]
+[ext_resource type="Material" path="res://assets/materials/oxide_red.tres" id="Rust"]
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="Black"]
+
+[sub_resource type="BoxMesh" id="Stone"]
+material = ExtResource("Concrete")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Teal"]
+material = ExtResource("Paint")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Wood"]
+material = ExtResource("Timber")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Iron"]
+material = ExtResource("Black")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Roof"]
+material = ExtResource("Rust")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="CylinderMesh" id="Pipe"]
+material = ExtResource("Metal")
+top_radius = 0.23
+bottom_radius = 0.23
+height = 2.9
+radial_segments = 8
+
+[node name="ScrapWorkshop" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.11, 0)
+scale = Vector3(7.2, 0.22, 6.3)
+mesh = SubResource("Stone")
+
+[node name="BackCladding" type="MeshInstance3D" parent="."]
+position = Vector3(-0.95, 1.49, -2.59)
+scale = Vector3(5.05, 2.65, 0.20)
+mesh = SubResource("Teal")
+
+[node name="WestCladding" type="MeshInstance3D" parent="."]
+position = Vector3(-3.35, 1.45, -0.57)
+scale = Vector3(0.18, 2.55, 4.15)
+mesh = SubResource("Teal")
+
+[node name="LeftFrontPost" type="MeshInstance3D" parent="."]
+position = Vector3(-3.3, 1.47, 1.55)
+scale = Vector3(0.18, 2.70, 0.18)
+mesh = SubResource("Wood")
+
+[node name="RightFrontPost" type="MeshInstance3D" parent="."]
+position = Vector3(1.4, 1.47, 1.55)
+scale = Vector3(0.18, 2.70, 0.18)
+mesh = SubResource("Wood")
+
+[node name="SlopingRoof" type="MeshInstance3D" parent="."]
+position = Vector3(-0.94, 2.94, -0.6)
+scale = Vector3(5.40, 0.18, 4.85)
+rotation = Vector3(0.10, 0, 0)
+mesh = SubResource("Roof")
+
+[node name="BenchTop" type="MeshInstance3D" parent="."]
+position = Vector3(-0.8, 1.1, 0.81)
+scale = Vector3(3.35, 0.18, 1.05)
+mesh = SubResource("Wood")
+
+[node name="BenchLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-2.18, 0.61, 0.81)
+scale = Vector3(0.32, 0.86, 0.76)
+mesh = SubResource("Iron")
+
+[node name="BenchRight" type="MeshInstance3D" parent="."]
+position = Vector3(0.59, 0.61, 0.81)
+scale = Vector3(0.32, 0.86, 0.76)
+mesh = SubResource("Iron")
+
+[node name="Vise" type="MeshInstance3D" parent="."]
+position = Vector3(0.23, 1.32, 1.0)
+scale = Vector3(0.48, 0.34, 0.42)
+mesh = SubResource("Iron")
+
+[node name="SalvagedPipe1" type="MeshInstance3D" parent="."]
+position = Vector3(2.57, 0.47, -0.72)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Pipe")
+
+[node name="SalvagedPipe2" type="MeshInstance3D" parent="."]
+position = Vector3(2.57, 0.85, -0.72)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Pipe")
+
+[node name="SalvagedPipe3" type="MeshInstance3D" parent="."]
+position = Vector3(2.57, 1.23, -0.72)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Pipe")
+
+[node name="PartsBin" type="MeshInstance3D" parent="."]
+position = Vector3(2.2, 0.52, 1.9)
+scale = Vector3(1.55, 0.64, 1.35)
+mesh = SubResource("Teal")

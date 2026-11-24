@@ -85,7 +85,8 @@ func can_build_on(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -
 	if (
 		site != null
 		and (
-			plots.plots.get(site.id) != site
+			def != plots.house_def
+			or plots.plots.get(site.id) != site
 			or not plots.connected(site)
 			or is_instance_valid(site.home)
 		)

@@ -2,6 +2,9 @@ class_name BuildingDef
 extends Resource
 ## One building type. Edit the .tres files in data/buildings/.
 
+enum Placement { DIRECT, HOME_PLOT, ZONE }
+
+@export var placement := Placement.DIRECT
 @export var id: StringName
 @export var display_name: String
 @export var size: Vector2i = Vector2i(1, 1)
@@ -9,6 +12,7 @@ extends Resource
 @export var max_health: int = 100
 @export var is_goal: bool = true
 @export var scene: PackedScene
+@export var model: PackedScene
 @export var levels: Array[BuildingLevelDef] = []
 @export var view_height: float = 3.0
 @export var color: Color = Color(0.6, 0.6, 0.6)
