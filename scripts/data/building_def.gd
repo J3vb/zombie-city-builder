@@ -15,9 +15,13 @@ extends Resource
 
 
 func cost_text() -> String:
-	if cost.is_empty():
+	return format_cost(cost)
+
+
+static func format_cost(amounts: Dictionary[StringName, int]) -> String:
+	if amounts.is_empty():
 		return "free"
 	var parts: PackedStringArray = []
-	for id_key: StringName in cost:
-		parts.append("%d %s" % [cost[id_key], id_key])
+	for id_key: StringName in amounts:
+		parts.append("%d %s" % [amounts[id_key], id_key])
 	return ", ".join(parts)

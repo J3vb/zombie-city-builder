@@ -45,7 +45,7 @@ func _show_level() -> void:
 	if body.visible:
 		var form: PrimitiveMesh
 		var dimensions := Vector3(size.x - 0.3, height, size.y - 0.3)
-		if stage != null and building.level == 1:
+		if building.def.id == &"house" and building.level == 1:
 			var tent := PrismMesh.new()
 			tent.size = dimensions
 			form = tent

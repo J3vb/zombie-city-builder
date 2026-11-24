@@ -216,3 +216,27 @@ func test_frontage_rejects_a_second_road_and_water_under_the_backyard() -> void:
 	assert_eq(_reserve(w, toward_water), null, "water in backyard rejects whole plot")
 	assert_true(w.plots.plots.is_empty(), "no partial reservations")
 	fx.destroy()
+
+
+func test_inspect_rotated_brick_house_on_a_bend() -> void:
+	var fx := WorldFixture.new()
+	var w := fx.create()
+	var road := _street(w)
+	var plot := _reserve(w, _cursor(road, 1))
+	w.grower.step()
+	GameClock.day = 4
+	plot.home.upgrade()
+	plot.home.upgrade()
+	w.camera.position = w.to_view(plot.center)
+	w.camera.rotation.y = 0.9
+	w.camera.pitch_deg = 30
+	w.camera._apply()
+	w.camera.lens.force_update_transform()
+	var roof := w.to_view(plot.center) + Vector3.UP * HOUSE.levels[2].height
+	_mouse(w.plot_tool, w.camera.lens.unproject_position(roof))
+	assert_eq(
+		w.plot_tool.selected_building, plot.home, "select level-three roof on rotated frontage"
+	)
+	plot.home.take_damage(999)
+	assert_eq(w.plot_tool.selected_building, null, "damage destroys the selected home")
+	fx.destroy()

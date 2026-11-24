@@ -77,6 +77,7 @@ func _ready() -> void:
 
 func bind(build_tool: BuildTool) -> void:
 	_build_tool = build_tool
+	$BuildingInfo.hide()
 
 
 func _process(_delta: float) -> void:
@@ -88,6 +89,7 @@ func _process(_delta: float) -> void:
 		return
 	var world := _build_tool.world
 	var tool := world.plot_tool
+	$BuildingInfo.refresh(tool.selected_building, world.grower)
 	_road_button.set_pressed_no_signal(world.road_tool.active)
 	_growth.text = "Resume growth" if world.grower.paused else "Pause growth"
 	_growth.set_pressed_no_signal(world.grower.paused)

@@ -46,12 +46,30 @@ func max_health() -> int:
 	return def.levels[level - 1].max_health if not def.levels.is_empty() else def.max_health
 
 
-func upgrade() -> bool:
-	if is_queued_for_deletion() or _upgrading or level >= def.levels.size() or GameClock.is_night():
-		return false
-	var next := def.levels[level]
+func next_level() -> BuildingLevelDef:
+	return def.levels[level] if level < def.levels.size() else null
+
+
+func upgrade_blocker() -> String:
+	var next := next_level()
+	if next == null:
+		return "Max level"
+	if GameClock.is_night():
+		return "Waits for daylight"
 	if GameClock.day < next.min_day:
+		return "Unlocks on day %d" % next.min_day
+	var missing: Dictionary[StringName, int] = {}
+	for id: StringName in next.cost:
+		var shortage := next.cost[id] - Economy.get_amount(id)
+		if shortage > 0:
+			missing[id] = shortage
+	return "" if missing.is_empty() else "Needs " + BuildingDef.format_cost(missing)
+
+
+func upgrade() -> bool:
+	if is_queued_for_deletion() or _upgrading or not upgrade_blocker().is_empty():
 		return false
+	var next := next_level()
 	_upgrading = true
 	var paid := Economy.spend(next.cost)
 	if paid and is_queued_for_deletion():
