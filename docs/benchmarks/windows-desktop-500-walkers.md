@@ -42,3 +42,10 @@ Run from an imported project on the reference PC with a display. The scene uses 
 godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_playable_3d.gd
 godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_playable_3d.gd -- night
 ```
+
+
+## Street and housing playtest
+
+The frontage test scene places two homes on opposite sides of a curved street with a T-junction. On the same desktop at 1920 × 1080 uncapped, both homes reached the brick stage before the crowd was introduced. A short rendered check with 500 active Walkers averaged 514 FPS during the day and 508 FPS at night. Frame p95 was 2.32 ms and 2.30 ms respectively. Each sample ran for two seconds after a 0.3-second warm-up. This snapshot used the prototype meshes.
+
+[Daytime screenshot with 500 Walkers](frontage-town.webp)

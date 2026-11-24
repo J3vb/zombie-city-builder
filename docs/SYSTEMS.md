@@ -55,6 +55,16 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 
 Select Street and click control points on the ground. Enter commits the preview, Backspace removes the last point and Esc cancels. The gold marker identifies the Station 4 entrance. A street endpoint can join an existing end or branch from the middle of a street. The junction splits the routing graph while the original street retains its ID. The grid reserves the full corridor against construction and gives its cells a walking cost of one. Removing the last street on a cell restores the terrain cost.
 
+### Road-facing plots and automatic growth
+
+Each confirmed home plot stores its street ID, attachment point, frontage polygon, oriented house footprint, entrance cell and backyard. The preview marks the entrance in gold. Confirming a plot is free. Its reserved cells exclude other construction, while only the house itself blocks walkers. A home faces the street through every upgrade. A disconnected street cannot supply a new plot.
+
+The grower rotates through upgrades, housing, farms and storage during daylight. It skips an unavailable site and saves up on a valid turn that lacks resources. A tent costs 20 wood. From day two, a shack costs another 30 wood and 10 scrap. From day four, brick costs another 40 wood and 30 scrap. Upgrades keep the same footprint and health fraction. The temporary economy adds 40 wood and 15 scrap at dawn. Farm and storage zones grow their first-stage buildings.
+
+Demolishing refunds half the initial construction cost once and leaves the plot reserved. Remove Plot releases empty land. Removing a street clears its vacant plots. The game prevents removal of any road that would leave an occupied home without access to Station 4. Unzone leaves existing farm and storage buildings standing.
+
+Run `res://scenes/tests/frontage_town.tscn` for a playable bend with a junction, two accepted home plots and a rejected overlap.
+
 ## 3. Building placement
 
 - **What:** pick a building, see a ghost preview, place it, it gets built over time.

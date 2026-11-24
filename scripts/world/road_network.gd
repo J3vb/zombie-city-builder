@@ -13,6 +13,8 @@ var grid: Grid
 var graph: Dictionary[Vector2, PackedVector2Array] = {}
 var reachable: Dictionary[Vector2, bool] = {}
 
+var removal_guard: Callable
+
 var _next_id := 1
 
 
@@ -73,7 +75,7 @@ func preview(points: PackedVector2Array) -> Street:
 	var covered: Dictionary[Vector2i, bool] = {}
 	for strip in road.strips:
 		for cell in GroundShape.cells_of(strip, grid.tile_size):
-			if grid.get_cost(cell) <= 0:
+			if grid.get_cost(cell) <= 0 or grid.parcel_cells.has(cell):
 				road.error = "The street crosses blocked land."
 				return road
 			covered[cell] = true
@@ -96,13 +98,20 @@ func add_road(points: PackedVector2Array) -> Street:
 	return road
 
 
-func remove_road(id: int) -> void:
+func removal_error(id: int) -> String:
 	if not roads.has(id):
-		return
+		return "Choose a street to remove."
+	return removal_guard.call(id) if removal_guard.is_valid() else ""
+
+
+func remove_road(id: int) -> bool:
+	if not removal_error(id).is_empty():
+		return false
 	grid.mark_road(roads[id].cells, -1)
 	roads.erase(id)
 	_rebuild_graph()
 	changed.emit()
+	return true
 
 
 func _overlaps_street(road: Street) -> bool:
@@ -132,13 +141,25 @@ func _overlaps_street(road: Street) -> bool:
 
 
 func _rebuild_graph() -> void:
-	graph.clear()
-	reachable.clear()
+	graph = _graph_without(0)
+	reachable = _reachable_in(graph)
+
+
+func reachable_without(id: int) -> Dictionary[Vector2, bool]:
+	return _reachable_in(_graph_without(id))
+
+
+func _graph_without(exclude: int) -> Dictionary[Vector2, PackedVector2Array]:
+	var links: Dictionary[Vector2, PackedVector2Array] = {}
 	var ends := PackedVector2Array([entrance])
 	for road: Street in roads.values():
+		if road.id == exclude:
+			continue
 		ends.append(road.line[0])
 		ends.append(road.line[-1])
 	for road: Street in roads.values():
+		if road.id == exclude:
+			continue
 		# Order endpoints and interior T-junctions along the original street.
 		var offsets: Dictionary[Vector2, float] = {}
 		for point in ends:
@@ -156,21 +177,28 @@ func _rebuild_graph() -> void:
 		var ordered := offsets.keys()
 		ordered.sort_custom(func(a: Vector2, b: Vector2) -> bool: return offsets[a] < offsets[b])
 		for i in range(1, ordered.size()):
-			_link(ordered[i - 1], ordered[i])
-			_link(ordered[i], ordered[i - 1])
+			_link(links, ordered[i - 1], ordered[i])
+			_link(links, ordered[i], ordered[i - 1])
+	return links
+
+
+func _reachable_in(links: Dictionary[Vector2, PackedVector2Array]) -> Dictionary[Vector2, bool]:
+	var visited: Dictionary[Vector2, bool] = {}
 	var pending := PackedVector2Array([entrance])
 	while not pending.is_empty():
 		var point := pending[-1]
 		pending.resize(pending.size() - 1)
-		if reachable.has(point):
+		if visited.has(point):
 			continue
-		reachable[point] = true
-		for neighbor: Vector2 in graph.get(point, PackedVector2Array()):
-			if not reachable.has(neighbor):
+		visited[point] = true
+		for neighbor: Vector2 in links.get(point, PackedVector2Array()):
+			if not visited.has(neighbor):
 				pending.append(neighbor)
 
+	return visited
 
-func _link(a: Vector2, b: Vector2) -> void:
-	var neighbors := PackedVector2Array(graph.get(a, PackedVector2Array()))
+
+func _link(links: Dictionary[Vector2, PackedVector2Array], a: Vector2, b: Vector2) -> void:
+	var neighbors := PackedVector2Array(links.get(a, PackedVector2Array()))
 	neighbors.append(b)
-	graph[a] = neighbors
+	links[a] = neighbors
