@@ -4,6 +4,7 @@ extends Node2D
 ## Owns the flow field and rebuilds it on a worker thread when the grid changes.
 
 const MAP_PATH := "res://data/maps/starter_map.tres"
+const TERRAIN_SET_PATH := "res://data/terrain/terrain_set.tres"
 const COMMAND_POST := preload("res://data/buildings/command_post.tres")
 const NIGHT_COLOR := Color(0.55, 0.6, 0.8)
 
@@ -30,8 +31,9 @@ var _task_started_usec := 0
 
 func _ready() -> void:
 	map_def = load(MAP_PATH) as MapDef
-	StarterMap.generate(terrain, map_def)
-	grid.setup(terrain)
+	var terrain_set := load(TERRAIN_SET_PATH) as TerrainSet
+	grid.setup(map_def, StarterMap.generate(map_def), terrain_set)
+	_draw_terrain_tiles()
 	camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size()))
 	build_tool.world = self
 	command_post = spawn_building(COMMAND_POST, map_def.command_post_cell)
@@ -50,7 +52,17 @@ func _exit_tree() -> void:
 
 
 func tile_size() -> Vector2:
-	return Vector2(terrain.tile_set.tile_size)
+	return Vector2.ONE * grid.tile_size
+
+
+func _draw_terrain_tiles() -> void:
+	terrain.clear()
+	terrain.scale = tile_size() / Vector2(terrain.tile_set.tile_size)
+	for y in grid.size.y:
+		for x in grid.size.x:
+			var cell := Vector2i(x, y)
+			var atlas_x := grid.terrain_types[grid.index(cell)]
+			terrain.set_cell(cell, 0, Vector2i(atlas_x, 0))
 
 
 func spawn_building(def: BuildingDef, cell: Vector2i) -> Building:

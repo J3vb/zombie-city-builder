@@ -45,9 +45,9 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 ## 2. Grid and map
 
 - **What:** the world is a grid of tiles. Each tile has terrain and maybe a building.
-- **Data:** terrain types per tile from `StarterMap` (M1 used a `TileMapLayer`; M1.5 uses a type array plus `TerrainSet`). A `Grid` node holds `Dictionary[Vector2i, Building]` for what stands where, plus a base terrain cost array (from TileSet custom data) and an overlay for buildings and walls. Grid is the single source of truth: the flow field (zombies) and `AStarGrid2D` (citizens) are both built from it.
-- **How:** tile size 32 px (set in the TileSet). First map is 128 x 128 tiles, generated at start by `starter_map.gd` from a simple layout (border, water, rubble). Hand-painted maps can come later.
-  Cell/world conversion uses the TileMapLayer (`local_to_map`, `map_to_local`). Helpers: `is_free(cells)`, `occupy()`, `release()`, `get_cost(cell)`, `building_at(cell)`.
+- **Data:** `StarterMap.generate(map_def)` returns one terrain ID per cell. `Grid` holds those IDs, their travel costs from `data/terrain/terrain_set.tres`, and the occupancy overlay used by building placement and horde routing.
+- **How:** the starter map has 128 × 128 cells of 32 simulation units. MapDef supplies the dimensions, tile size and terrain rectangles. Borders take precedence over water, then rubble, then ground. The 2D world paints the tile atlas from Grid's terrain IDs. The atlas X coordinate matches the terrain ID.
+  Grid maps a cell to its center and maps a simulation position back with floor division. Occupying or releasing a cell changes its current cost while retaining the underlying terrain.
 - **Depends on:** nothing.
 - **Milestone:** M1.
 
@@ -139,7 +139,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 - **What:** one shared path map that tells every zombie which way to walk to the city.
 - **Data:** cost, integration and direction arrays. One shared field for all goals. Exact rules: DESIGN.md item 12.
 - **How:**
-  1. **Cost field:** terrain cost from TileSet data (ground 1, rubble 3), open gate 1, wall or closed gate = break cost. Water and map border = impassable.
+  1. **Cost field:** terrain cost from TerrainSet (ground 1, rubble 3), open gate 1, wall or closed gate = break cost. Water and map border = impassable.
   2. **Integration field:** Dijkstra with a bucket queue (Dial's algorithm) from all goal cells. Goals = Command Post and non-wall buildings only. Citizens are not goals.
   3. **Flow field:** each tile points to its cheapest neighbour.
   - Rebuild at most once per frame when the Grid has changed. Add a throttle only if the M1 benchmark shows a need.

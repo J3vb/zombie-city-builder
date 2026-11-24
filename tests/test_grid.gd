@@ -1,8 +1,7 @@
 extends TestCase
 
-const TILESET := preload("res://assets/tiles/terrain_tileset.tres")
+const TERRAIN_SET_PATH := "res://data/terrain/terrain_set.tres"
 
-var _layer: TileMapLayer
 var _grid: Grid
 var _changes: int = 0
 
@@ -12,17 +11,13 @@ func _setup() -> void:
 	map.size = Vector2i(8, 6)
 	map.water_rects = [Rect2i(5, 2, 2, 2)]
 	map.rubble_rects = [Rect2i(1, 1, 1, 1)]
-	_layer = TileMapLayer.new()
-	_layer.tile_set = TILESET
-	StarterMap.generate(_layer, map)
 	_grid = Grid.new()
-	_grid.setup(_layer)
+	_grid.setup(map, StarterMap.generate(map), load(TERRAIN_SET_PATH) as TerrainSet)
 	_grid.changed.connect(func() -> void: _changes += 1)
 
 
 func _teardown() -> void:
 	_grid.free()
-	_layer.free()
 
 
 func test_setup_reads_terrain_costs() -> void:
@@ -61,3 +56,29 @@ func test_out_of_bounds_and_blocked_not_free() -> void:
 	assert_true(not _grid.is_free(on_water), "water")
 	assert_true(not _grid.is_free(on_border), "border")
 	_teardown()
+
+
+func test_coordinates_use_simulation_tile_size() -> void:
+	var map := MapDef.new()
+	map.size = Vector2i(6, 4)
+	map.tile_size = 10
+	var grid := Grid.new()
+	grid.setup(map, StarterMap.generate(map), load(TERRAIN_SET_PATH) as TerrainSet)
+	assert_eq(grid.world_size(), Vector2(60, 40), "size in simulation units")
+	assert_eq(grid.cell_to_world(Vector2i(2, 3)), Vector2(25, 35), "center")
+	assert_eq(grid.world_to_cell(Vector2(19.99, 5)), Vector2i(1, 0), "before tile edge")
+	assert_eq(grid.world_to_cell(Vector2(20, 5)), Vector2i(2, 0), "on tile edge")
+	assert_eq(grid.world_to_cell(Vector2(-0.1, 1)), Vector2i(-1, 0), "outside left")
+	grid.free()
+
+
+func test_border_and_water_take_precedence_over_rubble() -> void:
+	var map := MapDef.new()
+	map.size = Vector2i(4, 3)
+	map.water_rects = [Rect2i(0, 0, 2, 2)]
+	map.rubble_rects = [Rect2i(0, 0, 3, 2)]
+	var ids := StarterMap.generate(map)
+	assert_eq(ids.size(), 12, "one ID per cell")
+	assert_eq(ids[4], TerrainSet.Kind.BORDER, "border covers water and rubble")
+	assert_eq(ids[5], TerrainSet.Kind.WATER, "water covers rubble")
+	assert_eq(ids[6], TerrainSet.Kind.RUBBLE, "rubble remains visible outside water")

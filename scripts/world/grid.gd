@@ -8,24 +8,20 @@ signal changed
 const BLOCKED := -1
 
 var size: Vector2i
+var tile_size: int
+var terrain_types: PackedByteArray
 var base_cost: PackedInt32Array
 var cost: PackedInt32Array
 var occupant: Dictionary[Vector2i, Node2D] = {}
 
-var _layer: TileMapLayer
 
-
-func setup(layer: TileMapLayer) -> void:
-	_layer = layer
-	var rect := layer.get_used_rect()
-	size = rect.end
-	base_cost.resize(size.x * size.y)
-	base_cost.fill(BLOCKED)
-	for y in size.y:
-		for x in size.x:
-			var data := layer.get_cell_tile_data(Vector2i(x, y))
-			if data:
-				base_cost[y * size.x + x] = data.get_custom_data("cost")
+func setup(map: MapDef, types: PackedByteArray, terrain: TerrainSet) -> void:
+	size = map.size
+	tile_size = map.tile_size
+	terrain_types = types
+	base_cost.resize(terrain_types.size())
+	for i in terrain_types.size():
+		base_cost[i] = terrain.types[terrain_types[i]].cost
 	cost = base_cost.duplicate()
 	occupant.clear()
 
@@ -68,15 +64,15 @@ func building_at(cell: Vector2i) -> Node2D:
 
 
 func cell_to_world(cell: Vector2i) -> Vector2:
-	return _layer.to_global(_layer.map_to_local(cell))
+	return (Vector2(cell) + Vector2(0.5, 0.5)) * tile_size
 
 
 func world_to_cell(pos: Vector2) -> Vector2i:
-	return _layer.local_to_map(_layer.to_local(pos))
+	return Vector2i((pos / tile_size).floor())
 
 
 func world_size() -> Vector2:
-	return Vector2(size * _layer.tile_set.tile_size)
+	return Vector2(size * tile_size)
 
 
 static func cells_of(anchor: Vector2i, footprint: Vector2i) -> Array[Vector2i]:
