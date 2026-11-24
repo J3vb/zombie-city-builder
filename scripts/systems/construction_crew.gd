@@ -45,6 +45,14 @@ func _removed(site: Building) -> void:
 		_replan()
 
 
+func replace_builder(person: Resident) -> void:
+	builder = person
+	target = null
+	if builder != null:
+		_world.jobs.release_assignment(builder)
+	_replan()
+
+
 func _replan() -> void:
 	_dirty = true
 
@@ -54,7 +62,7 @@ func _choose() -> void:
 	var routes := _world.jobs.routes
 	target = null
 	_blocked.clear()
-	if not _after_dusk:
+	if not _after_dusk and not builder.retreating:
 		for site in projects:
 			var path := routes.to_building(origin, site)
 			if path.is_empty():
@@ -63,14 +71,18 @@ func _choose() -> void:
 			target = site
 			builder.send(path, true)
 			return
-	builder.send(routes.to_building(origin, _world.command_post), false)
+	builder.seek_shelter(_world.command_post)
 
 
 func tick(dt: float) -> void:
-	if not is_instance_valid(_world.command_post) or _world.command_post.is_queued_for_deletion():
+	if (
+		builder == null
+		or not is_instance_valid(_world.command_post)
+		or _world.command_post.is_queued_for_deletion()
+	):
 		return
 	var after_dusk := GameClock.time_of_day >= _world.plots.rules.dusk_at
-	if _dirty or after_dusk != _after_dusk:
+	if builder.update_retreat() or _dirty or after_dusk != _after_dusk:
 		_after_dusk = after_dusk
 		_dirty = false
 		_choose()
@@ -80,6 +92,8 @@ func tick(dt: float) -> void:
 
 
 func status(site: Building) -> String:
+	if builder == null or builder.retreating:
+		return "No surviving builder" if builder == null else "Builder taking shelter"
 	if GameClock.speed == 0:
 		return "Clock paused"
 	if GameClock.time_of_day >= _world.plots.rules.dusk_at:

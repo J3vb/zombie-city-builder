@@ -4,6 +4,10 @@ extends Node3D
 
 enum State { HOME, TO_WORK, WORKING, TO_HOME, SHELTERED, BLOCKED }
 
+var health: int
+var threat_near := false
+var retreating := false
+var shelter: Building
 var resident_id: int
 var display_name: String
 var home: Building
@@ -28,10 +32,52 @@ func setup(world: World, house: Building, id: int, given_name: String) -> void:
 	resident_id = id
 	display_name = given_name
 	home = house
+	shelter = house
+	health = world.plots.rules.resident_health
+	world.safety.people.append(self)
 	cell = house.plot.door if house.plot != null else world.grid.world_to_cell(world.roads.entrance)
 	_sim_position = world.grid.cell_to_world(cell)
 	position = world.to_view(_sim_position)
 	hide()
+
+
+func sim_position() -> Vector2:
+	return _sim_position
+
+
+func exposed() -> bool:
+	return health > 0 and state != State.HOME and state != State.SHELTERED
+
+
+func take_hit(amount: int) -> void:
+	if not exposed() or amount <= 0:
+		return
+	health = maxi(0, health - amount)
+	if health == 0:
+		_world.safety.lose(self, _world)
+
+
+func update_retreat() -> bool:
+	var should_retreat := threat_near or (retreating and state == State.TO_HOME)
+	if should_retreat == retreating:
+		return false
+	retreating = should_retreat
+	$Alert.visible = retreating
+	return true
+
+
+func seek_shelter(preferred: Building) -> void:
+	var origin := route_origin()
+	var routes := _world.jobs.routes
+	var path := routes.to_building(origin, preferred)
+	shelter = preferred
+	if preferred != _world.command_post and (path.is_empty() or retreating):
+		var fallback := routes.to_building(origin, _world.command_post)
+		if path.is_empty() or (not fallback.is_empty() and fallback.size() < path.size()):
+			shelter = _world.command_post
+			path = fallback
+	at_station = shelter == _world.command_post
+	send(path, false)
 
 
 func route_origin() -> Vector2i:
@@ -45,6 +91,8 @@ func occupies(tiles: Array[Vector2i]) -> bool:
 
 
 func send(path: Array[Vector2i], to_work: bool) -> void:
+	if to_work:
+		shelter = null
 	var origin := route_origin()
 	_next = 0
 	_path = path.duplicate()
@@ -103,8 +151,11 @@ func activity() -> String:
 		State.WORKING:
 			return "Working"
 		State.TO_HOME:
+			if retreating:
+				return "Fleeing to Station 4" if at_station else "Fleeing home"
 			return "Returning to shelter"
 		State.BLOCKED:
-			return "Route blocked"
+			return "Escape route blocked" if retreating else "Route blocked"
 		_:
-			return "At Station 4" if at_station else "At home"
+			var place := "At Station 4" if at_station else "At home"
+			return "Sheltering from Walkers" if retreating else place

@@ -22,6 +22,12 @@ Station 4 holds 100 of each resource. A finished tarp pile, shed or warehouse ad
 
 To try the five-day supply town, open `scenes/tests/supply_town.tscn` in Godot and press **F6**. Ten residents share two fields, a well, a lumber yard and a scrap workshop. Hordes are disabled and automatic growth starts paused so you can observe the accounts. Let the town reach dawn on day 6, pause hiring at the well, and reopen it after the water runs out. [See the day-six town](docs/benchmarks/supply-town.webp).
 
+### Civilian safety
+
+When a Walker comes within four tiles, the worker leaves their post and an amber **!** appears above them. Inspect their home or workplace to see where they are going and how much health they have. Residents can shelter at home or Station 4. If their shelter falls, they are exposed again. Losing the builder passes construction to a survivor. Losing the last resident ends the game. [See Noor escaping from the well](docs/benchmarks/civilian-shelter.webp).
+
+The fresh-start replay uses starting stock, paid construction and normal night spawns. Run `godot --headless --path . --script res://tests/play_opening.gd`. It stops on defeat (exit 1) or at dawn six (exit 0). In the recorded opening, three people faced 30 Walkers on night one and Station 4 fell. Early defenses are the next survival milestone.
+
 ## Docs
 
 | File | What's in it |

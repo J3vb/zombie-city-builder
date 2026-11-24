@@ -44,6 +44,14 @@ mesh = SubResource("Leg")
 position = Vector3(0.14, 0.29, 0)
 mesh = SubResource("Leg")
 
+[node name="Alert" type="Label3D" parent="."]
+visible = false
+position = Vector3(0, 2.6, 0)
+billboard = 1
+text = "!"
+modulate = Color(1, 0.72, 0.22, 1)
+pixel_size = 0.025
+
 [node name="Cap" type="MeshInstance3D" parent="."]
 position = Vector3(0, 1.65, 0)
 mesh = SubResource("Head")

@@ -9,6 +9,7 @@ const COMMAND_POST_PATH := "res://data/buildings/command_post.tres"
 
 var map_def: MapDef
 var flow_field := FlowField.new()
+var safety := TownSafety.new()
 var command_post: Building
 var last_build_ms: float = 0.0
 

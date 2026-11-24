@@ -15,6 +15,7 @@ var last_shortage: Dictionary[StringName, int] = {}
 var last_dawn := 0
 var world: World
 var rules: BalanceDef
+var _next_id := 1
 var _staff: Dictionary[Building, Resident] = {}
 var _closed: Dictionary[Building, bool] = {}
 var _dirty := true
@@ -58,9 +59,10 @@ func _placed(building: Building) -> void:
 		if resident.home == null:
 			resident.home = building
 			return
-	if residents.size() + 1 >= rules.resident_limit:
+	if world.safety.people.size() >= rules.resident_limit:
 		return
-	var id := residents.size() + 1
+	var id := _next_id
+	_next_id += 1
 	var given := "Resident %d" % id
 	if id <= rules.resident_names.size():
 		given = rules.resident_names[id - 1]
@@ -74,6 +76,7 @@ func _removed(building: Building) -> void:
 	if building.get_parent() != world.buildings:
 		return
 	_dirty = true
+	world.safety.shelter_removed(building)
 	sites.erase(building)
 	_closed.erase(building)
 	var worker := worker_at(building)
@@ -92,6 +95,20 @@ func _removed(building: Building) -> void:
 				):
 					resident.home = house
 					break
+
+
+func release_assignment(person: Resident) -> void:
+	_set_job(person, null)
+
+
+func remove_worker(person: Resident) -> void:
+	_set_job(person, null)
+	residents.erase(person)
+	if person.home != null and person.home.plot != null:
+		for displaced in residents:
+			if displaced.home == null:
+				displaced.home = person.home
+				break
 
 
 func tenant(house: Building) -> Resident:
@@ -123,7 +140,12 @@ func toggle_hiring(site: Building) -> void:
 
 
 func assign(resident: Resident, site: Building) -> bool:
-	if not residents.has(resident) or resident.home == null or not sites.has(site):
+	if (
+		resident == world.construction.builder
+		or not residents.has(resident)
+		or resident.home == null
+		or not sites.has(site)
+	):
 		return false
 	if routes.to_building(resident.route_origin(), site).is_empty():
 		return false
@@ -165,29 +187,32 @@ func _find_job(resident: Resident) -> void:
 
 func _plan(resident: Resident) -> void:
 	var origin := resident.route_origin()
-	if not _off_duty and resident.home != null and resident.worked_day != GameClock.day:
+	if (
+		not resident.retreating
+		and not _off_duty
+		and resident.home != null
+		and resident.worked_day != GameClock.day
+	):
 		if resident.job == null:
 			_find_job(resident)
 		if resident.job != null:
 			resident.send(routes.to_building(origin, resident.job), true)
 			return
-	var path := routes.to_building(origin, resident.home)
-	resident.at_station = path.is_empty()
-	if resident.at_station:
-		path = routes.to_building(origin, world.command_post)
-	resident.send(path, false)
+	resident.seek_shelter(resident.home)
 
 
 func _tick(dt: float) -> void:
 	if residents.is_empty():
 		return
 	var off_duty := GameClock.time_of_day >= rules.dusk_at
-	if _dirty or off_duty != _off_duty:
-		_off_duty = off_duty
-		for resident in residents:
-			_plan(resident)
-		_dirty = false
+	var replan := _dirty or off_duty != _off_duty
+	_off_duty = off_duty
+	_dirty = false
 	for resident in residents:
+		if resident == world.construction.builder:
+			continue
+		if resident.update_retreat() or replan:
+			_plan(resident)
 		var on_site := resident.travel(dt, rules.resident_speed)
 		if resident.state != Resident.State.WORKING or on_site <= 0.0:
 			continue
@@ -218,9 +243,7 @@ func _dawn(day: int) -> void:
 			last_output[item] = received
 		if harvested[item] > received:
 			last_overflow[item] = harvested[item] - received
-	var eaters := residents.duplicate()
-	eaters.append(world.construction.builder)
-	for resident in eaters:
+	for resident in world.safety.people:
 		resident.shift_seconds = 0.0
 		var hungry := false
 		var thirsty := false

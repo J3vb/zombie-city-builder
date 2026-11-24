@@ -29,12 +29,17 @@ func new_game() -> void:
 	add_child(world)
 	move_child(world, 0)
 	_hud.bind(world.build_tool)
+	_hud.show()
 
 
-func _on_game_over(_day: int) -> void:
+func _on_game_over(day: int) -> void:
+	if GameClock.ended:
+		return
+	GameClock.stop()
 	world.plot_tool.clear()
-	GameClock.set_speed(0)
-	_game_over.show_result(GameClock.day)
+	world.process_mode = Node.PROCESS_MODE_DISABLED
+	_hud.hide()
+	_game_over.show_result(day, world.safety.people.is_empty())
 
 
 func _unhandled_input(event: InputEvent) -> void:

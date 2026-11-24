@@ -120,7 +120,13 @@ A home on confirmed frontage houses one named resident. A displaced resident can
 
 A shift needs 60 seconds of on-site work at full pace. Reassignment, demolition or dawn discards unfinished work. A completed shift survives demolition and pays once the next dawn, before each resident uses one food and one water. A garden produces 4 food, a farm produces 6, 9 or 12 food, a well produces 12 water, a lumber yard produces 16 wood and a scrap workshop produces 4 scrap. The HUD shows stored output, overflow, rations and shortages. Inspect an affected resident or Station 4 to see the reduced work pace.
 
-Run the staffing and crowd benchmark on the reference PC with `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_residents.gd`. It builds and staffs 50 homes and workplaces, then measures six seconds with 500 active Walkers after a two-second warmup.
+### Civilian danger and shelter
+
+Each Walker pursues the closest exposed person within four tiles. A building in its path still takes hits. At contact, a Walker deals 8 civilian damage once per attack cooldown. Civilians start with 40 health. A hit does not pass through a blocked corner. Reaching shelter protects the occupant until they leave or the building falls.
+
+Workers head for their own home or Station 4, choosing the shorter reachable route in danger. The builder returns to Station 4. The amber marker and HUD warn of danger. Work pauses during flight, and unfinished construction stays claimed. After reaching safety, residents resume daytime work when the area clears. At dusk they stay inside. Death frees the bed and job. A surviving resident takes over a lost builder’s queue and eats one ration like everyone else. The loss screen distinguishes an empty town from the destruction of Station 4.
+
+Run the staffing and crowd benchmark on the reference PC with `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_residents.gd`. It builds and staffs 50 homes and workplaces, then measures six seconds with 500 active Walkers after a two-second warmup. Its Walkers deal zero civilian damage to hold the measured population constant while pursuit and flight run. The fresh-start replay and normal game use full damage.
 
 ## 6. Walls, gates and checkpoints
 

@@ -9,6 +9,7 @@ const BALANCE_PATH := "res://data/balance.tres"
 var day: int = 1
 var time_of_day: float = 0.0
 var speed: int = 1
+var ended := false
 
 var _balance: BalanceDef
 var _accumulator: float = 0.0
@@ -21,6 +22,7 @@ func _ready() -> void:
 
 
 func reset() -> void:
+	ended = false
 	day = 1
 	time_of_day = 0.0
 	speed = 1
@@ -29,7 +31,14 @@ func reset() -> void:
 	_night_sent = false
 
 
+func stop() -> void:
+	ended = true
+	speed = 0
+
+
 func set_speed(value: int) -> void:
+	if ended:
+		return
 	speed = clampi(value, 0, 3)
 
 
@@ -56,6 +65,8 @@ func _process(delta: float) -> void:
 
 
 func _advance(dt: float) -> void:
+	if ended:
+		return
 	time_of_day += dt / _balance.day_length_seconds
 	if not _dusk_sent and time_of_day >= _balance.dusk_at:
 		_dusk_sent = true

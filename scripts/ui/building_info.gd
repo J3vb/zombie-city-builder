@@ -80,10 +80,14 @@ func refresh(building: Building, grower: TownGrower) -> void:
 		var crew := grower.world.construction
 		%Assignment.hide()
 		%Staff.show()
+		if crew.builder == null:
+			%Staff.text = "No surviving builder"
+			return
 		var task := crew.target.project_name() if crew.target != null else "Station 4"
 		%Staff.text = (
 			"Builder   %s\n%s · %s" % [crew.builder.display_name, crew.builder.activity(), task]
 		)
+		%Staff.text += "\nHealth   %d / %d" % [crew.builder.health, _jobs.rules.resident_health]
 		if crew.builder.work_pace() < 1.0:
 			%Staff.text += (
 				"\nRation shortage · work pace %d%%" % roundi(crew.builder.work_pace() * 100)
@@ -120,7 +124,10 @@ func _refresh_staff(building: Building) -> void:
 			lines.append("Vacant home")
 	else:
 		lines.append("%s   ·   %s" % [resident.display_name, resident.activity()])
-		if resident.worked_day == GameClock.day:
+		lines.append("Health   %d / %d" % [resident.health, _jobs.rules.resident_health])
+		if resident == _jobs.world.construction.builder:
+			lines.append("Station 4 builder")
+		elif resident.worked_day == GameClock.day:
 			lines.append("Shift complete · pays at dawn")
 		elif resident.state == Resident.State.WORKING:
 			lines.append(
@@ -145,6 +152,8 @@ func _populate_workers() -> void:
 	menu.add_item("Resume hiring" if _jobs.hiring_closed(_site) else "Pause hiring", 0)
 	menu.add_separator()
 	for resident in _jobs.residents:
+		if resident == _jobs.world.construction.builder:
+			continue
 		var job := resident.job.def.display_name if resident.job != null else "Available"
 		menu.add_item("%s · %s" % [resident.display_name, job], resident.resident_id)
 

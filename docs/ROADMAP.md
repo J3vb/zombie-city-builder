@@ -61,12 +61,13 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 Goal: citizens make the economy run.
 
 - Citizens with needs (food, water, sleep), pathfinding with AStarGrid2D. Named residents now walk from a road-facing home to a reachable worksite. Food and water rations and dusk shelter are playable. Sleep and further needs remain.
-- Zombies chase citizens within 4 tiles
+- Playable now: Walkers pursue the closest exposed civilian within four tiles and deal contact damage on a cooldown ([#15](https://github.com/J3vb/zombie-city-builder/issues/15)).
 - Playable now: automatic and manual worker assignment for gardens, farms, wells, lumber yards and scrap workshops. Each person works at most one completed shift per day.
 - Playable now: the Station 4 builder travels to paid construction sites, completes buildings and upgrades over time, and returns at dawn to resume unfinished work. Inspect or cancel an order ([#17](https://github.com/J3vb/zombie-city-builder/issues/17)).
 - Playable now: staffed production supplies food, water, wood and scrap at dawn. Completed storage increases capacity. Missed rations slow work until the next fully fed and watered dawn.
-- Five-day economy check passed with ten people, two fields and three other workplaces. It starts with finished sites, pauses automatic growth and disables hordes. The remaining M2 work is civilian danger, injury, death and shelter under attack.
-- Citizens flee to homes at night
+- Five-day economy check passed with ten people, two fields and three other workplaces. It starts with finished sites, pauses automatic growth and disables hordes. Sleep remains open in [#14](https://github.com/J3vb/zombie-city-builder/issues/14).
+- Playable now: workers and the builder shelter at dusk or when threatened, resume after danger clears, and become exposed if their shelter falls. Death releases the bed and job. Losing every resident ends the game ([#20](https://github.com/J3vb/zombie-city-builder/issues/20)).
+- Fresh-start survival trial: at seed 4, three people had moved in by the first night. The 30-Walker wave destroyed Station 4 before dawn two. Build the first usable defense, then rerun `tests/play_opening.gd` against the same seed.
 
 **Economy acceptance:** ten citizens can feed and water themselves for five days. Run `scenes/tests/supply_town.tscn` or the automated supply economy test.
 

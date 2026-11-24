@@ -70,4 +70,13 @@ offset_top = 52.0
 mouse_filter = 2
 theme_override_constants/outline_size = 6
 
+[node name="CivilianAlert" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_left = 8.0
+offset_top = 80.0
+mouse_filter = 2
+theme_override_constants/outline_size = 6
+theme_override_colors/font_color = Color(1, 0.82, 0.56, 1)
+
 [node name="BuildingInfo" parent="." instance=ExtResource("2_info")]
