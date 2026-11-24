@@ -37,3 +37,15 @@ func test_stock_never_negative() -> void:
 	_setup()
 	_economy.add(&"wood", -50)
 	assert_eq(_economy.get_amount(&"wood"), 0, "wood")
+
+
+func test_stock_is_fully_debited_before_spend_notifies() -> void:
+	_setup()
+	var scrap_seen: Array[int] = []
+	var on_change := func(_id: StringName, _amount: int) -> void:
+		scrap_seen.append(_economy.get_amount(&"scrap"))
+	EventBus.resource_changed.connect(on_change)
+	var cost: Dictionary[StringName, int] = {&"wood": 4, &"scrap": 5}
+	assert_true(_economy.spend(cost), "purchase succeeds")
+	EventBus.resource_changed.disconnect(on_change)
+	assert_eq(scrap_seen, [0, 0], "both notifications see the complete purchase")

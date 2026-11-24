@@ -33,13 +33,13 @@ func test_setup_reads_terrain_costs() -> void:
 func test_occupy_and_release() -> void:
 	_setup()
 	var cells := Grid.cells_of(Vector2i(2, 2), Vector2i(2, 2))
-	var house := Node2D.new()
+	var house := Building.new()
 	assert_true(_grid.is_free(cells), "free before")
 	_grid.occupy(cells, house)
 	assert_true(not _grid.is_free(cells), "not free after occupy")
 	assert_eq(_grid.get_cost(Vector2i(3, 3)), Grid.BLOCKED, "occupied cost")
 	assert_eq(_grid.building_at(Vector2i(3, 3)), house, "building_at")
-	_grid.release(cells)
+	_grid.release(cells, house)
 	assert_true(_grid.is_free(cells), "free after release")
 	assert_eq(_grid.get_cost(Vector2i(3, 3)), 1, "cost restored")
 	assert_eq(_changes, 2, "changed fires once per call")
@@ -82,3 +82,22 @@ func test_border_and_water_take_precedence_over_rubble() -> void:
 	assert_eq(ids[4], TerrainSet.Kind.BORDER, "border covers water and rubble")
 	assert_eq(ids[5], TerrainSet.Kind.WATER, "water covers rubble")
 	assert_eq(ids[6], TerrainSet.Kind.RUBBLE, "rubble remains visible outside water")
+
+
+func test_conflicting_claim_leaves_every_cell_unchanged() -> void:
+	_setup()
+	var first := Building.new()
+	var second := Building.new()
+	var occupied: Array[Vector2i] = [Vector2i(2, 1)]
+	var overlap: Array[Vector2i] = [Vector2i(1, 1), Vector2i(2, 1)]
+	assert_true(_grid.occupy(occupied, first), "first claim")
+	assert_true(not _grid.occupy(overlap, second), "overlapping claim rejected")
+	_grid.release(overlap, second)
+	assert_eq(_grid.building_at(occupied[0]), first, "original owner")
+	assert_eq(_grid.building_at(overlap[0]), null, "no partial claim")
+	assert_eq(_grid.get_cost(overlap[0]), 3, "rubble cost preserved")
+	assert_eq(_changes, 1, "only the successful claim changed the grid")
+	_grid.release(occupied, first)
+	second.free()
+	first.free()
+	_teardown()

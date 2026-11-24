@@ -13,6 +13,7 @@ var flow_field := FlowField.new()
 var command_post: Building
 var last_build_ms: float = 0.0
 
+var _nearby_zombies := PackedInt32Array()
 var _dirty := false
 var _task_id := -1
 var _pending_field: FlowField
@@ -37,7 +38,7 @@ func _ready() -> void:
 	camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size()))
 	build_tool.world = self
 	command_post = spawn_building(COMMAND_POST, map_def.command_post_cell)
-	camera.position = command_post.position + Vector2(COMMAND_POST.size) * tile_size() / 2.0
+	camera.position = command_post.sim_center()
 	grid.changed.connect(_on_grid_changed)
 	_build_now()
 	zombies.setup(self)
@@ -65,11 +66,36 @@ func _draw_terrain_tiles() -> void:
 			terrain.set_cell(cell, 0, Vector2i(atlas_x, 0))
 
 
+func can_place_building(def: BuildingDef, cell: Vector2i) -> bool:
+	var cells := Grid.cells_of(cell, def.size)
+	if not grid.is_free(cells) or not Economy.can_afford(def.cost):
+		return false
+	for c in cells:
+		if zombies.query(grid.cell_to_world(c), grid.tile_size * 0.71, _nearby_zombies) > 0:
+			return false
+	return true
+
+
+## Paid placement, shared by input and simulation callers.
+func try_place_building(def: BuildingDef, cell: Vector2i) -> Building:
+	if not can_place_building(def, cell) or not Economy.spend(def.cost):
+		return null
+	var building := spawn_building(def, cell)
+	if building == null:
+		# A resource listener can claim the cells before the purchase completes.
+		for id: StringName in def.cost:
+			Economy.add(id, def.cost[id])
+	return building
+
+
+## Unpaid spawn for map setup. The grid still checks the whole footprint.
 func spawn_building(def: BuildingDef, cell: Vector2i) -> Building:
 	var building := def.scene.instantiate() as Building
-	building.setup(def, cell, grid, tile_size())
+	building.setup(def, cell, grid)
+	if not grid.occupy(building.cells, building):
+		building.free()
+		return null
 	buildings.add_child(building)
-	grid.occupy(building.cells, building)
 	EventBus.building_placed.emit(building)
 	return building
 
@@ -77,7 +103,7 @@ func spawn_building(def: BuildingDef, cell: Vector2i) -> Building:
 func goal_cells() -> PackedInt32Array:
 	var goals := PackedInt32Array()
 	for cell: Vector2i in grid.occupant:
-		var b := grid.occupant[cell] as Building
+		var b := grid.occupant[cell]
 		if b and b.def.is_goal:
 			goals.append(grid.index(cell))
 	return goals

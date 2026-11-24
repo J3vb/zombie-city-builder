@@ -180,9 +180,9 @@ The owner chose a full 3D view with a city-builder camera (decided 2026-11-21, a
 
 ### Zones and growth (M1.5)
 
-The owner chose SimCity-style zoning (2026-11-21): the player paints zones and buildings grow and upgrade by themselves.
+The first 3D slice requires curved roads and road-facing residential plots. The player marks a plot on a road, with the entrance toward the street and a backyard behind the home. Homes grow and upgrade on confirmed plots. Farmland and storage still use painted zones.
 
-*   **Zones:** Housing (grows houses), Farmland (grows farms), Storage (grows storage). Each is a `ZoneDef` in `ZoneCatalog`. Painting and removing zones is free; resources are paid when something grows or upgrades.
+*   **Zones:** Farmland grows farms and Storage grows storage buildings. Housing uses road-facing plots. Each is a `ZoneDef` in `ZoneCatalog`. Painting and removing zones is free; resources are paid when something grows or upgrades.
 *   **`ZoneMap`** (World-owned, sim space): one zone id per cell (`PackedByteArray`, 0 = none). Painting checks only bounds and passable terrain, so a zone can lie under a building (the overlay hides it there) and the lot regrows after the building is destroyed. Removing a zone clears any cell; a building on it stays standing. Zones never change tile costs or pathing, so `Grid` stays the single source of truth for what stands where.
 *   **Hand-placed:** the Command Post (at start) and, from M3, walls, gates and towers. `BuildTool.place()` stays for these.
 *   **`Grower`** (World-owned, sim) acts once every `grow_interval_hours` of game time, by day only, unless the player paused growth. It works through a fixed **turn order**: Upgrade, Housing, Farmland, Storage, then Upgrade again.
@@ -191,10 +191,10 @@ The owner chose SimCity-style zoning (2026-11-21): the player paints zones and b
     *   **Grow:** spend `def.cost` and spawn the zone's building at level 1 on the best lot. At most `growth_per_day` new buildings per day.
     *   **Upgrade:** the building nearest to the Command Post whose `upgrade_blocker()` is empty, any level, so one house visibly finishes early. At most `upgrades_per_day` per day.
     *   **Reserve:** the Grower never spends a resource below `grower_reserve` (`BalanceDef`, empty in M1.5). M3 raises it so walls and towers always have scrap.
-*   **Lot:** an anchor cell where every footprint cell has that zone, passes the normal placement check (`BuildTool.can_place` without the cost check, so the zombie check stays), no other building stands in the ring of cells around the footprint (a 1-cell gap, so M2 citizens and zombies can walk between buildings), and no zombie is within `grow_zombie_clearance` tiles. The candidate nearest to the Command Post wins, ties to the lowest cell index. Towns grow outwards from the centre and the result is the same every time (no randomness).
+*   **Lot:** a confirmed residential plot or an anchor wholly within a farm or storage zone. The footprint passes the same terrain, occupancy and Walker checks as player placement. No other building stands in the ring of cells around the footprint (a 1-cell gap, so M2 citizens and zombies can walk between buildings), and no zombie is within `grow_zombie_clearance` tiles. The candidate nearest to the Command Post wins, ties to the lowest cell index. Towns grow outwards from the centre and the result is the same every time (no randomness).
 *   **Why it didn't grow:** the Grower keeps one status line per zone ("Growing", "Saving up: needs 30 wood", "No room for a 3x3 farm", "Daily limit reached", "Paused", "Waits for daylight"). The HUD shows it on each zone button.
-*   **Player control in M1.5:** paint and remove zones, pause or resume growth. Where you paint matters: zombies attack the nearest goal building, so outer buildings shield the centre. M1.5 is mostly a look-and-feel milestone; demand (homeless citizens, food shortage) drives growth from M2.
-*   **Pacing check (start 100 wood + 40 scrap, `daily_income` 40 wood + 15 scrap, housing only):** day 1 three tents (60 wood); day 2 first tent to Shack (30 wood + 10 scrap) and a fourth tent; day 4 the first Brick house (40 wood + 30 scrap). `test_grower` runs this with income only and expects a level 3 house by day 5 and at least one building in each of the three zones by day 3 when all three are painted.
+*   **Player control in M1.5:** draw roads, mark or remove empty home plots, paint or remove farm and storage zones, and pause or resume growth. Where you paint matters: zombies attack the nearest goal building, so outer buildings shield the centre. M1.5 is mostly a look-and-feel milestone; demand (homeless citizens, food shortage) drives growth from M2.
+*   **Pacing check (start 100 wood + 40 scrap, `daily_income` 40 wood + 15 scrap, housing only):** day 1 three tents (60 wood); day 2 first tent to Shack (30 wood + 10 scrap) and a fourth tent; day 4 the first Brick house (40 wood + 30 scrap). `test_grower` runs this with income only and expects a level 3 house by day 5 and at least one building of each type by day 3 when roadside plots and both zones are available.
 
 ### Building upgrades (M1.5)
 
@@ -364,9 +364,9 @@ docs/        design docs, reviews/
 
 *   **Map size:** is 128 x 128 right? Decide after the M1 benchmark.
 *   **Art style:** decided: 3D, dark and gritty (see Art direction).
-*   **Zoning:** decided 2026-11-21: SimCity-style zones (see Zones and growth).
+*   **Zoning:** paint farmland and storage and mark residential frontage (see Zones and growth).
 *   **Demand:** what makes zones grow from M2 (homeless citizens, food shortage)? Decide in the M2 plan.
-*   **Roads:** do zoned lots need road access, like SimCity? Not in M1.5; decide in the M2 plan.
+*   **Roads:** curved streets and attached home plots are required in M1.5. Keep their shape in simulation coordinates and project their footprint onto Grid for occupancy and movement.
 *   **Game name:** decided: Hold the Gates.
 
 ## Future Improvements
@@ -550,13 +550,13 @@ Tests that need nodes add them to the tree root, and free them at the end.
 
 ### M1.5: 3D view and building upgrades
 
-Goal: the M1 game in 3D with a city-builder camera, SimCity-style zones where buildings grow and upgrade by themselves (three levels each), and the dark gritty look. M1 gameplay rules stay the same except where listed.
+Goal: the M1 game in 3D with a city-builder camera, curved streets, road-facing residential plots and painted farm and storage zones with three growth levels, and the dark gritty look. M1 gameplay rules stay the same except where listed.
 
 | PR | Contents | Playable after it? |
 |---|---|---|
 | 0 | 3D test scene and ARM64 test export. **Merged (#58).** Owner reports fps before PR A | n/a |
 | A | Terrain from data, World/camera/picking/build ghost/buildings/zombies/day-night in 3D, debug overlay text only | Yes: box buildings, capsule zombies |
-| B | Flow arrows in 3D, building levels, zones, growth and auto-upgrades, selection and InfoPanel, temporary income | Yes: paint zones, the town grows and upgrades, levels shown as taller boxes |
+| B | Curved streets and frontage plots, flow arrows, building levels, farm and storage zones, growth, selection, temporary income | Lay out a bend and see the homes face the street as they grow |
 | C | Gritty art kit: materials, models per level, zombie mesh, props, final lighting | Yes: final M1.5 look |
 
 After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps on the ARM laptop (Performance floor).
@@ -564,7 +564,7 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 #### Rules every M1.5 file follows
 
 *   Conversion as in "3D view": `World.to_view()` / `to_sim()`; hot loops may cache `view_scale`.
-*   Sim code (`Grid`, `FlowField`, `SpatialHash`, `HordeDirector`, `ZombieManager` movement, `BuildTool` validation) uses no 3D types.
+*   Sim code (`Grid`, `FlowField`, `SpatialHash`, `HordeDirector`, `ZombieManager` movement, World placement validation) uses no 3D types.
 *   `Building.sim_center() -> Vector2` is the building's position in sim space. Sim code uses it, never `position`.
 *   A building model's origin is the centre of its footprint, on the ground.
 *   New numbers go in a Def (`BalanceDef`, `MapDef`, `LightingDef`, `BuildingLevelDef`, `TerrainSet`, `ZombieDef`).
@@ -606,7 +606,7 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 *   Owns `var rng := RandomNumberGenerator.new()`, seeded from `map_def.map_seed`.
 *   `_ready()` order: load `map_def` and the terrain set; `view_scale = map_def.view_scale`; `rng.seed = map_def.map_seed`; `types = StarterMap.generate(map_def)`; `grid.setup(map_def.size, types, terrain_set, map_def.tile_size)`; `terrain.build(grid, terrain_set, view_tile(), rng)`; `camera.world = self`; `camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * view_scale))` (view-space XZ, metres); `build_tool.world = self`; spawn the Command Post; `camera.look_at_sim(command_post.sim_center())`; connect `grid.changed`; build the flow field; `zombies.setup(self)`; `horde.setup(self, Time.get_ticks_usec())` (unchanged from M1); `day_night.setup()`; `debug_overlay.world = self`.
 *   Adds `view_scale`, `to_view()`, `to_sim()`, `view_tile() -> float` (= `tile_size * view_scale` = 4). `tile_size()` returns `Vector2(map_def.tile_size, map_def.tile_size)` (sim units).
-*   `spawn_building(def, cell)` calls `building.setup(def, cell, self)`.
+*   `spawn_building(def, cell)` sets up the simulation building with Grid. Paid placement uses `World.try_place_building()`.
 *   Flow-field rebuild code unchanged.
 
 ##### A6. `scenes/world/camera_rig.tscn` (Create), `scripts/world/camera_rig.gd` (Replace)
@@ -627,13 +627,13 @@ After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps
 
 ##### A8. `scripts/buildings/building.gd`, `command_post.gd`, `scenes/buildings/*.tscn` (Modify)
 
-*   `extends Node3D`. `setup(def, anchor, world: World)`. `sim_center() -> Vector2` = footprint centre in sim space; `position = world.to_view(sim_center())`.
+*   Keep `Building` as a simulation node with `setup(def, anchor, grid)`. Its 3D view uses `world.to_view(sim_center())` for the model origin.
 *   Look in PR A: a `MeshInstance3D` box of the footprint (minus 0.3 m each side), 3 m high, colour from `def.color`. Health bar 1 m above the roof, shown when damaged: two `MeshInstance3D` with `QuadMesh` (back dark, front red), unshaded material with `billboard_mode = ENABLED` and `no_depth_test = true`; the front quad's X scale = health fraction. No `_draw`.
 *   Callers switched to `sim_center()`: `zombie_manager.gd` (`target`), `world.gd` (camera start), `tests/test_zombie_manager.gd`.
 
 ##### A9. `scripts/units/zombie_manager.gd`, `scenes/units/zombie_manager.tscn` (Modify)
 
-*   `extends Node3D`, child `MultiMeshInstance3D` (`cast_shadow = off`). Movement code unchanged except `target` (A8).
+*   Keep `ZombieManager` as a simulation node. A child `MultiMeshInstance3D` subscribes to the scene-local crowd signals (`cast_shadow = off`). Keep the movement code in the simulation node.
 *   `setup()`: `transform_format = TRANSFORM_3D`, `FLOATS_PER_INSTANCE = 16`, mesh = `load("res://data/zombies/walker.tres").mesh` (load, not preload; see CLAUDE.md gotcha). `view_scale` copied from World. `_rng.seed = world.map_def.map_seed + 1`.
 *   New arrays, resized in `setup`, set in `spawn`, moved in swap-remove: `_heading: PackedFloat32Array` (radians; 0 = facing +Z, eased towards the move direction at `turn_rate`), `_phase: PackedFloat32Array` (random at spawn from `_rng`).
 *   `_time: float` advances by the scaled `dt`, so the bob stops when paused.
@@ -686,6 +686,8 @@ Level 1 health equals the M1 values, so M1 balance does not change.
 *   `upgrade() -> bool`: if `upgrade_blocker()` is empty: `Economy.spend(next.upgrade_cost)`, `level += 1`, health as in "Building upgrades", swap the look, emit `EventBus.building_upgraded(self)`, return true. Else change nothing, return false.
 *   `pick_box() -> AABB`: footprint x current height in view space, used for selection.
 
+Before B4, implement the curved street and frontage tools in the order in [ROADMAP.md](ROADMAP.md). The housing ID below identifies residential growth. Housing candidates come from a confirmed plot attached to a road. Rectangle painting and its overlay apply to farmland and storage.
+
 ##### B4. Zones: `scripts/data/zone_def.gd`, `zone_catalog.gd`, `data/zones/housing.tres`, `farmland.tres`, `storage.tres`, `zone_catalog.tres` (Create); `scripts/world/zone_map.gd` (Create)
 
 *   `ZoneDef`: `id: int` (1 housing, 2 farmland, 3 storage; 0 is "none"), `display_name: String`, `building: BuildingDef`, `color: Color` (housing `#c8a060`, farmland `#7da04a`, storage `#6f86a8`). `ZoneCatalog`: `zones: Array[ZoneDef]`, in `data/zones/zone_catalog.tres`. Always loaded with `load()`, not `preload()` (CLAUDE.md gotcha).
@@ -702,7 +704,7 @@ Level 1 health equals the M1 values, so M1 balance does not change.
 *   `tick(hours: float)`: at night or when paused, set `_hours = 0`, update statuses, return. Else add `hours`; each time `_hours >= grow_interval_hours`, subtract it and call `step()`.
 *   `step() -> bool`: runs the action of the current turn. If the action is impossible, move to the next turn and try again (at most one full round per step). If it is only unaffordable, stay on this turn and return false. On success, move to the next turn and return true.
 *   `grow_step(zone: ZoneDef) -> int` and `upgrade_step() -> int` return `DONE`, `WAIT` (cannot afford, or below `grower_reserve`) or `SKIP` (impossible). Public so tests can drive them.
-*   `find_lot(zone: ZoneDef) -> Vector2i` (or `Vector2i(-1, -1)`): every cell of that zone as an anchor, rules as in "Lot". Upgrade ties after distance go to the lowest anchor index.
+*   `find_lot(zone: ZoneDef) -> Vector2i` (or `Vector2i(-1, -1)`): use confirmed frontage plots for homes and zoned cells for farmland and storage, following the lot rules. Upgrade ties after distance go to the lowest anchor index.
 *   `BalanceDef` adds `hours_per_day` 24, `grow_interval_hours` 1.0, `growth_per_day` 4, `upgrades_per_day` 2, `grow_zombie_clearance` 3 (tiles), `grower_reserve` (empty), `daily_income` (40 wood, 15 scrap; temporary, removed in M2), `zone_overlay_alpha` 0.25, `zone_overlay_alpha_active` 0.45, `debug_arrow_radius` 40.
 
 ##### B7. `scenes/world/world.tscn`, `scripts/world/world.gd` (Modify)
@@ -766,7 +768,7 @@ Level 1 health equals the M1 values, so M1 balance does not change.
 | `test_building.gd` (modify, B) | uses `level_def(1).max_health` instead of `max_health` |
 | `test_building_upgrade.gd` (create, B) | upgrade spends, raises the level, keeps the health fraction (50/100 hp becomes 90/180), keeps cells; blocked with no change when poor, at max level, before `min_day`, or at night; blocker texts as in B3 |
 | `test_zone_map.gd` (create, B) | painting a rect over ground and water zones only the ground cells and returns that count; cells under a building get zoned; painting 0 clears cells under a building too; a rect past the map edge is clamped; `changed` fires once per call |
-| `test_grower.gd` (create, B) | `find_lot` picks the valid anchor nearest the Command Post; no lot when the footprint crosses a zone edge or water, touches another building's ring, or has a zombie within the clearance; `grow_step` spends and spawns a level 1 house (DONE), returns WAIT when too poor or below the reserve, SKIP with no lot or after `growth_per_day`; a WAIT keeps the turn, a SKIP moves it in the same step; `tick` does nothing at night or when paused; `upgrade_step` picks the nearest upgradeable building and stops after `upgrades_per_day`; pacing: with only `daily_income` and all three zones painted, each zone has a building by day 3 and a level 3 house exists by day 5; two runs from the same state give the same result |
+| `test_grower.gd` (create, B) | `find_lot` picks the valid anchor nearest the Command Post; no lot when the footprint crosses a zone edge or water, touches another building's ring, or has a zombie within the clearance; `grow_step` spends and spawns a level 1 house (DONE), returns WAIT when too poor or below the reserve, SKIP with no lot or after `growth_per_day`; a WAIT keeps the turn, a SKIP moves it in the same step; `tick` does nothing at night or when paused; `upgrade_step` picks the nearest upgradeable building and stops after `upgrades_per_day`; pacing: with only `daily_income`, roadside home plots and both painted zones, each zone has a building by day 3 and a level 3 house exists by day 5; two runs from the same state give the same result |
 | `test_world_income.gd` (create, B) | `daily_income` is paid once per `day_started`, not at a new game |
 | `test_build_tool.gd` (modify, B) | `can_place(def, cell, false)` ignores cost; a zone drag from (5,5) to (7,6) paints 6 cells; with the camera at 30 degrees pitch, a ray through a 6.5 m brick house roof selects that house, not the cell behind it; clicking empty ground clears the selection |
 
@@ -775,7 +777,7 @@ Level 1 health equals the M1 values, so M1 balance does not change.
 *   CI as before (lint, format, import, tests, main scene 120 frames).
 *   Before PR A: the owner reports the 3D test scene's fps on the ARM laptop. 30 or more with 500 zombies at some setting = go; otherwise stop and revisit Alternative C2.
 *   After PR A and after PR C: exported ARM64 build, owner reads fps with 500 zombies (F3 overlay). Below 30: lower settings first, then cut art.
-*   After PR C, by hand: CUJ 1 in 3D; paint a housing zone and watch houses grow and reach level 3 over a few days; rotate and zoom at night; the night readability screenshot (Art direction). Screenshots in the PR.
+*   After PR C, by hand: CUJ 1 in 3D; mark two plots on a curved road and watch homes grow and reach level 3 over a few days; rotate and zoom at night; the night readability screenshot (Art direction). Screenshots in the PR.
 
 --------------------------------------------------------------------------------
 

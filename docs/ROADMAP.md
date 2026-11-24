@@ -45,13 +45,15 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - City-builder camera: pan, rotate, zoom, tilt; mouse picking
 - Zombies drawn in 3D (one MultiMesh), facing where they walk
 - Day/night sun, fog and night lighting
-- SimCity-style zones (housing, farmland, storage): paint zones, buildings grow and upgrade by themselves (3 levels each)
+- Draw a curved street from Station 4 ([#67](https://github.com/J3vb/zombie-city-builder/issues/67)). Preview, cancel and commit the curve, join two ends or make a T-junction. Validate the full road width against terrain and occupied cells.
+- Mark a residential plot on either side of a bend ([#68](https://github.com/J3vb/zombie-city-builder/issues/68)). Face the entrance toward the street, reserve space for the backyard and reject overlapping plots. Allow an empty plot to be removed and explain why an occupied plot prevents road removal.
+- Grow a tent, shack and brick house on the same confirmed plot. Keep farmland and storage as painted zones with automatic growth and upgrades.
 - Selection panel that shows a building's level and what its next upgrade waits for
 - Temporary daily income so upgrades can be tested before M2's production
 - Gritty low-poly art kit: materials, building models per level, zombie mesh, props
 - Updated Windows x86_64 and ARM64 builds
 
-**Done when:** you can paint a housing zone, watch houses grow and reach level 3, and watch a horde attack the town at night in 3D, at 30 fps or more on the owner's laptop.
+**Done when:** you can draw a bend, mark two road-facing plots on it, watch a home reach level 3, and watch a horde attack the town at night in 3D, at 30 fps or more on the owner's laptop.
 
 ## M2: Living town
 
