@@ -4,6 +4,7 @@ extends Resource
 
 enum Placement { DIRECT, HOME_PLOT, ZONE }
 
+@export_range(1.0, 120.0) var build_seconds: float = 20.0
 @export var output_resource: StringName
 @export var shift_yields := PackedInt32Array()
 @export var placement := Placement.DIRECT

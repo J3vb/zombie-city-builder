@@ -1,0 +1,79 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="Wood"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="Metal"]
+
+[sub_resource type="BoxMesh" id="Plank"]
+material = ExtResource("Wood")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Pipe"]
+material = ExtResource("Metal")
+size = Vector3(1, 1, 1)
+
+[node name="ConstructionFrame" type="Node3D"]
+
+[node name="LeftFront" type="MeshInstance3D" parent="."]
+position = Vector3(-0.46, 0.5, 0.46)
+scale = Vector3(0.032, 1.0, 0.032)
+mesh = SubResource("Pipe")
+
+[node name="LeftBack" type="MeshInstance3D" parent="."]
+position = Vector3(-0.46, 0.5, -0.46)
+scale = Vector3(0.032, 1.0, 0.032)
+mesh = SubResource("Pipe")
+
+[node name="LeftRail" type="MeshInstance3D" parent="."]
+position = Vector3(-0.46, 0.82, 0)
+scale = Vector3(0.028, 0.065, 0.94)
+mesh = SubResource("Pipe")
+
+[node name="LeftFoot" type="MeshInstance3D" parent="."]
+position = Vector3(-0.46, 0.08, 0)
+scale = Vector3(0.06, 0.12, 0.97)
+mesh = SubResource("Plank")
+
+[node name="RightFront" type="MeshInstance3D" parent="."]
+position = Vector3(0.46, 0.5, 0.46)
+scale = Vector3(0.032, 1.0, 0.032)
+mesh = SubResource("Pipe")
+
+[node name="RightBack" type="MeshInstance3D" parent="."]
+position = Vector3(0.46, 0.5, -0.46)
+scale = Vector3(0.032, 1.0, 0.032)
+mesh = SubResource("Pipe")
+
+[node name="RightRail" type="MeshInstance3D" parent="."]
+position = Vector3(0.46, 0.82, 0)
+scale = Vector3(0.028, 0.065, 0.94)
+mesh = SubResource("Pipe")
+
+[node name="RightFoot" type="MeshInstance3D" parent="."]
+position = Vector3(0.46, 0.08, 0)
+scale = Vector3(0.06, 0.12, 0.97)
+mesh = SubResource("Plank")
+
+[node name="FrontRail" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.75, 0.46)
+scale = Vector3(0.95, 0.11, 0.035)
+mesh = SubResource("Plank")
+
+[node name="BackRail" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.75, -0.46)
+scale = Vector3(0.95, 0.11, 0.035)
+mesh = SubResource("Plank")
+
+[node name="Stock1" type="MeshInstance3D" parent="."]
+position = Vector3(0.17, 0.06, -0.240)
+scale = Vector3(0.46, 0.11, 0.065)
+mesh = SubResource("Plank")
+
+[node name="Stock2" type="MeshInstance3D" parent="."]
+position = Vector3(0.17, 0.06, -0.155)
+scale = Vector3(0.46, 0.11, 0.065)
+mesh = SubResource("Plank")
+
+[node name="Stock3" type="MeshInstance3D" parent="."]
+position = Vector3(0.17, 0.06, -0.070)
+scale = Vector3(0.46, 0.11, 0.065)
+mesh = SubResource("Plank")

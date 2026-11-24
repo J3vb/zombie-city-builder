@@ -7,6 +7,7 @@ var _feedback := ""
 
 
 func _ready() -> void:
+	%CancelProject.pressed.connect(_cancel_project)
 	%Assignment.about_to_popup.connect(_populate_workers)
 	%Assignment.get_popup().id_pressed.connect(_choose_worker)
 
@@ -28,6 +29,22 @@ func refresh(building: Building, grower: TownGrower) -> void:
 	visible = is_instance_valid(building) and not building.is_queued_for_deletion()
 	if not visible:
 		return
+	var building_work := building.target_level != 0
+	%CancelProject.visible = building_work
+	%Project.visible = building_work
+	if building_work:
+		var refund := building.unused_materials()
+		var recovered := "none" if refund.is_empty() else BuildingDef.format_cost(refund)
+		%Project.text = (
+			"%s · %d%%\n%s"
+			% [
+				building.project_name(),
+				floori(building.work_done * 100 / building.required_work()),
+				grower.world.construction.status(building)
+			]
+		)
+		%CancelProject.text = "Cancel build" if building.target_level == 1 else "Cancel upgrade"
+		%CancelProject.tooltip_text = "Returns unused materials: %s" % recovered
 	var levels := building.def.levels
 	var title := building.def.display_name
 	var level_text := "Level %d of %d" % [building.level, maxi(1, levels.size())]
@@ -36,20 +53,37 @@ func refresh(building: Building, grower: TownGrower) -> void:
 		level_text = "%s   ·   %s" % [building.def.display_name, level_text]
 	elif building == grower.world.command_post:
 		level_text = "Station 4   ·   " + level_text
-	%Category.text = level_text
+	%Category.text = "Construction site" if building.target_level == 1 else level_text
 	%Title.text = title
 	%Health.text = "Health   %d / %d" % [building.health, building.max_health()]
 	%HealthBar.max_value = building.max_health()
 	%HealthBar.value = building.health
 	var next := building.next_level()
-	%Next.visible = next != null
-	%Cost.visible = next != null
-	%Status.visible = not levels.is_empty()
+	%Next.visible = next != null and not building_work
+	%Cost.visible = next != null and not building_work
+	%Status.visible = not levels.is_empty() and not building_work
 	if next != null:
 		%Next.text = "Next upgrade   %s" % next.title
 		%Cost.text = "From day %d   ·   %s" % [next.min_day, BuildingDef.format_cost(next.cost)]
 	%Status.text = "Fully upgraded" if next == null else grower.upgrade_status(building)
-	_refresh_staff(building)
+	if building.target_level == 1:
+		%Staff.hide()
+		%Assignment.hide()
+	elif building == grower.world.command_post:
+		var crew := grower.world.construction
+		%Assignment.hide()
+		%Staff.show()
+		var task := crew.target.project_name() if crew.target != null else "Station 4"
+		%Staff.text = (
+			"Builder   %s\n%s · %s" % [crew.builder.display_name, crew.builder.activity(), task]
+		)
+	else:
+		_refresh_staff(building)
+
+
+func _cancel_project() -> void:
+	if is_instance_valid(_site):
+		_site.cancel_construction()
 
 
 func _refresh_staff(building: Building) -> void:

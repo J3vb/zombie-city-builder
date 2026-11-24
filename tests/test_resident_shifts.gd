@@ -48,8 +48,8 @@ func test_shift_counts_only_time_on_site_and_dawn_settles_it_once() -> void:
 	garden.demolish()
 	GameClock.day = 2
 	EventBus.day_started.emit(2)
-	assert_eq(Economy.get_amount(&"food"), food + 4 - 1, "earned food feeds the resident")
-	assert_eq(Economy.get_amount(&"water"), water - 1)
+	assert_eq(Economy.get_amount(&"food"), food + 4 - 2, "earned food feeds the resident")
+	assert_eq(Economy.get_amount(&"water"), water - 2)
 	assert_eq(w.jobs.last_output.get(&"food"), 4)
 	var settled := Economy.stock.duplicate()
 	EventBus.day_started.emit(2)
@@ -116,7 +116,7 @@ func test_blocked_site_becomes_reachable_and_dusk_sends_worker_home() -> void:
 	Economy.reset(empty)
 	EventBus.day_started.emit(2)
 	assert_true(person.hungry and person.thirsty)
-	assert_eq(w.jobs.last_shortage.get(&"water"), 1)
+	assert_eq(w.jobs.last_shortage.get(&"water"), 2)
 	fx.destroy()
 
 
@@ -128,7 +128,9 @@ func test_farm_level_yield_home_loss_and_rehousing() -> void:
 	var site := w.spawn_building(FARM, Vector2i(54, 70))
 	GameClock.day = 4
 	assert_true(site.upgrade())
+	finish_construction(w)
 	assert_true(site.upgrade())
+	finish_construction(w)
 	assert_eq(site.shift_output(), 12)
 	_move(w, 32)
 	var id := person.resident_id
@@ -164,15 +166,17 @@ func test_five_consecutive_dawns_and_restart_isolate_the_workforce() -> void:
 			GameClock._advance(0.5)
 		assert_eq(w.jobs.last_output.get(&"food"), 4)
 		assert_eq(w.jobs.last_output.get(&"scrap"), 4)
-		assert_eq(w.jobs.last_consumed.get(&"food"), 2)
+		assert_eq(w.jobs.last_consumed.get(&"food"), 3)
 		assert_true(w.jobs.last_shortage.is_empty())
-	assert_eq(Economy.get_amount(&"food"), starting_food + 10)
-	assert_eq(Economy.get_amount(&"water"), starting_water - 10)
+	assert_eq(Economy.get_amount(&"food"), starting_food + 5)
+	assert_eq(Economy.get_amount(&"water"), starting_water - 15)
 	main.new_game()
 	assert_eq(main.world.jobs.residents.size(), 0)
 	assert_true(main.world.jobs.pending.is_empty())
 	var food := Economy.get_amount(&"food")
 	GameClock.day = 2
 	EventBus.day_started.emit(2)
-	assert_eq(Economy.get_amount(&"food"), food, "old workforce cannot eat or pay after restart")
+	assert_eq(
+		Economy.get_amount(&"food"), food - 1, "only the new Station 4 builder eats after restart"
+	)
 	main.free()

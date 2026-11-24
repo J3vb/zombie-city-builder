@@ -20,6 +20,7 @@ func test_upgrade_explains_day_light_and_all_shortages_before_spending() -> void
 	var cells := store.cells.duplicate()
 	var before := Economy.get_amount(&"wood")
 	assert_true(store.upgrade(), "day 2 shed")
+	finish_construction(w)
 	assert_eq(store.health, 100)
 	assert_eq(Economy.get_amount(&"wood"), before - 30)
 	GameClock.day = 4
@@ -31,6 +32,7 @@ func test_upgrade_explains_day_light_and_all_shortages_before_spending() -> void
 	Economy.add(&"wood", 13)
 	Economy.add(&"scrap", 6)
 	assert_true(store.upgrade(), "day 4 warehouse")
+	finish_construction(w)
 	assert_eq(store.health, 175)
 	assert_eq(store.cells, cells)
 	assert_eq(store.upgrade_blocker(), "Max level")
@@ -48,17 +50,20 @@ func test_mixed_upgrades_take_nearest_affordable_and_share_daily_limit() -> void
 	farm.take_damage(40)
 	GameClock.day = 4
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(farm.level, 2, "nearest to Station 4")
 	assert_eq(farm.health, 70)
 	var low: Dictionary[StringName, int] = {&"wood": 30}
 	Economy.reset(low)
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(store.level, 2, "nearest affordable stage when greenhouse lacks scrap")
 	assert_eq(outer.level, 1)
 	Economy.add(&"wood", 100)
 	Economy.add(&"scrap", 100)
 	assert_eq(w.grower.upgrade_status(outer), "Daily limit reached")
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(farm.level, 2, "daily upgrade cap shared by all types")
 	EventBus.day_started.emit(5)
 	w.grower.paused = true
@@ -69,6 +74,7 @@ func test_mixed_upgrades_take_nearest_affordable_and_share_daily_limit() -> void
 	GameClock.set_speed(1)
 	assert_eq(w.grower.upgrade_status(farm), "Waiting for its turn")
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(farm.level, 3)
 	assert_eq(farm.health, 110)
 	assert_eq(farm.def.levels[farm.level - 1].title, "Greenhouse")
@@ -92,7 +98,9 @@ func test_roof_selection_with_a_building_behind_and_all_clear_actions() -> void:
 	var behind := w.spawn_building(STORAGE, Vector2i(35, 32))
 	GameClock.day = 4
 	front.upgrade()
+	finish_construction(w)
 	front.upgrade()
+	finish_construction(w)
 	var center := w.to_view(front.sim_center())
 	w.camera.rotation.y = 0
 	w.camera.position = center

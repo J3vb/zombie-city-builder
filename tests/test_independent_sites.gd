@@ -59,10 +59,12 @@ func test_ground_behind_home_can_be_owned_and_removed_independently() -> void:
 	var garden := w.try_place_building(GARDEN, garden_cell)
 	assert_true(garden != null, "can use former backyard land")
 	w.grower.step()
+	finish_construction(w)
 	var home := plot.home
 	assert_true(is_instance_valid(home), "neighboring garden allows home growth")
 	GameClock.day = 2
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(home.level, 2)
 	assert_eq(w.grid.building_at(garden_cell), garden, "home upgrade preserves garden")
 	home.demolish()
@@ -104,7 +106,9 @@ func test_toolbar_switches_between_sites_farm_zoning_and_inspection() -> void:
 	w.build_tool._unhandled_input(click)
 	var site := w.grid.building_at(anchor)
 	assert_eq(site.def, GARDEN)
-	assert_true(not site.get_node("View/Body").visible, "garden displays its own model")
+	assert_eq(site.target_level, 1, "garden starts as a construction site")
+	finish_construction(w)
+	assert_true(not site.get_node("View/Body").visible, "finished garden displays its own model")
 	workshop_button.pressed.emit()
 	hud._process(0)
 	assert_eq(w.build_tool.selected, WORKSHOP)

@@ -36,6 +36,7 @@ model_path = "res://scenes/models/farm_3.tscn"
 [resource]
 script = ExtResource("1_def")
 id = &"farm"
+build_seconds = 24.0
 output_resource = &"food"
 shift_yields = PackedInt32Array(6, 9, 12)
 placement = 2

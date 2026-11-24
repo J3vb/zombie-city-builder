@@ -63,7 +63,7 @@ Goal: citizens make the economy run.
 - Citizens with needs (food, water, sleep), pathfinding with AStarGrid2D. Named residents now walk from a road-facing home to a reachable worksite. Food and water rations and dusk shelter are playable. Sleep and further needs remain.
 - Zombies chase citizens within 4 tiles
 - Playable now: automatic and manual worker assignment for gardens, farms and scrap workshops. Each person works at most one completed shift per day.
-- Builders build construction sites over time
+- Playable now: the Station 4 builder travels to paid construction sites, completes buildings and upgrades over time, and returns at dawn to resume unfinished work. Inspect or cancel an order ([#17](https://github.com/J3vb/zombie-city-builder/issues/17)).
 - Production buildings: farm, well, lumber yard, scrap yard
 - Playable now: completed shifts supply food and scrap at dawn. The report shows food and water used and any shortage. Next add staffed water and lumber, storage limits and consequences for prolonged shortages.
 - Citizens flee to homes at night
