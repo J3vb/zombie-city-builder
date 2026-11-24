@@ -27,7 +27,7 @@ func _ready() -> void:
 	gradient.set_color(0, Color.WHITE)
 	gradient.set_color(1, Color(1, 1, 1, 0))
 	tex.gradient = gradient
-	var centre := world.command_post.position
+	var centre := world.command_post.sim_center()
 	for i in LIGHTS:
 		var light := PointLight2D.new()
 		light.texture = tex

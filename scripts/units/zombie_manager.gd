@@ -1,13 +1,19 @@
 class_name ZombieManager
-extends Node2D
-## All zombies as rows in packed arrays, drawn in one MultiMesh.
+extends Node
+## Simulates all zombies in packed arrays and publishes one batch for rendering.
 ## A row index is only valid inside the current frame: deaths are removed at
 ## the end of the frame by swapping the last row into the gap.
 
-enum State { HORDE, ATTACK }
+signal crowd_configured(capacity: int, world_size: Vector2)
+signal crowd_updated(
+	positions: PackedVector2Array,
+	types: PackedByteArray,
+	states: PackedByteArray,
+	defs: Array[ZombieDef],
+	count: int
+)
 
-const FLOATS_PER_INSTANCE := 12
-const ATTACK_TINT := Color(1.0, 0.55, 0.45)
+enum State { HORDE, ATTACK }
 
 var world: World
 var last_update_ms: float = 0.0
@@ -23,11 +29,8 @@ var _cooldown := PackedFloat32Array()
 var _dying := PackedInt32Array()
 var _hash := SpatialHash.new()
 var _near := PackedInt32Array()
-var _buffer := PackedFloat32Array()
 var _frame: int = 0
 var _tile: float = 32.0
-
-@onready var _mesh_instance: MultiMeshInstance2D = $Mesh
 
 
 func setup(owner_world: World) -> void:
@@ -39,20 +42,8 @@ func setup(owner_world: World) -> void:
 	_type.resize(cap)
 	_state.resize(cap)
 	_cooldown.resize(cap)
-	_buffer.resize(cap * FLOATS_PER_INSTANCE)
 	_hash.setup(world.grid.world_size(), _tile * 2.0)
-	var mm := MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_2D
-	mm.use_colors = true
-	var quad := QuadMesh.new()
-	quad.size = Vector2(1, 1)
-	mm.mesh = quad
-	mm.instance_count = cap
-	mm.visible_instance_count = 0
-	# The buffer is written directly, so Godot can't work out the bounds itself.
-	var world_size := world.grid.world_size()
-	mm.custom_aabb = AABB(Vector3(-64, -64, -1), Vector3(world_size.x + 128, world_size.y + 128, 2))
-	_mesh_instance.multimesh = mm
+	crowd_configured.emit(cap, world.grid.world_size())
 
 
 func count() -> int:
@@ -103,7 +94,7 @@ func _process(delta: float) -> void:
 	if dt > 0.0:
 		_step_all(dt)
 	_remove_dead()
-	_upload()
+	crowd_updated.emit(_pos, _type, _state, _defs, _count)
 	last_update_ms = (Time.get_ticks_usec() - start) / 1000.0
 
 
@@ -111,8 +102,8 @@ func _step_all(dt: float) -> void:
 	var field := world.flow_field
 	var grid := world.grid
 	var target := world.grid.world_size() / 2.0
-	if is_instance_valid(world.command_post):
-		target = world.command_post.global_position
+	if is_instance_valid(world.command_post) and not world.command_post.is_queued_for_deletion():
+		target = world.command_post.sim_center()
 	var sep_r := _balance.separation_radius
 	var sep_k := _balance.separation_strength
 	for i in _count:
@@ -126,7 +117,7 @@ func _step_all(dt: float) -> void:
 			dir = (target - p).normalized()
 		var ahead := p + dir * _tile * 0.5
 		var ahead_cell := Vector2i(floori(ahead.x / _tile), floori(ahead.y / _tile))
-		var building := grid.building_at(ahead_cell) as Building
+		var building := grid.building_at(ahead_cell)
 		if building:
 			_state[i] = State.ATTACK
 			_cooldown[i] -= dt
@@ -194,26 +185,3 @@ func _remove_dead() -> void:
 		_cooldown[i] = _cooldown[last]
 		_count -= 1
 	_dying.clear()
-
-
-func _upload() -> void:
-	var mm := _mesh_instance.multimesh
-	for i in _count:
-		var def := _defs[_type[i]]
-		var size := def.radius * 2.0
-		var c := def.color * ATTACK_TINT if _state[i] == State.ATTACK else def.color
-		var o := i * FLOATS_PER_INSTANCE
-		_buffer[o] = size
-		_buffer[o + 1] = 0.0
-		_buffer[o + 2] = 0.0
-		_buffer[o + 3] = _pos[i].x
-		_buffer[o + 4] = 0.0
-		_buffer[o + 5] = size
-		_buffer[o + 6] = 0.0
-		_buffer[o + 7] = _pos[i].y
-		_buffer[o + 8] = c.r
-		_buffer[o + 9] = c.g
-		_buffer[o + 10] = c.b
-		_buffer[o + 11] = 1.0
-	RenderingServer.multimesh_set_buffer(mm.get_rid(), _buffer)
-	mm.visible_instance_count = _count

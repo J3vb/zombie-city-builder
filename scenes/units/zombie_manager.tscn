@@ -1,9 +1,14 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/units/zombie_manager.gd" id="1_zm"]
+[ext_resource type="Script" path="res://scripts/units/zombie_view_2d.gd" id="2_view"]
 
 [node name="ZombieManager" type="Node2D"]
 z_index = 5
 script = ExtResource("1_zm")
 
 [node name="Mesh" type="MultiMeshInstance2D" parent="."]
+script = ExtResource("2_view")
+
+[connection signal="crowd_configured" from="." to="Mesh" method="setup"]
+[connection signal="crowd_updated" from="." to="Mesh" method="present"]

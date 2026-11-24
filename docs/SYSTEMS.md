@@ -47,7 +47,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 - **What:** the world is a grid of tiles. Each tile has terrain and maybe a building.
 - **Data:** `StarterMap.generate(map_def)` returns one terrain ID per cell. `Grid` holds those IDs, their travel costs from `data/terrain/terrain_set.tres`, and the occupancy overlay used by building placement and horde routing.
 - **How:** the starter map has 128 × 128 cells of 32 simulation units. MapDef supplies the dimensions, tile size and terrain rectangles. Borders take precedence over water, then rubble, then ground. The 2D world paints the tile atlas from Grid's terrain IDs. The atlas X coordinate matches the terrain ID.
-  Grid maps a cell to its center and maps a simulation position back with floor division. Occupying or releasing a cell changes its current cost while retaining the underlying terrain.
+  Grid maps a cell to its center and maps a simulation position back with floor division. Grid accepts a whole building footprint at once. An overlap or blocked cell rejects the claim. Releasing a footprint restores the terrain cost only on cells owned by that building.
 - **Depends on:** nothing.
 - **Milestone:** M1.
 
@@ -60,9 +60,10 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
   - Walls use drag-to-draw (click start, drag, release) along a straight line.
   - On place: resources are reserved, a construction site appears, builders walk there and add work.
   - When done, the site swaps to the real building and the grid updates. Pathfinding gets a "dirty" signal.
-  - Demolish refunds 50 percent.
+  - The playable prototype uses `World.try_place_building()` for paid placement. It checks the footprint, nearby Walkers and stock. Map setup uses `World.spawn_building()` for unpaid placement. Both claim cells through Grid.
+  - Demolition refunds 50 percent once. Enemy damage that destroys a building releases its cells without a refund. Read `Building.sim_bounds()` and `sim_center()` for targeting and placement. The building scene has a separate child for drawing and the damage bar.
 - **Depends on:** Grid, Resources.
-- **Zones and upgrades (M1.5):** the player paints zones; the `Grower` grows the zone's building on free lots (nearest the Command Post first) and upgrades buildings through their `levels` (`BuildingLevelDef`: model, health, upgrade cost, unlock day). Same footprint at every level. Instant in M1.5, done by builders from M2. Walls, gates and towers stay hand-placed.
+- **Zones and upgrades (M1.5):** the player draws curved streets, marks road-facing residential plots, and paints farmland and storage zones. The `Grower` grows homes on confirmed plots and farm or storage buildings in their zones and upgrades buildings through their `levels` (`BuildingLevelDef`: model, health, upgrade cost, unlock day). Same footprint at every level. Instant in M1.5, done by builders from M2. Walls, gates and towers stay hand-placed.
 - **Milestone:** M1 (instant build), M1.5 (3D, upgrades), M2 (builders).
 
 ## 4. Resources and economy
@@ -120,7 +121,7 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 ## 8. Zombie AI
 
 - **What:** hundreds of zombies, cheap per unit.
-- **Data:** one `ZombieManager` node holds arrays of position, velocity, health, type, state. Drawing uses `MultiMeshInstance2D`.
+- **Data:** one `ZombieManager` node holds arrays of position, velocity, health, type, state. The manager publishes the living rows in one batch after removing deaths. A scene child draws the batch with `MultiMeshInstance2D`.
 - **How:**
   - Zombies are **not** individual nodes. They are rows in arrays. This is the key performance choice.
   - States: `Horde` (follow flow field), `Attack` (hit a blocked tile), `Chase` (citizen nearby, M2), `Investigate` (heard noise, M3), `Roam` (wander, M3).

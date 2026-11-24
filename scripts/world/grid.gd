@@ -12,7 +12,7 @@ var tile_size: int
 var terrain_types: PackedByteArray
 var base_cost: PackedInt32Array
 var cost: PackedInt32Array
-var occupant: Dictionary[Vector2i, Node2D] = {}
+var occupant: Dictionary[Vector2i, Building] = {}
 
 
 func setup(map: MapDef, types: PackedByteArray, terrain: TerrainSet) -> void:
@@ -45,21 +45,30 @@ func is_free(cells: Array[Vector2i]) -> bool:
 	return true
 
 
-func occupy(cells: Array[Vector2i], building: Node2D) -> void:
+func occupy(cells: Array[Vector2i], building: Building) -> bool:
+	if building == null or cells.is_empty() or not is_free(cells):
+		return false
 	for cell in cells:
 		occupant[cell] = building
 		cost[index(cell)] = BLOCKED
 	changed.emit()
+	return true
 
 
-func release(cells: Array[Vector2i]) -> void:
+func release(cells: Array[Vector2i], owner_building: Building) -> void:
+	if owner_building == null:
+		return
+	var released := false
 	for cell in cells:
-		occupant.erase(cell)
-		cost[index(cell)] = base_cost[index(cell)]
-	changed.emit()
+		if occupant.get(cell) == owner_building:
+			occupant.erase(cell)
+			cost[index(cell)] = base_cost[index(cell)]
+			released = true
+	if released:
+		changed.emit()
 
 
-func building_at(cell: Vector2i) -> Node2D:
+func building_at(cell: Vector2i) -> Building:
 	return occupant.get(cell)
 
 

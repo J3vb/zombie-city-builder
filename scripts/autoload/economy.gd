@@ -37,5 +37,7 @@ func spend(cost: Dictionary[StringName, int]) -> bool:
 	if not can_afford(cost):
 		return false
 	for id: StringName in cost:
-		add(id, -cost[id])
+		stock[id] = get_amount(id) - cost[id]
+	for id: StringName in cost:
+		EventBus.resource_changed.emit(id, stock[id])
 	return true

@@ -1,6 +1,6 @@
 class_name BuildTool
 extends Node2D
-## Places buildings: ghost preview, checks, spending.
+## Shows the placement preview and submits the selected building to World.
 
 const VALID := Color(0.3, 0.9, 0.4, 0.45)
 const INVALID := Color(0.95, 0.2, 0.2, 0.45)
@@ -10,7 +10,6 @@ var selected: BuildingDef
 var world: World
 
 var _hover_cell := Vector2i(-1, -1)
-var _query := PackedInt32Array()
 
 
 func select(def: BuildingDef) -> void:
@@ -24,30 +23,14 @@ func clear() -> void:
 
 
 func can_place(def: BuildingDef, cell: Vector2i) -> bool:
-	var cells := Grid.cells_of(cell, def.size)
-	if not world.grid.is_free(cells):
-		return false
-	if _zombie_in(cells):
-		return false
-	return Economy.can_afford(def.cost)
+	return world.can_place_building(def, cell)
 
 
 func place(cell: Vector2i) -> bool:
-	if selected == null or not can_place(selected, cell):
+	if selected == null or world.try_place_building(selected, cell) == null:
 		return false
-	Economy.spend(selected.cost)
-	world.spawn_building(selected, cell)
 	queue_redraw()
 	return true
-
-
-func _zombie_in(cells: Array[Vector2i]) -> bool:
-	var tile := world.tile_size()
-	for c in cells:
-		var centre := world.grid.cell_to_world(c)
-		if world.zombies.query(centre, tile.x * 0.71, _query) > 0:
-			return true
-	return false
 
 
 func _process(_delta: float) -> void:
