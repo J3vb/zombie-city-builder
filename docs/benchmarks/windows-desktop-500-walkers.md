@@ -1,0 +1,27 @@
+# Windows desktop benchmark with 500 Walkers
+
+Measured on 24 November 2026 at commit `963821b8c3ddd4ebeef12659b0ebca95467d12f2`. The Windows desktop ran the 3D crowd scene at 607 FPS at night and the playable 2D town at 258 FPS. The full 128 × 128 flow-field rebuild took 16.91–17.40 ms across three runs, above the 8 ms budget tracked in [#11](https://github.com/J3vb/zombie-city-builder/issues/11).
+
+## Machine and settings
+
+- Ryzen 9 7950X3D and GeForce RTX 4080 SUPER, Windows x86_64.
+- Godot 4.7.2 stable, running the project directly with the Compatibility renderer on ANGLE/D3D11. The project CI version is Godot 4.5.1.
+- 1920 × 1080 render resolution, VSync disabled, uncapped frame rate, default camera pose.
+- Each case had three seconds of warm-up followed by one 15-second sample. Average FPS is rendered frames divided by wall-clock time. Frame p95 is the 95th percentile of intervals between successive frame-post-draw signals. Walker update times come from the existing in-game timers and include submitting the instance buffer.
+
+| Scene | Average FPS | Frame p95 | Walker update median | Walker update p95 |
+| --- | ---: | ---: | ---: | ---: |
+| 3D benchmark, day, sun shadows on | 637 | 1.78 ms | 0.212 ms | 0.224 ms |
+| 3D benchmark, night, shadows on and 30 lights enabled | 607 | 1.86 ms | 0.213 ms | 0.226 ms |
+| Playable 2D town, daytime, 500 active Walkers | 258 | 4.09 ms | 1.225 ms | 1.292 ms |
+
+The 3D test uses the benchmark's scripted crowd movement. The playable town also runs horde movement, spatial queries and building interaction. These are distinct workloads. The 3D gameplay and exported ARM64 laptop checks remain open.
+
+## Repeating the checks
+
+1. Import the project with `godot --headless --import`.
+2. Start `godot --path . --resolution 1920x1080 --disable-vsync res://scenes/tests/bench_3d.tscn`. Select 500 with **1**. Use a fresh scene for each sample. Leave the camera still and press **N** once for the night case.
+3. For the playable case launch `godot --path . --resolution 1920x1080 --disable-vsync`. Use a fresh town, leave the clock at 1×, and queue 500 Walkers. The measured run set the horde RNG seed to 1 and queued 500 in one call. For a manual spot check, use the debug spawn control five times and confirm 500 on the F3 overlay. Use the overlay for live readings or sample the timings above for a timed comparison.
+4. Run `godot --headless --script res://tests/bench_flow_field.gd` three times. Each invocation reports the mean of ten rebuilds after one warm-up on a synthetic 128 × 128 cost grid. The three means here were 17.40, 16.95 and 16.91 ms.
+
+The playable world already rebuilds a dirty flow field on a worker after startup. The rebuild result measures work duration. To assess its effect on play, capture frame times while placing buildings or changing a gate once gates are implemented.
