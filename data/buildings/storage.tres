@@ -8,6 +8,7 @@
 [sub_resource type="Resource" id="Level1"]
 script = ExtResource("3_level")
 title = "Tarp pile"
+storage_capacity = 40
 max_health = 120
 height = 2.0
 color = Color(0.35, 0.42, 0.39, 1)
@@ -16,6 +17,7 @@ model_path = "res://scenes/models/storage_1.tscn"
 [sub_resource type="Resource" id="Level2"]
 script = ExtResource("3_level")
 title = "Shed"
+storage_capacity = 80
 min_day = 2
 cost = Dictionary[StringName, int]({&"wood": 30})
 max_health = 200
@@ -26,6 +28,7 @@ model_path = "res://scenes/models/storage_2.tscn"
 [sub_resource type="Resource" id="Level3"]
 script = ExtResource("3_level")
 title = "Warehouse"
+storage_capacity = 140
 min_day = 4
 cost = Dictionary[StringName, int]({&"wood": 30, &"scrap": 40})
 max_health = 350

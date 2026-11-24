@@ -56,6 +56,12 @@ func shift_output() -> int:
 	)
 
 
+func storage_capacity() -> int:
+	if target_level == 1 or def.levels.is_empty():
+		return 0
+	return def.levels[level - 1].storage_capacity
+
+
 func max_health() -> int:
 	return def.levels[level - 1].max_health if not def.levels.is_empty() else def.max_health
 
@@ -89,8 +95,7 @@ func upgrade() -> bool:
 	_upgrading = true
 	var paid := Economy.spend(next.cost)
 	if paid and is_queued_for_deletion():
-		for id: StringName in next.cost:
-			Economy.add(id, next.cost[id])
+		Economy.refund(next.cost)
 		paid = false
 	if paid:
 		begin_construction(level + 1, next.cost)
@@ -168,8 +173,7 @@ func cancel_construction() -> void:
 		return
 	var refund := unused_materials()
 	_clear_project()
-	for id in refund:
-		Economy.add(id, refund[id])
+	Economy.refund(refund)
 
 
 func take_damage(amount: int) -> void:
@@ -196,8 +200,7 @@ func _remove(demolished: bool) -> void:
 		if target_level != 1:
 			for id in def.cost:
 				refund[id] = refund.get(id, 0) + floori(def.cost[id] * _balance.demolish_refund)
-		for id in refund:
-			Economy.add(id, refund[id])
+		Economy.refund(refund)
 	else:
 		_on_destroyed()
 	EventBus.building_destroyed.emit(self)

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BuildCatalog" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="BuildCatalog" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/building_def.gd" id="1_1a2l8"]
 [ext_resource type="Resource" path="res://data/buildings/house.tres" id="2_iix55"]
@@ -9,6 +9,9 @@
 [ext_resource type="Resource" path="res://data/buildings/garden.tres" id="6_garden"]
 [ext_resource type="Resource" path="res://data/buildings/scrap_workshop.tres" id="7_workshop"]
 
+[ext_resource type="Resource" path="res://data/buildings/well.tres" id="8_well"]
+[ext_resource type="Resource" path="res://data/buildings/lumber_yard.tres" id="9_lumber"]
+
 [resource]
 script = ExtResource("5_d7rva")
-buildings = Array[ExtResource("1_1a2l8")]([ExtResource("2_iix55"), ExtResource("6_garden"), ExtResource("3_bvotc"), ExtResource("7_workshop"), ExtResource("4_q3q18")])
+buildings = Array[ExtResource("1_1a2l8")]([ExtResource("2_iix55"), ExtResource("6_garden"), ExtResource("3_bvotc"), ExtResource("8_well"), ExtResource("9_lumber"), ExtResource("7_workshop"), ExtResource("4_q3q18")])

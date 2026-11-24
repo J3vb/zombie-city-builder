@@ -47,6 +47,8 @@ func _ready() -> void:
 	road_tool.setup(self)
 	plots.setup(self)
 	grower.setup(self)
+	_refresh_storage()
+	EventBus.building_destroyed.connect(_storage_removed)
 	jobs.setup(self)
 	construction.setup(self)
 	plot_tool.setup(self)
@@ -59,6 +61,8 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	if EventBus.building_destroyed.is_connected(_storage_removed):
+		EventBus.building_destroyed.disconnect(_storage_removed)
 	if _task_id != -1:
 		WorkerThreadPool.wait_for_task_completion(_task_id)
 		_task_id = -1
@@ -111,8 +115,7 @@ func try_place_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = n
 	var building := _place(def, cell, site, true)
 	if building == null:
 		# A resource listener can claim the cells before the purchase completes.
-		for id: StringName in def.cost:
-			Economy.add(id, def.cost[id])
+		Economy.refund(def.cost)
 	return building
 
 
@@ -143,11 +146,27 @@ func _place(def: BuildingDef, cell: Vector2i, site: FrontagePlot, paid: bool) ->
 		site.home = building
 	buildings.add_child(building)
 	building.construction_changed.connect(construction.site_changed.bind(building))
+	if not def.levels.is_empty() and def.levels[0].storage_capacity > 0:
+		building.construction_changed.connect(_refresh_storage)
+		_refresh_storage()
 	if paid:
 		construction.site_changed(building)
 	else:
 		EventBus.building_placed.emit(building)
 	return building
+
+
+func _storage_removed(building: Building) -> void:
+	if building.get_parent() == buildings and building.storage_capacity() > 0:
+		_refresh_storage()
+
+
+func _refresh_storage() -> void:
+	var limit := plots.rules.station_capacity
+	for building: Building in buildings.get_children():
+		if not building.is_queued_for_deletion():
+			limit += building.storage_capacity()
+	Economy.set_capacity(limit)
 
 
 func goal_cells() -> PackedInt32Array:

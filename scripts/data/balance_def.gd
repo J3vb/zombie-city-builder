@@ -45,7 +45,6 @@ extends Resource
 @export var growth_hours: float = 1.0
 @export var growth_per_day: int = 4
 @export var upgrades_per_day: int = 2
-@export var daily_income: Dictionary[StringName, int] = {&"wood": 40, &"scrap": 15}
 
 @export_group("Buildings")
 @export_range(0.0, 1.0) var demolish_refund: float = 0.5
@@ -54,6 +53,7 @@ extends Resource
 @export var debug_spawn_count: int = 100
 
 @export_group("Economy")
+@export var station_capacity: int = 100
 @export var start_resources: Dictionary[StringName, int] = {
 	&"food": 50,
 	&"water": 50,
@@ -68,6 +68,8 @@ extends Resource
 @export var builder_name: String = "Ada"
 @export var resident_limit: int = 100
 @export var resident_speed: float = 40.0
+@export_range(0.0, 1.0) var shortage_pace_loss: float = 0.1
+@export_range(0.01, 1.0) var minimum_work_pace: float = 0.5
 @export var shift_seconds: float = 60.0
 @export var resident_names := PackedStringArray(
 	["Mara", "Elias", "Noor", "Bram", "Lena", "Raf", "Fien", "Ivo", "Nina", "Otis"]

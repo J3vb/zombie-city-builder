@@ -1,7 +1,7 @@
 # Hold the Gates: Technical Design
 
 *   **Author:** J3vb (drafted with Claude)
-*   **Status:** M0 and M1 built. M1.5 (3D view and building upgrades) proposed, reviewed once, see [reviews](reviews/review-report.md) and [3D review](reviews/review-3d-report.md)
+*   **Status:** The 3D town, frontage, building upgrades and staffed economy are playable. The original M1.5 plan below records the temporary income prototype. M2 replaced it with resident production. See [current systems](SYSTEMS.md), [milestones](ROADMAP.md) and the [original 3D review](reviews/review-3d-report.md).
 *   **Date:** 2026-11-21
 
 ## Overview
@@ -204,7 +204,7 @@ The first 3D slice requires curved roads and road-facing residential plots. The 
 *   **Allowed when:** a next level exists, it is not night (`GameClock.is_night()` is false), `GameClock.day >= next.min_day`, and `Economy.can_afford(next.upgrade_cost)`.
 *   **On success:** spend, `level += 1`, keep the same health fraction (`health = roundi(float(health) * new_max / old_max)`), swap the look, emit `EventBus.building_upgraded(building)`. On failure nothing changes.
 *   Upgrades are instant in M1.5. From M2, an upgrade becomes a construction job for builders, and level stats like beds and storage get effects.
-*   **Temporary income:** M1 has no production, so M1.5 adds a flat `daily_income` (`BalanceDef`) paid at each `day_started` (not at a new game; the start stock covers day 1). M2 replaces it with real production.
+*   **Historical M1.5 income:** the grower once granted 40 wood and 15 scrap at dawn. Staffed production now supplies both.
 *   **Upgrading keeps the health fraction**, so it is the only way to heal in M1.5. Intended; repairs by builders come in M3.
 *   **Selecting:** with no tool chosen in the build bar, clicking a building selects it and opens the `InfoPanel` (what it is, its level, and what its next upgrade waits for, including Grower reasons like "Daily limit reached" or "Waiting for its turn"). Clicking empty ground, pressing Esc, choosing a tool, or the building being destroyed clears the selection.
 

@@ -1,0 +1,100 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="Wood"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="Steel"]
+[ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="Stone"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="Paint"]
+
+[sub_resource type="BoxMesh" id="Base"]
+material = ExtResource("Stone")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Beam"]
+material = ExtResource("Wood")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxMesh" id="Roof"]
+material = ExtResource("Paint")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="CylinderMesh" id="Wheel"]
+material = ExtResource("Steel")
+top_radius = 0.52
+bottom_radius = 0.52
+height = 0.08
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="Log"]
+material = ExtResource("Wood")
+top_radius = 0.33
+bottom_radius = 0.33
+height = 4.5
+radial_segments = 12
+
+[node name="LumberYard" type="Node3D"]
+
+[node name="Pad" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.10, 0)
+scale = Vector3(7.45, 0.20, 7.15)
+mesh = SubResource("Base")
+
+[node name="Worktop" type="MeshInstance3D" parent="."]
+position = Vector3(1.38, 1.11, 0.25)
+scale = Vector3(2.45, 0.24, 3.6)
+mesh = SubResource("Beam")
+
+[node name="SawBlade" type="MeshInstance3D" parent="."]
+position = Vector3(1.48, 1.30, 0.15)
+rotation = Vector3(0, 0, 1.57)
+mesh = SubResource("Wheel")
+
+[node name="Awning" type="MeshInstance3D" parent="."]
+position = Vector3(1.2, 2.75, -0.65)
+scale = Vector3(3.6, 0.18, 4.45)
+rotation = Vector3(-0.12, 0, 0)
+mesh = SubResource("Roof")
+
+[node name="WestFront" type="MeshInstance3D" parent="."]
+position = Vector3(-0.3, 1.4, 1.2)
+scale = Vector3(0.18, 2.60, 0.18)
+mesh = SubResource("Beam")
+
+[node name="WestBack" type="MeshInstance3D" parent="."]
+position = Vector3(-0.3, 1.4, -2.65)
+scale = Vector3(0.18, 2.60, 0.18)
+mesh = SubResource("Beam")
+
+[node name="EastFront" type="MeshInstance3D" parent="."]
+position = Vector3(2.7, 1.4, 1.2)
+scale = Vector3(0.18, 2.60, 0.18)
+mesh = SubResource("Beam")
+
+[node name="EastBack" type="MeshInstance3D" parent="."]
+position = Vector3(2.7, 1.4, -2.65)
+scale = Vector3(0.18, 2.60, 0.18)
+mesh = SubResource("Beam")
+
+[node name="Trunk1" type="MeshInstance3D" parent="."]
+position = Vector3(-2.9, 0.54, -0.35)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Log")
+
+[node name="Trunk2" type="MeshInstance3D" parent="."]
+position = Vector3(-2.27, 0.54, -0.35)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Log")
+
+[node name="Trunk3" type="MeshInstance3D" parent="."]
+position = Vector3(-1.64, 0.54, -0.35)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Log")
+
+[node name="Stack1" type="MeshInstance3D" parent="."]
+position = Vector3(-2.59, 1.07, -0.35)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Log")
+
+[node name="Stack2" type="MeshInstance3D" parent="."]
+position = Vector3(-1.96, 1.07, -0.35)
+rotation = Vector3(1.57, 0, 0)
+mesh = SubResource("Log")

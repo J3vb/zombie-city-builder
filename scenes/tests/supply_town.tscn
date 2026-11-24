@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/main/main.tscn" id="Main"]
+[ext_resource type="Script" path="res://scripts/debug/supply_town.gd" id="Supply"]
+
+[node name="SupplyTown" type="Node"]
+script = ExtResource("Supply")
+
+[node name="Main" parent="." instance=ExtResource("Main")]

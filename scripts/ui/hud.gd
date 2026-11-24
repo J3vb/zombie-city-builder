@@ -27,6 +27,7 @@ func _ready() -> void:
 		_resource_labels[id] = label
 		_set_resource(id, Economy.get_amount(id))
 	EventBus.resource_changed.connect(_set_resource)
+	Economy.capacity_changed.connect(_refresh_resources)
 	var names: Array[String] = ["Pause", "1x", "2x", "3x"]
 	for speed in names.size():
 		var button := Button.new()
@@ -56,7 +57,7 @@ func _ready() -> void:
 				)
 		button.toggle_mode = true
 		button.focus_mode = Control.FOCUS_NONE
-		button.custom_minimum_size = Vector2(150, 64)
+		button.custom_minimum_size = Vector2(130, 64)
 		button.pressed.connect(_on_build_pressed.bind(def))
 		_build_box.add_child(button)
 		_build_buttons[def] = button
@@ -106,13 +107,15 @@ func _process(_delta: float) -> void:
 		_displayed_dawn = world.jobs.last_dawn
 		%DawnReport.visible = not world.jobs.last_consumed.is_empty()
 		var report := (
-			"Dawn %d   ·   Produced %s   ·   Used %s"
+			"Dawn %d   ·   Stored %s   ·   Used %s"
 			% [
 				_displayed_dawn,
 				_amounts(world.jobs.last_output),
 				_amounts(world.jobs.last_consumed)
 			]
 		)
+		if not world.jobs.last_overflow.is_empty():
+			report += "   ·   No room for %s" % _amounts(world.jobs.last_overflow)
 		if not world.jobs.last_shortage.is_empty():
 			report += "   ·   Short %s" % _amounts(world.jobs.last_shortage)
 		%DawnReport.text = report
@@ -146,9 +149,14 @@ func _hour() -> int:
 	return int(GameClock.time_of_day * 24.0 + 6.0) % 24
 
 
+func _refresh_resources() -> void:
+	for id in SHOWN_RESOURCES:
+		_set_resource(id, Economy.get_amount(id))
+
+
 func _set_resource(id: StringName, value: int) -> void:
 	if _resource_labels.has(id):
-		_resource_labels[id].text = "%s %d" % [String(id).capitalize(), value]
+		_resource_labels[id].text = "%s %d/%d" % [String(id).capitalize(), value, Economy.capacity]
 
 
 func _on_build_pressed(def: BuildingDef) -> void:

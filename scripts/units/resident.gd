@@ -13,6 +13,7 @@ var cell: Vector2i
 var shift_seconds := 0.0
 var worked_day := 0
 var at_station := false
+var missed_rations := 0
 var hungry := false
 var thirsty := false
 
@@ -79,6 +80,20 @@ func travel(dt: float, speed: float) -> float:
 			state = State.SHELTERED
 			hide()
 	return dt
+
+
+func update_ration(condition_hungry: bool, condition_thirsty: bool) -> void:
+	hungry = condition_hungry
+	thirsty = condition_thirsty
+	if hungry or thirsty:
+		missed_rations += int(hungry) + int(thirsty)
+	else:
+		missed_rations = 0
+
+
+func work_pace() -> float:
+	var rules := _world.plots.rules
+	return maxf(rules.minimum_work_pace, 1.0 - missed_rations * rules.shortage_pace_loss)
 
 
 func activity() -> String:

@@ -59,7 +59,7 @@ Select Street and click control points on the ground. Enter commits the preview,
 
 Each confirmed home plot stores its street ID, attachment point, frontage polygon, oriented house footprint and entrance cell. The preview marks the entrance in gold. Confirming a plot is free. Its reserved cells exclude other construction, while only the house itself blocks walkers. A home faces the street through every upgrade. A disconnected street cannot supply a new plot.
 
-The grower rotates through upgrades, housing, farms and storage during daylight. It skips an unavailable site and saves up on a valid turn that lacks resources. A tent costs 20 wood. From day two, a shack costs another 30 wood and 10 scrap. From day four, brick costs another 40 wood and 30 scrap. Upgrades keep the same footprint and health fraction. The temporary economy adds 40 wood and 15 scrap at dawn. Paint at least a 3 × 3 area for a farm or a 2 × 2 area for storage. Both can grow through three stages.
+The grower rotates through upgrades, housing, farms and storage during daylight. It skips an unavailable site and saves up on a valid turn that lacks resources. A tent costs 20 wood. From day two, a shack costs another 30 wood and 10 scrap. From day four, brick costs another 40 wood and 30 scrap. Upgrades keep the same footprint and health fraction. Expansion uses wood from staffed lumber yards and scrap from staffed workshops. Paint at least a 3 × 3 area for a farm or a 2 × 2 area for storage. Both can grow through three stages.
 
 Select Garden or Scrap workshop and click a clear footprint to order construction. A garden occupies one tile and costs 10 wood. A workshop takes 2 × 2 tiles and costs 20 wood and 10 scrap. Both can be placed before the first home. They have their own health, footprint and demolition refund. During M2 a staffed garden or workshop pays its completed shift at dawn.
 
@@ -91,12 +91,12 @@ The builder picks the first reachable order, walks along the resident routing gr
 ## 4. Resources and economy
 
 - **What:** stockpile of food, water, wood, scrap, fuel, medicine, ammo. Power is a live value, not stored.
-- **Data:** autoload `Economy` with `Dictionary[StringName, int]`. Storage cap from storage buildings.
+- **Data:** autoload `Economy` with `Dictionary[StringName, int]`. Station 4 holds 100 of each resource. Each completed storage building contributes 40, 80 or 140 at tiers one through three. An upgrade replaces its previous contribution. Destroying storage preserves existing stock and blocks further deposits until there is room. Returning paid materials on cancellation or demolition can exceed capacity.
 - **How:**
   - `can_afford(cost)`, `spend(cost)`, `add(id, amount)`. Emits `resource_changed(id, value)`.
-  - Production buildings add on a timer while staffed.
+  - Staffed sites deliver completed shifts at dawn. New deliveries enter only up to the available per-resource capacity. The dawn report lists any discarded overflow.
   - Daily upkeep at `day_started`: each citizen eats 1 food and drinks 1 water.
-  - Shortage effects: no food -> health and morale drop. No water -> faster health drop.
+  - Each missed food or water ration slows that resident’s work by 10 percentage points, down to 50%. Receiving both rations restores full pace. This affects production and construction. Health and morale are future systems.
   - Power: generators give power while they have fuel. Buildings that need power stop when total demand is above supply.
 - **Depends on:** Game clock.
 - **Milestone:** M1 (stockpile), M2 (production, upkeep), M4 (power).
@@ -116,9 +116,9 @@ The builder picks the first reachable order, walks along the resident routing gr
 
 ### Playable first shifts
 
-A home on confirmed frontage houses one named resident. A displaced resident can shelter at Station 4 and takes a vacant bed before a new resident joins. Each garden, farm or scrap workshop offers one job. The world job board assigns the nearest reachable vacancy. The building inspector can transfer a named worker or pause hiring. Grid passability and terrain weights feed a four-direction A* route to a free edge cell. A layout change invalidates the route. Residents leave for shelter after their shift or at dusk.
+A home on confirmed frontage houses one named resident. A displaced resident can shelter at Station 4 and takes a vacant bed before a new resident joins. Each garden, farm, well, lumber yard or scrap workshop offers one job. The world job board assigns the nearest reachable vacancy. The building inspector can transfer a named worker or pause hiring. Grid passability and terrain weights feed a four-direction A* route to a free edge cell. A layout change invalidates the route. Residents leave for shelter after their shift or at dusk.
 
-One shift requires 60 simulated seconds on site. Reassignment, demolition or dawn discards unfinished work. A completed shift survives demolition and pays once the next dawn, before each resident uses one food and one water. A garden produces 4 food, a farm produces 6, 9 or 12 food, and a workshop produces 4 scrap. The HUD reports earned output separately from the temporary 40 wood and 15 scrap construction grant. Unmet rations appear on the resident and in the dawn report.
+A shift needs 60 seconds of on-site work at full pace. Reassignment, demolition or dawn discards unfinished work. A completed shift survives demolition and pays once the next dawn, before each resident uses one food and one water. A garden produces 4 food, a farm produces 6, 9 or 12 food, a well produces 12 water, a lumber yard produces 16 wood and a scrap workshop produces 4 scrap. The HUD shows stored output, overflow, rations and shortages. Inspect an affected resident or Station 4 to see the reduced work pace.
 
 Run the staffing and crowd benchmark on the reference PC with `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_residents.gd`. It builds and staffs 50 homes and workplaces, then measures six seconds with 500 active Walkers after a two-second warmup.
 

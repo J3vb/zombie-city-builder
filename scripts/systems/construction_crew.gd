@@ -76,7 +76,7 @@ func tick(dt: float) -> void:
 		_choose()
 	var remaining := builder.travel(dt, _world.plots.rules.resident_speed)
 	if target != null and builder.state == Resident.State.WORKING and remaining > 0.0:
-		target.add_build_work(remaining)
+		target.add_build_work(remaining * builder.work_pace())
 
 
 func status(site: Building) -> String:
