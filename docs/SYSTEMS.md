@@ -51,6 +51,10 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 - **Depends on:** nothing.
 - **Milestone:** M1.
 
+### Streets
+
+Select Street and click control points on the ground. Enter commits the preview, Backspace removes the last point and Esc cancels. The gold marker identifies the Station 4 entrance. A street endpoint can join an existing end or branch from the middle of a street. The junction splits the routing graph while the original street retains its ID. The grid reserves the full corridor against construction and gives its cells a walking cost of one. Removing the last street on a cell restores the terrain cost.
+
 ## 3. Building placement
 
 - **What:** pick a building, see a ghost preview, place it, it gets built over time.

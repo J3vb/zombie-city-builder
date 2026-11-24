@@ -30,6 +30,11 @@ extends Resource
 @export var camera_tilt_speed: float = 45.0
 @export var edge_scroll_margin: float = 12.0
 
+@export_group("Streets")
+@export var road_width: float = 32.0
+@export var road_min_length: float = 48.0
+@export var road_snap_radius: float = 16.0
+
 @export_group("Buildings")
 @export_range(0.0, 1.0) var demolish_refund: float = 0.5
 

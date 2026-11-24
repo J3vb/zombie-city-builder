@@ -5,6 +5,7 @@ extends CanvasLayer
 const SHOWN_RESOURCES: Array[StringName] = [&"food", &"water", &"wood", &"scrap"]
 const CATALOG := preload("res://data/buildings/catalog.tres")
 
+var _road_button := Button.new()
 var _build_tool: BuildTool
 var _resource_labels: Dictionary[StringName, Label] = {}
 var _speed_buttons: Array[Button] = []
@@ -32,6 +33,12 @@ func _ready() -> void:
 		button.pressed.connect(GameClock.set_speed.bind(speed))
 		_speed_box.add_child(button)
 		_speed_buttons.append(button)
+	_road_button.text = "Street"
+	_road_button.toggle_mode = true
+	_road_button.focus_mode = Control.FOCUS_NONE
+	_road_button.custom_minimum_size = Vector2(110, 64)
+	_road_button.pressed.connect(_on_street_pressed)
+	_build_box.add_child(_road_button)
 	for def in CATALOG.buildings:
 		var button := Button.new()
 		button.text = "%s\n%s" % [def.display_name, def.cost_text()]
@@ -52,6 +59,11 @@ func _process(_delta: float) -> void:
 	_clock_label.text = "Day %d  %s  %02d:00" % [GameClock.day, phase, _hour()]
 	for speed in _speed_buttons.size():
 		_speed_buttons[speed].set_pressed_no_signal(GameClock.speed == speed)
+	if _build_tool:
+		var road_tool := _build_tool.world.road_tool
+		_road_button.set_pressed_no_signal(road_tool.active)
+		%ToolHint.text = road_tool.hint
+		%ToolHint.visible = not road_tool.hint.is_empty()
 	var selected: BuildingDef = _build_tool.selected if _build_tool else null
 	for def: BuildingDef in _build_buttons:
 		_build_buttons[def].set_pressed_no_signal(def == selected)
@@ -74,3 +86,10 @@ func _on_build_pressed(def: BuildingDef) -> void:
 		_build_tool.clear()
 	else:
 		_build_tool.select(def)
+
+
+func _on_street_pressed() -> void:
+	if _build_tool.world.road_tool.active:
+		_build_tool.world.road_tool.clear()
+	else:
+		_build_tool.world.road_tool.select()

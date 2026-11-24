@@ -6,7 +6,7 @@ Made with **Godot 4.5** and **GDScript**.
 
 ## Status
 
-The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Curved streets and road-facing housing plots are next. See [the roadmap](docs/ROADMAP.md).
+The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets and connect branches to Station 4. Road-facing housing plots are next. See [the roadmap](docs/ROADMAP.md).
 
 ## Docs
 
@@ -33,7 +33,9 @@ Controls:
 | R / F | Tilt up / down |
 | Mouse wheel | Zoom |
 | Build bar button, then left click | Place a building |
-| Right click / Esc | Cancel building |
+| Street, then left clicks | Set street points, starting at the gold Station 4 marker or open ground |
+| Enter / Backspace | Finish a street / undo its last point |
+| Right click / Esc | Cancel construction |
 | Space | Pause |
 | 1 / 2 / 3 | Game speed |
 | F3 | Debug overlay (FPS, zombie count, flow arrows) |
