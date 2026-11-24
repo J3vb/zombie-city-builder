@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="TerrainSet" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/terrain_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://scripts/data/terrain_def.gd" id="2_type"]
+
+[sub_resource type="Resource" id="Ground"]
+resource_name = "Ground"
+script = ExtResource("2_type")
+cost = 1
+color = Color(0.24, 0.29, 0.2, 1)
+
+[sub_resource type="Resource" id="Rubble"]
+resource_name = "Rubble"
+script = ExtResource("2_type")
+cost = 3
+color = Color(0.36, 0.33, 0.29, 1)
+
+[sub_resource type="Resource" id="Water"]
+resource_name = "Water"
+script = ExtResource("2_type")
+cost = -1
+color = Color(0.16, 0.27, 0.38, 1)
+
+[sub_resource type="Resource" id="Border"]
+resource_name = "Border"
+script = ExtResource("2_type")
+cost = -1
+color = Color(0.1, 0.1, 0.1, 1)
+
+[resource]
+script = ExtResource("1_set")
+types = Array[ExtResource("2_type")]([SubResource("Ground"), SubResource("Rubble"), SubResource("Water"), SubResource("Border")])

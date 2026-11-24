@@ -28,3 +28,13 @@ func test_world_scene_loads() -> void:
 func test_main_scene_loads() -> void:
 	var scene := load("res://scenes/main/main.tscn") as PackedScene
 	assert_true(scene != null, "main.tscn did not load")
+
+
+func test_playable_world_draws_generated_terrain() -> void:
+	var fixture := WorldFixture.new()
+	var world := fixture.create()
+	assert_eq(world.terrain.get_used_rect(), Rect2i(Vector2i.ZERO, world.grid.size), "map extent")
+	for cell in [Vector2i.ZERO, Vector2i(3, 2), Vector2i(40, 30), Vector2i(10, 90)]:
+		var kind := world.grid.terrain_types[world.grid.index(cell)]
+		assert_eq(world.terrain.get_cell_atlas_coords(cell), Vector2i(kind, 0), "tile %s" % cell)
+	fixture.destroy()
