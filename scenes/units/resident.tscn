@@ -1,0 +1,49 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/units/resident.gd" id="Resident"]
+
+[sub_resource type="StandardMaterial3D" id="Coat"]
+albedo_color = Color(0.18, 0.48, 0.46, 1)
+
+[sub_resource type="StandardMaterial3D" id="Boots"]
+albedo_color = Color(0.19, 0.15, 0.12, 1)
+
+[sub_resource type="StandardMaterial3D" id="Hat"]
+albedo_color = Color(0.94, 0.70, 0.27, 1)
+
+[sub_resource type="CapsuleMesh" id="Body"]
+material = SubResource("Coat")
+radius = 0.34
+height = 1.06
+radial_segments = 8
+rings = 2
+
+[sub_resource type="BoxMesh" id="Leg"]
+material = SubResource("Boots")
+size = Vector3(0.21, 0.58, 0.26)
+
+[sub_resource type="SphereMesh" id="Head"]
+material = SubResource("Hat")
+radius = 0.25
+height = 0.49
+radial_segments = 8
+rings = 3
+
+[node name="Resident" type="Node3D"]
+script = ExtResource("Resident")
+
+[node name="Coat" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.94, 0)
+mesh = SubResource("Body")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="."]
+position = Vector3(-0.14, 0.29, 0)
+mesh = SubResource("Leg")
+
+[node name="RightLeg" type="MeshInstance3D" parent="."]
+position = Vector3(0.14, 0.29, 0)
+mesh = SubResource("Leg")
+
+[node name="Cap" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.65, 0)
+mesh = SubResource("Head")

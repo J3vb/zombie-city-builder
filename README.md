@@ -8,6 +8,12 @@ Made with **Godot 4.5** and **GDScript**.
 
 The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Place small gardens and scrap workshops on individual sites. Farms grow from plots into fenced fields and greenhouses. Storage grows from tarp piles into sheds and warehouses. Click a building to check its health or see what its next upgrade needs. See [the roadmap](docs/ROADMAP.md).
 
+### Residents and shifts
+
+Grow a home on a connected street and place a garden or scrap workshop nearby. One named resident moves into each home. Inspect the site to see who works there and how far their shift has progressed. **Manage worker** lets you reassign a resident or pause hiring. A completed garden shift earns 4 food. A workshop shift earns 4 scrap. Farms earn 6, 9 or 12 food as they upgrade.
+
+Goods arrive at dawn. Each resident then uses one food and one water. The dawn report shows output, use and shortages. The temporary construction grant still supplies 40 wood and 15 scrap per day. [See the garden shift in the playable town](docs/benchmarks/resident-shift.webp).
+
 ## Docs
 
 | File | What's in it |

@@ -7,6 +7,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"garden"
+output_resource = &"food"
+shift_yields = PackedInt32Array(4)
 display_name = "Garden"
 size = Vector2i(1, 1)
 cost = Dictionary[StringName, int]({&"wood": 10})
