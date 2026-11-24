@@ -19,12 +19,10 @@ func _cursor(road: Street, side: float) -> Vector2:
 
 
 func _reserve(world: World, cursor: Vector2) -> FrontagePlot:
-	return world.plots.reserve(
-		cursor, world.plots.rules.plot_frontage, world.plots.rules.plot_depth
-	)
+	return world.plots.reserve(cursor, world.plots.rules.plot_frontage)
 
 
-func test_two_sides_of_a_curve_keep_a_door_and_a_backyard() -> void:
+func test_two_sides_of_a_curve_keep_their_own_door() -> void:
 	var fx := WorldFixture.new()
 	var w := fx.create()
 	var road := _street(w)
@@ -46,7 +44,7 @@ func test_two_sides_of_a_curve_keep_a_door_and_a_backyard() -> void:
 			w.spawn_building(FARM, plot.door), null, "entrance is reserved against other buildings"
 		)
 	assert_eq(_reserve(w, _cursor(road, 1)), null, "overlap rejected")
-	assert_eq(w.plots.reserve(_cursor(road, 1), 16, 150), null, "too narrow")
+	assert_eq(w.plots.reserve(_cursor(road, 1), 16), null, "too narrow")
 	assert_eq(w.plots.plots.size(), 2, "invalid previews add no claim")
 	fx.destroy()
 
@@ -186,15 +184,15 @@ func test_mouse_tools_reserve_demolish_release_and_remove() -> void:
 	fx.destroy()
 
 
-func test_frontage_rejects_a_second_road_and_water_under_the_backyard() -> void:
+func test_frontage_rejects_a_second_road_and_water_under_the_house() -> void:
 	var fx := WorldFixture.new()
 	var w := fx.create()
 	var start := w.roads.entrance
 	var road := w.roads.add_road(PackedVector2Array([start, start + Vector2(0, 400)]))
-	var second := start + Vector2(166, 0)
+	var second := start + Vector2(120, 0)
 	w.roads.add_road(PackedVector2Array([second, second + Vector2(0, 400)]))
 	var cursor := road.line[road.line.size() / 2] + Vector2.RIGHT * 8
-	assert_eq(_reserve(w, cursor), null, "backyard cannot cross the parallel street")
+	assert_eq(_reserve(w, cursor), null, "house cannot cross the parallel street")
 	assert_eq(
 		_reserve(w, road.line[-1] + Vector2.RIGHT * 8), null, "frontage cannot extend past the end"
 	)
@@ -204,16 +202,16 @@ func test_frontage_rejects_a_second_road_and_water_under_the_backyard() -> void:
 			[
 				start,
 				Vector2(48, 82) * t,
-				Vector2(40, 86.5) * t,
-				Vector2(20, 86.5) * t,
-				Vector2(12, 86.5) * t
+				Vector2(40, 87.5) * t,
+				Vector2(20, 87.5) * t,
+				Vector2(12, 87.5) * t
 			]
 		)
 	)
 	assert_true(coastal != null, "shore road stays on dry ground")
-	var hit := coastal.nearest(Vector2(30, 86.5) * t)
+	var hit := coastal.nearest(Vector2(30, 87.5) * t)
 	var toward_water: Vector2 = hit.point + Vector2.DOWN * 8
-	assert_eq(_reserve(w, toward_water), null, "water in backyard rejects whole plot")
+	assert_eq(_reserve(w, toward_water), null, "water under the house rejects the whole plot")
 	assert_true(w.plots.plots.is_empty(), "no partial reservations")
 	fx.destroy()
 

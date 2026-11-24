@@ -22,20 +22,16 @@ func setup(owner_world: World) -> void:
 	EventBus.building_destroyed.connect(_on_building_destroyed)
 
 
-func preview(cursor: Vector2, frontage: float, depth: float) -> FrontagePlot:
+func preview(cursor: Vector2, frontage: float) -> FrontagePlot:
 	var plot := FrontagePlot.new()
 	var hit := roads.nearest(cursor, rules.plot_pick_distance)
 	if hit.is_empty():
 		plot.error = "Choose a side of a street."
 		return plot
 	var house_size := Vector2(house_def.size) * grid.tile_size
-	if (
-		frontage < house_size.x
-		or frontage > rules.plot_max_size
-		or depth < house_size.y + rules.plot_setback + rules.plot_min_yard
-		or depth > rules.plot_max_size
-	):
-		plot.error = "Allow enough frontage for the home and depth for its backyard."
+	var depth := house_size.y + rules.plot_setback
+	if frontage < house_size.x or frontage > rules.plot_max_size:
+		plot.error = "Choose frontage wide enough for the house."
 		return plot
 	var side: Vector2 = hit.tangent
 	var back := side.orthogonal()
@@ -49,13 +45,6 @@ func preview(cursor: Vector2, frontage: float, depth: float) -> FrontagePlot:
 	plot.center = doorstep + back * house_size.y * 0.5
 	plot.polygon = FrontagePlot.rectangle(verge, side, back, frontage, depth)
 	plot.house = FrontagePlot.rectangle(doorstep, side, back, house_size.x, house_size.y)
-	plot.yard = FrontagePlot.rectangle(
-		doorstep + back * house_size.y,
-		side,
-		back,
-		frontage,
-		depth - rules.plot_setback - house_size.y
-	)
 	plot.cells = GroundShape.cells_of(plot.polygon, grid.tile_size)
 	plot.path_to_street = FrontagePlot.rectangle(
 		doorstep, side, plot.front, grid.tile_size * 0.28, rules.plot_setback + rules.plot_verge
@@ -98,8 +87,8 @@ func _geometry_error(plot: FrontagePlot, road: Street) -> String:
 	return ""
 
 
-func reserve(cursor: Vector2, frontage: float, depth: float) -> FrontagePlot:
-	var plot := preview(cursor, frontage, depth)
+func reserve(cursor: Vector2, frontage: float) -> FrontagePlot:
+	var plot := preview(cursor, frontage)
 	if not plot.error.is_empty():
 		return null
 	plot.id = _next_id

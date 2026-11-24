@@ -43,7 +43,16 @@ func _ready() -> void:
 	_build_box.add_child(_road_button)
 	for def in CATALOG.buildings:
 		var button := Button.new()
-		button.text = "Home plot" if def.id == &"house" else "%s zone" % def.display_name
+		match def.placement:
+			BuildingDef.Placement.HOME_PLOT:
+				button.text = "Home plot"
+			BuildingDef.Placement.ZONE:
+				button.text = "%s zone" % def.display_name
+			BuildingDef.Placement.DIRECT:
+				button.text = def.display_name
+				button.tooltip_text = (
+					"%d × %d tiles · %s" % [def.size.x, def.size.y, def.cost_text()]
+				)
 		button.toggle_mode = true
 		button.focus_mode = Control.FOCUS_NONE
 		button.custom_minimum_size = Vector2(150, 64)
@@ -94,16 +103,18 @@ func _process(_delta: float) -> void:
 	_growth.text = "Resume growth" if world.grower.paused else "Pause growth"
 	_growth.set_pressed_no_signal(world.grower.paused)
 	var message := world.road_tool.hint if world.road_tool.active else tool.hint
+	if _build_tool.selected != null:
+		message = _build_tool.hint
 	if message.is_empty():
 		message = world.grower.status
 	%ToolHint.text = message
 	%ToolHint.visible = not message.is_empty()
 	for def: BuildingDef in _build_buttons:
-		var active := (
-			tool.mode == PlotTool.Mode.HOME
-			if def.id == &"house"
-			else (tool.mode == PlotTool.Mode.ZONE and tool.zone == def)
-		)
+		var active := _build_tool.selected == def
+		if def.placement == BuildingDef.Placement.HOME_PLOT:
+			active = tool.mode == PlotTool.Mode.HOME
+		elif def.placement == BuildingDef.Placement.ZONE:
+			active = tool.mode == PlotTool.Mode.ZONE and tool.zone == def
 		_build_buttons[def].set_pressed_no_signal(active)
 	for action in _land_buttons:
 		_land_buttons[action].set_pressed_no_signal(action == tool.mode)
@@ -122,7 +133,17 @@ func _on_build_pressed(def: BuildingDef) -> void:
 	if _build_tool == null:
 		return
 	var tool := _build_tool.world.plot_tool
-	var mode := PlotTool.Mode.HOME if def.id == &"house" else PlotTool.Mode.ZONE
+	if def.placement == BuildingDef.Placement.DIRECT:
+		if _build_tool.selected == def:
+			_build_tool.clear()
+		else:
+			_build_tool.select(def)
+		return
+	var mode := (
+		PlotTool.Mode.HOME
+		if def.placement == BuildingDef.Placement.HOME_PLOT
+		else PlotTool.Mode.ZONE
+	)
 	if tool.mode == mode and (mode == PlotTool.Mode.HOME or tool.zone == def):
 		tool.clear()
 	else:

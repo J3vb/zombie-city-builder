@@ -1,10 +1,9 @@
 class_name PlotOverlay
 extends Node3D
-## Draws lot, yard, footprint and entrance geometry from the plot the simulation uses.
+## Draws lot, footprint and entrance geometry from the plot the simulation uses.
 
 const LAND := Color(0.77, 0.67, 0.43, 0.25)
 const HOME := Color(0.78, 0.64, 0.41, 0.70)
-const YARD := Color(0.35, 0.6, 0.28, 0.45)
 const DOOR := Color(0.96, 0.75, 0.31, 0.82)
 const BLOCKED := Color(0.8, 0.16, 0.12, 0.68)
 
@@ -51,7 +50,6 @@ func _plot(layer: Node3D, plot: FrontagePlot, preview: bool) -> void:
 		return
 	var height := 0.085 if preview else 0.025
 	_surface(layer, [plot.polygon], LAND if plot.error.is_empty() else BLOCKED, height)
-	_surface(layer, [plot.yard], YARD, height + 0.01)
 	_surface(layer, [plot.house], HOME, height + 0.02)
 	_surface(layer, [plot.path_to_street], DOOR, height + 0.04)
 

@@ -16,10 +16,10 @@ func _ready() -> void:
 	var point := road.line[i]
 	for direction in [-1.0, 1.0]:
 		var cursor: Vector2 = point + normal * direction * 10.0
-		if world.plots.reserve(cursor, rules.plot_frontage, rules.plot_depth) == null:
+		if world.plots.reserve(cursor, rules.plot_frontage) == null:
 			push_error("Frontage demo could not reserve both sides of the bend.")
 			return
-	if world.plots.reserve(point + normal * 10.0, rules.plot_frontage, rules.plot_depth) != null:
+	if world.plots.reserve(point + normal * 10.0, rules.plot_frontage) != null:
 		push_error("Frontage demo accepted an overlapping plot.")
 	world.grower.step()
 	world.grower.step()

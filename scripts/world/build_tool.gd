@@ -6,6 +6,7 @@ const VALID := Color(0.35, 0.9, 0.45, 0.55)
 const INVALID := Color(0.95, 0.26, 0.20, 0.65)
 const NO_CELL := Vector2i(-1, -1)
 
+var hint := ""
 var selected: BuildingDef
 var world: World
 
@@ -36,12 +37,14 @@ func select(def: BuildingDef) -> void:
 	world.road_tool.clear()
 	world.plot_tool.clear()
 	selected = def
+	hint = "Click open ground to place %s for %s." % [def.display_name, def.cost_text()]
 	var size := Vector2(def.size) * world.view_tile()
 	_box.size = Vector3(size.x, 0.4, size.y)
 
 
 func clear() -> void:
 	selected = null
+	hint = ""
 	_ghost.hide()
 
 
@@ -83,7 +86,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("place") and event is InputEventMouseButton:
 		var cell := cell_at_screen(event.position)
 		if cell != NO_CELL:
-			place(cell)
+			if place(cell):
+				hint = "%s placed. Click to place another or press Esc." % selected.display_name
+			elif not Economy.can_afford(selected.cost):
+				hint = "%s costs %s." % [selected.display_name, selected.cost_text()]
+			else:
+				hint = "Choose clear land outside roads, buildings and home plots."
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cancel"):
 		clear()

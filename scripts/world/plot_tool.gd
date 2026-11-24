@@ -37,7 +37,7 @@ func select(next: Mode, zone_def: BuildingDef = null) -> void:
 	zone = zone_def
 	match mode:
 		Mode.HOME:
-			hint = "Click beside a connected street to reserve a home and backyard."
+			hint = "Click beside a connected street to reserve a home plot."
 		Mode.ZONE:
 			hint = "Drag over land to paint a %s zone." % zone.display_name
 		Mode.UNZONE:
@@ -98,12 +98,10 @@ func _process(_delta: float) -> void:
 		return
 	_last = point
 	if mode == Mode.HOME:
-		var plot := world.plots.preview(
-			point, world.plots.rules.plot_frontage, world.plots.rules.plot_depth
-		)
+		var plot := world.plots.preview(point, world.plots.rules.plot_frontage)
 		_view.show_plot(plot)
 		hint = (
-			"Click to reserve. Gold marks the door, green marks the backyard."
+			"Click to reserve. Gold marks the path from the front door to the street."
 			if plot.error.is_empty()
 			else plot.error
 		)
@@ -151,11 +149,11 @@ func _click(point: Vector2, screen: Vector2) -> void:
 	match mode:
 		Mode.HOME:
 			var rules := world.plots.rules
-			var plot := world.plots.reserve(point, rules.plot_frontage, rules.plot_depth)
+			var plot := world.plots.reserve(point, rules.plot_frontage)
 			hint = (
 				"Plot reserved. A tent can grow in daylight."
 				if plot != null
-				else world.plots.preview(point, rules.plot_frontage, rules.plot_depth).error
+				else world.plots.preview(point, rules.plot_frontage).error
 			)
 		Mode.ZONE, Mode.UNZONE:
 			var cell := world.grid.world_to_cell(point)
@@ -184,7 +182,11 @@ func _click(point: Vector2, screen: Vector2) -> void:
 				hint = "Choose a building other than Station 4."
 			else:
 				building.demolish()
-				hint = "Building demolished. Its empty plot can be removed."
+				hint = (
+					"Home demolished. Its empty plot can be removed."
+					if building.plot != null
+					else "Building demolished. The land is available."
+				)
 
 
 func _building_at_screen(screen: Vector2) -> Building:

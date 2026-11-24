@@ -34,12 +34,15 @@ func _show_level() -> void:
 		_model.hide()
 		_model.queue_free()
 		_model = null
+	var model_scene := building.def.model
 	if (
 		stage != null
 		and not stage.model_path.is_empty()
 		and ResourceLoader.exists(stage.model_path, "PackedScene")
 	):
-		_model = (load(stage.model_path) as PackedScene).instantiate() as Node3D
+		model_scene = load(stage.model_path) as PackedScene
+	if model_scene != null:
+		_model = model_scene.instantiate() as Node3D
 		add_child(_model)
 	body.visible = _model == null
 	if body.visible:

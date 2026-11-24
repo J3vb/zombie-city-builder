@@ -36,11 +36,9 @@ extends Resource
 @export var road_snap_radius: float = 16.0
 
 @export_group("Plots and growth")
-@export var plot_frontage: float = 100.0
-@export var plot_depth: float = 152.0
+@export var plot_frontage: float = 64.0
 @export var plot_verge: float = 20.0
 @export var plot_setback: float = 40.0
-@export var plot_min_yard: float = 32.0
 @export var plot_max_size: float = 256.0
 @export var plot_pick_distance: float = 150.0
 @export var growth_clearance_tiles: float = 3.0

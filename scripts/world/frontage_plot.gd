@@ -11,7 +11,6 @@ var door: Vector2i
 var polygon := PackedVector2Array()
 var house := PackedVector2Array()
 var path_to_street := PackedVector2Array()
-var yard := PackedVector2Array()
 var cells: Array[Vector2i] = []
 var house_cells: Array[Vector2i] = []
 var home: Building
