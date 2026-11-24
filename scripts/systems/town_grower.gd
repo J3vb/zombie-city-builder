@@ -83,7 +83,7 @@ func step() -> void:
 		var result := Result.SKIP
 		match _turn:
 			0:
-				result = _upgrade_home()
+				result = _upgrade_building()
 			1:
 				result = _grow_home()
 			2:
@@ -98,20 +98,13 @@ func step() -> void:
 	status = "Waiting for an eligible plot, zone or upgrade."
 
 
-func _nearest_home(upgrading: bool) -> FrontagePlot:
+func _nearest_vacant_plot() -> FrontagePlot:
 	var best: FrontagePlot
 	var distance := INF
 	for plot: FrontagePlot in world.plots.plots.values():
 		if not world.plots.connected(plot):
 			continue
-		if upgrading:
-			if (
-				not is_instance_valid(plot.home)
-				or plot.home.level >= plot.home.def.levels.size()
-				or GameClock.day < plot.home.def.levels[plot.home.level].min_day
-			):
-				continue
-		elif (
+		if (
 			is_instance_valid(plot.home)
 			or not world.can_build_on(world.plots.house_def, plot.house_cells[0], plot)
 			or not _clear(plot.center)
@@ -134,7 +127,7 @@ func _clear(center: Vector2) -> bool:
 func _grow_home() -> Result:
 	if _grown >= rules.growth_per_day:
 		return Result.SKIP
-	var plot := _nearest_home(false)
+	var plot := _nearest_vacant_plot()
 	if plot == null:
 		return Result.SKIP
 	var def := world.plots.house_def
@@ -148,20 +141,64 @@ func _grow_home() -> Result:
 	return Result.DONE
 
 
-func _upgrade_home() -> Result:
+func _has_upgrade_site(building: Building) -> bool:
+	return (
+		building.def != world.plots.house_def
+		or (building.plot != null and world.plots.connected(building.plot))
+	)
+
+
+func upgrade_status(building: Building) -> String:
+	var blocker := building.upgrade_blocker()
+	if not blocker.is_empty():
+		return blocker
+	if not _has_upgrade_site(building):
+		return "Needs a connected home plot"
+	if paused:
+		return "Town growth is paused"
+	if GameClock.speed == 0:
+		return "Clock is paused"
+	if _upgraded >= rules.upgrades_per_day:
+		return "Daily limit reached"
+	return "Waiting for its turn"
+
+
+func _upgrade_building() -> Result:
 	if _upgraded >= rules.upgrades_per_day:
 		return Result.SKIP
-	var plot := _nearest_home(true)
-	if plot == null:
+	var best: Building
+	var best_affordable := false
+	var best_index := -1
+	var distance := INF
+	var origin := world.command_post.sim_center()
+	for building: Building in world.buildings.get_children():
+		var next := building.next_level()
+		if building.is_queued_for_deletion() or next == null or GameClock.day < next.min_day:
+			continue
+		if not _has_upgrade_site(building):
+			continue
+		var affordable := Economy.can_afford(next.cost)
+		if best_affordable and not affordable:
+			continue
+		var d := origin.distance_squared_to(building.sim_center())
+		var index := world.grid.index(building.cell)
+		var farther := d > distance or (d == distance and index >= best_index)
+		if affordable == best_affordable and farther:
+			continue
+		best = building
+		distance = d
+		best_index = index
+		best_affordable = affordable
+	if best == null:
 		return Result.SKIP
-	var next := plot.home.def.levels[plot.home.level]
-	if not Economy.can_afford(next.cost):
+	var next := best.next_level()
+	if not best_affordable:
 		status = "Saving for %s." % next.title
 		return Result.WAIT
-	if not plot.home.upgrade():
+	if not best.upgrade():
 		return Result.SKIP
 	_upgraded += 1
-	status = "Home upgraded to %s." % next.title
+	status = "%s upgraded to %s." % [best.def.display_name, next.title]
 	return Result.DONE
 
 

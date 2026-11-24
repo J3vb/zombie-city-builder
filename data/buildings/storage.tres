@@ -1,7 +1,37 @@
-[gd_resource type="Resource" script_class="BuildingDef" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/building_def.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/buildings/building.tscn" id="2_scene"]
+
+[ext_resource type="Script" path="res://scripts/data/building_level_def.gd" id="3_level"]
+
+[sub_resource type="Resource" id="Level1"]
+script = ExtResource("3_level")
+title = "Tarp pile"
+max_health = 120
+height = 2.0
+color = Color(0.35, 0.42, 0.39, 1)
+model_path = "res://scenes/models/storage_1.tscn"
+
+[sub_resource type="Resource" id="Level2"]
+script = ExtResource("3_level")
+title = "Shed"
+min_day = 2
+cost = Dictionary[StringName, int]({&"wood": 30})
+max_health = 200
+height = 3.5
+color = Color(0.45, 0.35, 0.27, 1)
+model_path = "res://scenes/models/storage_2.tscn"
+
+[sub_resource type="Resource" id="Level3"]
+script = ExtResource("3_level")
+title = "Warehouse"
+min_day = 4
+cost = Dictionary[StringName, int]({&"wood": 30, &"scrap": 40})
+max_health = 350
+height = 7.0
+color = Color(0.38, 0.43, 0.48, 1)
+model_path = "res://scenes/models/storage_3.tscn"
 
 [resource]
 script = ExtResource("1_def")
@@ -10,5 +40,6 @@ display_name = "Storage"
 size = Vector2i(2, 2)
 cost = Dictionary[StringName, int]({&"wood": 25, &"scrap": 10})
 max_health = 120
+levels = Array[ExtResource("3_level")]([SubResource("Level1"), SubResource("Level2"), SubResource("Level3")])
 scene = ExtResource("2_scene")
 color = Color(0.5, 0.52, 0.58, 1)

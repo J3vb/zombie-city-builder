@@ -4,6 +4,7 @@ extends Node3D
 
 enum Mode { NONE, HOME, ZONE, UNZONE, DEMOLISH, REMOVE_PLOT, REMOVE_ROAD }
 
+var selected_building: Building
 var mode := Mode.NONE
 var hint := ""
 var zone: BuildingDef
@@ -21,6 +22,7 @@ func setup(owner_world: World) -> void:
 	world.plots.changed.connect(_invalidate)
 	world.roads.changed.connect(_invalidate)
 	world.grid.changed.connect(_invalidate)
+	EventBus.building_destroyed.connect(_building_destroyed)
 
 
 func _invalidate() -> void:
@@ -48,7 +50,28 @@ func select(next: Mode, zone_def: BuildingDef = null) -> void:
 			hint = "Click a street to remove it."
 
 
+func _building_destroyed(building: Building) -> void:
+	if building == selected_building:
+		_select_building(null)
+
+
+func _select_building(building: Building) -> void:
+	if (
+		is_instance_valid(selected_building)
+		and selected_building.tree_exiting.is_connected(_selection_exiting)
+	):
+		selected_building.tree_exiting.disconnect(_selection_exiting)
+	selected_building = building
+	if building != null:
+		building.tree_exiting.connect(_selection_exiting, CONNECT_ONE_SHOT)
+
+
+func _selection_exiting() -> void:
+	selected_building = null
+
+
 func clear() -> void:
+	_select_building(null)
 	mode = Mode.NONE
 	_drag = BuildTool.NO_CELL
 	_last = Vector2.INF
@@ -104,9 +127,16 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if mode == Mode.NONE:
+	if world.road_tool.active or world.build_tool.selected != null:
 		return
-	if event.is_action_pressed("cancel"):
+	if mode == Mode.NONE:
+		if event.is_action_pressed("place") and event is InputEventMouseButton:
+			_select_building(_building_at_screen(event.position))
+		elif selected_building != null and event.is_action_pressed("cancel"):
+			_select_building(null)
+		else:
+			return
+	elif event.is_action_pressed("cancel"):
 		clear()
 	elif event.is_action_pressed("place") and event is InputEventMouseButton:
 		var hit: Variant = world.camera.ground_at(event.position)

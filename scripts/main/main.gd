@@ -32,6 +32,7 @@ func new_game() -> void:
 
 
 func _on_game_over(_day: int) -> void:
+	world.plot_tool.clear()
 	GameClock.set_speed(0)
 	_game_over.show_result(GameClock.day)
 
