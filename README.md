@@ -26,7 +26,15 @@ To try the five-day supply town, open `scenes/tests/supply_town.tscn` in Godot a
 
 When a Walker comes within four tiles, the worker leaves their post and an amber **!** appears above them. Inspect their home or workplace to see where they are going and how much health they have. Residents can shelter at home or Station 4. If their shelter falls, they are exposed again. Losing the builder passes construction to a survivor. Losing the last resident ends the game. [See Noor escaping from the well](docs/benchmarks/civilian-shelter.webp).
 
-The fresh-start replay uses starting stock, paid construction and normal night spawns. Run `godot --headless --path . --script res://tests/play_opening.gd`. It stops on defeat (exit 1) or at dawn six (exit 0). In the recorded opening, three people faced 30 Walkers on night one and Station 4 fell. Early defenses are the next survival milestone.
+### Defending Station 4
+
+Open **Defenses** and drag a barricade or palisade along a row or column. The preview shows the full price and flags blocked tiles. Use gates where your line crosses the street. Ada builds each paid segment. Click a finished gate with the build tool cleared to open or close it, or change its **Close at dusk** setting. A gate waits for anyone crossing to clear the tile.
+
+Place a **Watchtower** within range of the buildings you want to protect. Its placement ring shows the 16-tile reach. Use **Manage worker** to post a resident. They walk to the tower and stand watch through the night. Each shot uses one ammo. Station 4 starts with 36 ammo. Click Station 4 to pack another 24 for 2 scrap. [See the gate and staffed tower in game](docs/benchmarks/first-defense.webp).
+
+The fresh-start replay reached dawn six with three people and Station 4 at 500/500 health. Two defenders used 250 rounds across five nights, leaving 2 ammo, 35 food and 35 water. This opening uses starting rations and prioritizes defense construction. The separate ten-person supply town tests food and water production.
+
+Run `godot --headless --path . --script res://tests/play_opening.gd` to replay the defended opening. Append `-- undefended` to run the original supply-first strategy with the same seed. It loses on night one. The replay returns 0 on survival through dawn six and 1 on defeat.
 
 ## Docs
 

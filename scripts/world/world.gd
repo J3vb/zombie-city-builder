@@ -10,6 +10,7 @@ const COMMAND_POST_PATH := "res://data/buildings/command_post.tres"
 var map_def: MapDef
 var flow_field := FlowField.new()
 var safety := TownSafety.new()
+var perimeter := Perimeter.new()
 var command_post: Building
 var last_build_ms: float = 0.0
 
@@ -50,6 +51,8 @@ func _ready() -> void:
 	grower.setup(self)
 	_refresh_storage()
 	EventBus.building_destroyed.connect(_storage_removed)
+	add_child(perimeter)
+	perimeter.setup(self)
 	jobs.setup(self)
 	construction.setup(self)
 	plot_tool.setup(self)
@@ -201,7 +204,9 @@ func _process(_delta: float) -> void:
 func _start_build() -> void:
 	_dirty = false
 	_pending_field = FlowField.new()
-	var job := _pending_field.build.bind(grid.cost.duplicate(), grid.size, goal_cells())
+	var job := _pending_field.build.bind(
+		grid.horde_costs(), grid.size, goal_cells(), grid.cost.duplicate()
+	)
 	_task_started_usec = Time.get_ticks_usec()
 	_task_id = WorkerThreadPool.add_task(job, false, "flow field")
 
@@ -209,5 +214,5 @@ func _start_build() -> void:
 func _build_now() -> void:
 	_dirty = false
 	var start := Time.get_ticks_usec()
-	flow_field.build(grid.cost.duplicate(), grid.size, goal_cells())
+	flow_field.build(grid.horde_costs(), grid.size, goal_cells(), grid.cost.duplicate())
 	last_build_ms = (Time.get_ticks_usec() - start) / 1000.0

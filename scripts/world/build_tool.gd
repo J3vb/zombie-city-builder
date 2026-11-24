@@ -10,6 +10,7 @@ var hint := ""
 var selected: BuildingDef
 var world: World
 
+var _range := MeshInstance3D.new()
 var _ghost := MeshInstance3D.new()
 var _box := BoxMesh.new()
 var _material := StandardMaterial3D.new()
@@ -31,6 +32,19 @@ func _ready() -> void:
 	_cross.position.y = 1.3
 	_ghost.add_child(_cross)
 	_ghost.hide()
+	var paint := StandardMaterial3D.new()
+	paint.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	paint.albedo_color = Color(0.9, 0.75, 0.35)
+	var ring := TorusMesh.new()
+	ring.rings = 96
+	ring.ring_segments = 5
+	ring.outer_radius = 1.0
+	ring.inner_radius = 0.994
+	ring.material = paint
+	_range.mesh = ring
+	_range.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_range)
+	_range.hide()
 
 
 func select(def: BuildingDef) -> void:
@@ -38,6 +52,9 @@ func select(def: BuildingDef) -> void:
 	world.plot_tool.clear()
 	selected = def
 	hint = "Click open ground to order %s for %s." % [def.display_name, def.cost_text()]
+	if def is TowerDef:
+		var reach := (def as TowerDef).range_tiles * world.view_tile()
+		_range.scale = Vector3(reach, 1, reach)
 	var size := Vector2(def.size) * world.view_tile()
 	_box.size = Vector3(size.x, 0.4, size.y)
 
@@ -46,6 +63,7 @@ func clear() -> void:
 	selected = null
 	hint = ""
 	_ghost.hide()
+	_range.hide()
 
 
 func can_place(def: BuildingDef, cell: Vector2i) -> bool:
@@ -71,10 +89,12 @@ func _process(_delta: float) -> void:
 		return
 	var cell := cell_at_screen(get_viewport().get_mouse_position())
 	_ghost.visible = cell != NO_CELL
+	_range.visible = _ghost.visible and selected is TowerDef
 	if not _ghost.visible:
 		return
 	var center := (Vector2(cell) + Vector2(selected.size) * 0.5) * world.grid.tile_size
 	_ghost.position = world.to_view(center) + Vector3.UP * 0.24
+	_range.position = world.to_view(center) + Vector3.UP * 0.16
 	var valid := can_place(selected, cell)
 	_material.albedo_color = VALID if valid else INVALID
 	_cross.visible = not valid

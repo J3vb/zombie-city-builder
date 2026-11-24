@@ -1,59 +1,108 @@
 extends SceneTree
-## Replay a fresh, paid opening against the normal hordes. Stop at defeat or dawn six.
+## Same seed and normal nights for both strategies. Pass -- undefended for the pre-defense opening.
+
+var world: Node
+var clock: Node
+var stock: Node
+var posts: Array[Node] = []
+var last_watch := 0
 
 
 func _initialize() -> void:
 	call_deferred("_run")
 
 
-func _run() -> void:
-	var main := (load("res://scenes/main/main.tscn") as PackedScene).instantiate()
-	root.add_child(main)
-	current_scene = main
-	var world: Node = main.world
-	var clock := root.get_node("GameClock")
-	var stock := root.get_node("Economy")
-	world.horde.rng.seed = 4
+func _street() -> bool:
 	var entry: Vector2 = world.roads.entrance
 	var tile: float = world.grid.tile_size
 	if world.roads.add_road(PackedVector2Array([entry, entry + Vector2.DOWN * tile * 24])) == null:
-		push_error("Opening street failed")
-		quit(1)
-		return
+		return false
 	for row in 5:
 		for side: int in [-1, 1]:
 			if row == 4 and side == 1:
 				break
 			var cursor := entry + Vector2(side * 8, (3 + row * 4) * tile)
 			if world.plots.reserve(cursor, world.plots.rules.plot_frontage) == null:
-				push_error("Opening home plot failed")
-				quit(1)
-				return
-	var well := load("res://data/buildings/well.tres")
-	var lumber := load("res://data/buildings/lumber_yard.tres")
-	var field := load("res://data/buildings/farm.tres")
-	if (
-		world.try_place_building(lumber, Vector2i(72, 80)) == null
-		or world.try_place_building(well, Vector2i(56, 76)) == null
-	):
-		push_error("Opening orders failed")
+				return false
+	return true
+
+
+func _order(id: String, cell: Vector2i) -> Node:
+	var def := load("res://data/buildings/%s.tres" % id)
+	return world.try_place_building(def, cell)
+
+
+func _build(defended: bool) -> bool:
+	if not _street():
+		return false
+	if defended:
+		for cell: Vector2i in [Vector2i(67, 66), Vector2i(60, 65)]:
+			var tower := _order("watchtower", cell)
+			if tower == null:
+				return false
+			posts.append(tower)
+		var fence := load("res://data/defenses/barricade.tres")
+		var gate := load("res://data/defenses/gate.tres")
+		if (
+			not world.perimeter.order(fence, Vector2i(62, 67), Vector2i(63, 67))
+			or not world.perimeter.order(gate, Vector2i(64, 67), Vector2i(65, 67))
+			or not world.perimeter.order(fence, Vector2i(66, 67), Vector2i(66, 67))
+		):
+			return false
+	if _order("lumber_yard", Vector2i(72, 80)) == null:
+		return false
+	if not defended:
+		if _order("well", Vector2i(56, 76)) == null:
+			return false
+		world.grower.paint(Rect2i(55, 70, 3, 3), load("res://data/buildings/farm.tres"))
+	return true
+
+
+func _prepare_watch() -> void:
+	if clock.time_of_day < 0.5 or last_watch == clock.day:
+		return
+	last_watch = clock.day
+	for i in mini(posts.size(), world.jobs.residents.size()):
+		if is_instance_valid(posts[i]) and not posts[i].is_queued_for_deletion():
+			world.jobs.assign(world.jobs.residents[i], posts[i])
+	var wave: int = world.horde.horde_size(clock.day)
+	while stock.get_amount(&"ammo") < wave:
+		if not stock.pack_ammo(world.plots.rules):
+			break
+
+
+func _run() -> void:
+	var main := (load("res://scenes/main/main.tscn") as PackedScene).instantiate()
+	root.add_child(main)
+	current_scene = main
+	world = main.world
+	clock = root.get_node("GameClock")
+	stock = root.get_node("Economy")
+	world.horde.rng.seed = 4
+	var defended := not OS.get_cmdline_user_args().has("undefended")
+	if not _build(defended):
+		push_error("Opening street or paid orders failed")
 		quit(1)
 		return
-	world.grower.paint(Rect2i(55, 70, 3, 3), field)
 	var step: float = 1.0 / world.plots.rules.sim_ticks_per_second
-	var waves := 0
-	var previous_day: int = clock.day
-	var first_wave := false
 	var post: Node = world.command_post
+	var waves := 0
 	while clock.day < 6 and not clock.ended:
+		var previous_day: int = clock.day
 		clock._advance(step)
-		if world.horde.queued > 0 and not first_wave:
-			first_wave = true
-			waves += 1
+		if defended:
+			_prepare_watch()
+		if world.horde.queued > 0 and waves < clock.day:
+			waves = clock.day
 			print(
 				(
-					"Night %d: %d Walkers, %d people, Station 4 at %d HP"
-					% [clock.day, world.horde.queued, world.safety.people.size(), post.health]
+					"Night %d: %d Walkers, %d people, %d ammo"
+					% [
+						clock.day,
+						world.horde.queued,
+						world.safety.people.size(),
+						stock.get_amount(&"ammo")
+					]
 				)
 			)
 		world.horde._process(step)
@@ -61,25 +110,31 @@ func _run() -> void:
 			world._build_now()
 		world.zombies._process(step)
 		if clock.day != previous_day:
-			previous_day = clock.day
-			first_wave = false
 			print(
 				(
-					"Dawn %d: %d people, %d food, %d water"
+					"Dawn %d: %d people, %d food, %d water, %d ammo, Station 4 %d HP"
 					% [
 						clock.day,
 						world.safety.people.size(),
 						stock.get_amount(&"food"),
-						stock.get_amount(&"water")
+						stock.get_amount(&"water"),
+						stock.get_amount(&"ammo"),
+						post.health
 					]
 				)
 			)
+	var shots := 0
+	for tower in posts:
+		if is_instance_valid(tower):
+			shots += tower.shots
 	print(
 		(
-			"Opening ended on day %d. Horde nights encountered: %d. %s"
+			"Day %d: %d waves, %d shots, %d remaining Walkers. %s"
 			% [
 				clock.day,
 				waves,
+				shots,
+				world.zombies.count(),
 				main.get_node("GameOver/%Message").text if clock.ended else "Station 4 held."
 			]
 		)

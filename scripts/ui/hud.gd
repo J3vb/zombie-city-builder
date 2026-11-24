@@ -2,11 +2,14 @@ class_name Hud
 extends CanvasLayer
 ## Top bar (resources, day, speed) and bottom build bar.
 
-const SHOWN_RESOURCES: Array[StringName] = [&"food", &"water", &"wood", &"scrap"]
+const SHOWN_RESOURCES: Array[StringName] = [&"food", &"water", &"wood", &"scrap", &"ammo"]
+const WATCHTOWER := preload("res://data/buildings/watchtower.tres")
+const BARRIERS: Array[BarrierDef] = [Perimeter.BARRICADE, Perimeter.WALL, Perimeter.GATE]
 const CATALOG := preload("res://data/buildings/catalog.tres")
 
 var _land_buttons: Dictionary[int, Button] = {}
 var _displayed_dawn := 0
+var _defenses := MenuButton.new()
 var _growth := Button.new()
 var _road_button := Button.new()
 var _build_tool: BuildTool
@@ -80,6 +83,13 @@ func _ready() -> void:
 		button.pressed.connect(_land_pressed.bind(action))
 		_build_box.add_child(button)
 		_land_buttons[action] = button
+	_defenses.text = "Defenses"
+	_defenses.focus_mode = Control.FOCUS_NONE
+	for barrier in BARRIERS:
+		_defenses.get_popup().add_item(barrier.title)
+	_defenses.get_popup().add_item(WATCHTOWER.display_name)
+	_defenses.get_popup().id_pressed.connect(_select_defense)
+	_build_box.add_child(_defenses)
 	_growth.toggle_mode = true
 	_growth.focus_mode = Control.FOCUS_NONE
 	_growth.pressed.connect(_toggle_growth)
@@ -127,6 +137,7 @@ func _process(_delta: float) -> void:
 			report += "   ·   Short %s" % _amounts(world.jobs.last_shortage)
 		%DawnReport.text = report
 	$BuildingInfo.refresh(tool.selected_building, world.grower)
+	$PerimeterInfo.refresh(world, tool.selected_segment)
 	_road_button.set_pressed_no_signal(world.road_tool.active)
 	_growth.text = "Resume growth" if world.grower.paused else "Pause growth"
 	_growth.set_pressed_no_signal(world.grower.paused)
@@ -185,6 +196,13 @@ func _on_build_pressed(def: BuildingDef) -> void:
 		tool.clear()
 	else:
 		tool.select(mode, def)
+
+
+func _select_defense(index: int) -> void:
+	if index < BARRIERS.size():
+		_build_tool.world.plot_tool.select_barrier(BARRIERS[index])
+	else:
+		_build_tool.select(WATCHTOWER)
 
 
 func _land_pressed(mode: PlotTool.Mode) -> void:

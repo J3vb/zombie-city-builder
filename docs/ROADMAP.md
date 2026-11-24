@@ -67,7 +67,7 @@ Goal: citizens make the economy run.
 - Playable now: staffed production supplies food, water, wood and scrap at dawn. Completed storage increases capacity. Missed rations slow work until the next fully fed and watered dawn.
 - Five-day economy check passed with ten people, two fields and three other workplaces. It starts with finished sites, pauses automatic growth and disables hordes. Sleep remains open in [#14](https://github.com/J3vb/zombie-city-builder/issues/14).
 - Playable now: workers and the builder shelter at dusk or when threatened, resume after danger clears, and become exposed if their shelter falls. Death releases the bed and job. Losing every resident ends the game ([#20](https://github.com/J3vb/zombie-city-builder/issues/20)).
-- Fresh-start survival trial: at seed 4, three people had moved in by the first night. The 30-Walker wave destroyed Station 4 before dawn two. Build the first usable defense, then rerun `tests/play_opening.gd` against the same seed.
+- Fresh-start survival trial: at seed 4, three people had moved in by the first night. The 30-Walker wave destroyed Station 4 before dawn two. The defended opening below uses the same seed.
 
 **Economy acceptance:** ten citizens can feed and water themselves for five days. Run `scenes/tests/supply_town.tscn` or the automated supply economy test.
 
@@ -75,16 +75,17 @@ Goal: citizens make the economy run.
 
 Goal: the core fantasy. Build walls, hold the line.
 
-- Drag-to-draw walls and barricades
-- Gates (open, closed, auto-close at dusk)
-- Flow field with wall break cost; zombies attack walls
-- Wall damage, repair by builders
-- Watchtower and rifle tower with ammo
-- Defender job (citizens on walls)
+- Playable: drag barricades and palisades, preview the cost, pay for the entire line and have the builder complete it tile by tile (#21).
+- Playable: gate tiles allow street crossings, manual opening and closing, and optional dusk closing. Closing waits for traffic to clear (#22).
+- Playable: the Walker flow field weighs a breach by tier. Walkers use the open gate or attack a cheaper barrier when it closes. Destroyed segments reopen immediately (#23).
+- Wall damage is playable. Safe builder repairs remain (#24).
+- A staffed watchtower uses ammo. Station 4 can pack reserves from scrap. The rifle tower and wall-post assignments remain (#25, #26).
 - Horde nights every 3rd night with a warning and direction
 - Noise system (gunfire draws zombies)
 
-**Done when:** you can survive 10 days by building and fixing walls.
+**Opening check passed.** Two posted defenders, a gated barricade and three residents reached dawn six against waves of 30, 40, 50, 60 and 70. Station 4 retained all 500 HP and the town had 2 ammo left. The matching undefended replay lost on night one.
+
+**Milestone acceptance:** survive ten days, repair a breach and hold off three warned major hordes.
 
 ## M4: The outside and infection
 

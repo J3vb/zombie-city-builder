@@ -4,6 +4,7 @@ extends Node3D
 
 var builder: Resident
 var target: Building
+var segment: BarrierSegment
 var projects: Array[Building] = []
 var _blocked: Dictionary[Building, bool] = {}
 var _world: World
@@ -61,6 +62,7 @@ func _choose() -> void:
 	var origin := builder.route_origin()
 	var routes := _world.jobs.routes
 	target = null
+	segment = null
 	_blocked.clear()
 	if not _after_dusk and not builder.retreating:
 		for site in projects:
@@ -71,6 +73,12 @@ func _choose() -> void:
 			target = site
 			builder.send(path, true)
 			return
+		for order in _world.perimeter.orders:
+			var path := routes.to_edges(origin, [order.cell])
+			if not path.is_empty():
+				segment = order
+				builder.send(path, true)
+				return
 	builder.seek_shelter(_world.command_post)
 
 
@@ -87,8 +95,11 @@ func tick(dt: float) -> void:
 		_dirty = false
 		_choose()
 	var remaining := builder.travel(dt, _world.plots.rules.resident_speed)
-	if target != null and builder.state == Resident.State.WORKING and remaining > 0.0:
-		target.add_build_work(remaining * builder.work_pace())
+	if builder.state == Resident.State.WORKING and remaining > 0.0:
+		if target != null:
+			target.add_build_work(remaining * builder.work_pace())
+		elif segment != null:
+			_world.perimeter.add_work(segment, remaining * builder.work_pace())
 
 
 func status(site: Building) -> String:

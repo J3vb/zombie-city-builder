@@ -51,7 +51,7 @@ func _placed(building: Building) -> void:
 	if building.get_parent() != world.buildings or building.is_queued_for_deletion():
 		return
 	_dirty = true
-	if building.def.shift_yields.size() > 0:
+	if building is DefenseTower or building.def.shift_yields.size() > 0:
 		sites.append(building)
 	if building.plot == null:
 		return
@@ -162,6 +162,9 @@ func assign(resident: Resident, site: Building) -> bool:
 func _set_job(resident: Resident, site: Building) -> void:
 	if resident.job != null:
 		_staff.erase(resident.job)
+	if resident.on_watch():
+		resident.shelter = null
+		resident.show()
 	resident.job = site
 	resident.shift_seconds = 0.0
 	if site != null:
@@ -187,6 +190,10 @@ func _find_job(resident: Resident) -> void:
 
 func _plan(resident: Resident) -> void:
 	var origin := resident.route_origin()
+	if resident.job is DefenseTower and not resident.retreating and resident.home != null:
+		if not resident.on_watch():
+			resident.send(routes.to_building(origin, resident.job), true)
+		return
 	if (
 		not resident.retreating
 		and not _off_duty
@@ -214,6 +221,9 @@ func _tick(dt: float) -> void:
 		if resident.update_retreat() or replan:
 			_plan(resident)
 		var on_site := resident.travel(dt, rules.resident_speed)
+		if resident.state == Resident.State.WORKING and resident.job is DefenseTower:
+			resident.stand_watch()
+			continue
 		if resident.state != Resident.State.WORKING or on_site <= 0.0:
 			continue
 		resident.shift_seconds += on_site * resident.work_pace()

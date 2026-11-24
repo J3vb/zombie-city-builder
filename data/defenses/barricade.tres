@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BarrierDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/barrier_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+title = "Barricade"
+cost = Dictionary[StringName, int]({&"wood": 2})
+health = 90
+break_cost = 18
+build_seconds = 2.0
+gate = false
+height = 1.5
+color = Color(0.50,0.36,0.23,1)

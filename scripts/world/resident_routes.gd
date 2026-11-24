@@ -29,6 +29,14 @@ func to_building(start: Vector2i, building: Building) -> Array[Vector2i]:
 		or building.is_queued_for_deletion()
 	):
 		return empty
+	_sync()
+	if building.plot != null:
+		var door := building.plot.door
+		return _astar.get_id_path(start, door) if grid.get_cost(door) > 0 else empty
+	return to_edges(start, building.cells)
+
+
+func _sync() -> void:
 	if _dirty:
 		for y in grid.size.y:
 			for x in grid.size.x:
@@ -38,13 +46,14 @@ func to_building(start: Vector2i, building: Building) -> Array[Vector2i]:
 				if cost > 0:
 					_astar.set_point_weight_scale(cell, cost)
 		_dirty = false
-	if building.plot != null:
-		var door := building.plot.door
-		return _astar.get_id_path(start, door) if grid.get_cost(door) > 0 else empty
+
+
+func to_edges(start: Vector2i, cells: Array[Vector2i]) -> Array[Vector2i]:
+	_sync()
 	var best: Array[Vector2i] = []
 	var best_cost := INF
 	var ends: Dictionary[Vector2i, bool] = {}
-	for cell in building.cells:
+	for cell in cells:
 		for offset: Vector2i in [Vector2i.UP, Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]:
 			var end := cell + offset
 			if grid.get_cost(end) <= 0 or ends.has(end):

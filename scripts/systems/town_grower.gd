@@ -49,6 +49,7 @@ func paint(rect: Rect2i, zone: BuildingDef) -> void:
 				zones.erase(cell)
 			elif (
 				world.grid.base_cost[world.grid.index(cell)] > 0
+				and not world.grid.barriers.has(cell)
 				and not world.grid.road_cells.has(cell)
 				and not world.grid.parcel_cells.has(cell)
 			):

@@ -49,6 +49,18 @@ func refund(materials: Dictionary[StringName, int]) -> void:
 		EventBus.resource_changed.emit(id, stock[id])
 
 
+func pack_ammo(rules: BalanceDef) -> bool:
+	if get_amount(&"ammo") + rules.ammo_batch > capacity or not can_afford(rules.ammo_batch_cost):
+		return false
+	for id in rules.ammo_batch_cost:
+		stock[id] = get_amount(id) - rules.ammo_batch_cost[id]
+	stock[&"ammo"] = get_amount(&"ammo") + rules.ammo_batch
+	for id in rules.ammo_batch_cost:
+		EventBus.resource_changed.emit(id, stock[id])
+	EventBus.resource_changed.emit(&"ammo", stock[&"ammo"])
+	return true
+
+
 func can_afford(cost: Dictionary[StringName, int]) -> bool:
 	for id: StringName in cost:
 		if get_amount(id) < cost[id]:

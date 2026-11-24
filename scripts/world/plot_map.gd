@@ -72,7 +72,7 @@ func _geometry_error(plot: FrontagePlot, road: Street) -> String:
 	if not roads.reachable.has(road.line[0]):
 		return "Connect this street to Station 4 first."
 	for cell in plot.cells:
-		if grid.get_cost(cell) <= 0 or grid.parcel_cells.has(cell):
+		if grid.get_cost(cell) <= 0 or grid.parcel_cells.has(cell) or grid.barriers.has(cell):
 			return "The plot overlaps blocked or reserved land."
 	if (
 		not grid.is_free(plot.house_cells)
