@@ -1,10 +1,15 @@
 class_name DebugOverlay
-extends Node2D
+extends Node3D
 ## F3: stats and flow-field arrows. F5/F6/F7 cheats in debug builds.
 
 const ARROW := Color(1, 1, 1, 0.35)
 
 var world: World
+var _field: FlowField
+var _center := Vector2i(-1, -1)
+var _arrows := MeshInstance3D.new()
+var _lines := ImmediateMesh.new()
+var _line_material := StandardMaterial3D.new()
 
 var _balance: BalanceDef = preload("res://data/balance.tres")
 
@@ -13,6 +18,12 @@ var _balance: BalanceDef = preload("res://data/balance.tres")
 
 
 func _ready() -> void:
+	_line_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_line_material.albedo_color = ARROW
+	_line_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_arrows.mesh = _lines
+	_arrows.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_arrows)
 	_set_visible(false)
 
 
@@ -48,25 +59,33 @@ func _process(_delta: float) -> void:
 			world.zombies.last_update_ms,
 		]
 	)
-	queue_redraw()
+	var center := world.grid.world_to_cell(world.to_sim(world.camera.position))
+	if center != _center or world.flow_field != _field:
+		_center = center
+		_field = world.flow_field
+		_draw_field()
 
 
-func _draw() -> void:
-	var cam := world.camera
-	var view := get_viewport_rect().size / cam.zoom
-	var rect := Rect2(cam.get_screen_center_position() - view / 2.0, view)
-	var tile := world.tile_size()
-	var x0 := maxi(0, floori(rect.position.x / tile.x))
-	var y0 := maxi(0, floori(rect.position.y / tile.y))
-	var x1 := mini(world.grid.size.x - 1, ceili(rect.end.x / tile.x))
-	var y1 := mini(world.grid.size.y - 1, ceili(rect.end.y / tile.y))
-	for y in range(y0, y1 + 1):
-		for x in range(x0, x1 + 1):
-			var dir := world.flow_field.direction_at(Vector2i(x, y))
+func _draw_field() -> void:
+	_lines.clear_surfaces()
+	var area := Rect2i(_center - Vector2i(20, 20), Vector2i(41, 41))
+	area = area.intersection(Rect2i(Vector2i.ZERO, world.grid.size))
+	var started := false
+	for y in range(area.position.y, area.end.y):
+		for x in range(area.position.x, area.end.x):
+			var cell := Vector2i(x, y)
+			var dir := _field.direction_at(cell)
 			if dir == Vector2.ZERO:
 				continue
-			var centre := (Vector2(x, y) + Vector2(0.5, 0.5)) * tile
-			var tip := centre + dir * tile.x * 0.35
-			draw_line(centre - dir * tile.x * 0.2, tip, ARROW, 2.0)
-			draw_line(tip, tip - dir.rotated(0.5) * 6.0, ARROW, 2.0)
-			draw_line(tip, tip - dir.rotated(-0.5) * 6.0, ARROW, 2.0)
+			if not started:
+				_lines.surface_begin(Mesh.PRIMITIVE_LINES, _line_material)
+				started = true
+			var origin := world.to_view(world.grid.cell_to_world(cell)) + Vector3.UP * 0.09
+			var step := world.to_view(dir * world.grid.tile_size)
+			var tip := origin + step * 0.35
+			_lines.surface_add_vertex(origin - step * 0.2)
+			_lines.surface_add_vertex(tip)
+			_lines.surface_add_vertex(tip)
+			_lines.surface_add_vertex(tip - step.rotated(Vector3.UP, 0.5) * 0.2)
+	if started:
+		_lines.surface_end()

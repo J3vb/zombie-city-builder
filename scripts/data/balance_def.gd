@@ -19,10 +19,15 @@ extends Resource
 @export var chase_radius_tiles: int = 4
 
 @export_group("Camera")
-@export var camera_pan_speed: float = 1200.0
-@export var camera_zoom_min: float = 0.25
-@export var camera_zoom_max: float = 2.0
-@export var camera_zoom_step: float = 0.1
+@export var camera_pan_speed: float = 48.0
+@export var camera_zoom_min: float = 12.0
+@export var camera_zoom_max: float = 180.0
+@export var camera_zoom_step: float = 1.15
+@export var camera_start_distance: float = 60.0
+@export var camera_start_pitch: float = 50.0
+@export var camera_turn_speed: float = 1.6
+@export var camera_drag_speed: float = 0.01
+@export var camera_tilt_speed: float = 45.0
 @export var edge_scroll_margin: float = 12.0
 
 @export_group("Buildings")

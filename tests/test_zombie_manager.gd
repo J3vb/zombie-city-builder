@@ -86,7 +86,7 @@ func test_crowd_mesh_tracks_living_walkers() -> void:
 	var fx := WorldFixture.new()
 	var world := fx.create()
 	var zm := world.zombies
-	var mesh := (zm.get_node("Mesh") as MultiMeshInstance2D).multimesh
+	var mesh := (zm.get_node("Mesh") as MultiMeshInstance3D).multimesh
 	zm.spawn(Vector2(100, 100), WALKER)
 	zm.spawn(Vector2(140, 100), WALKER)
 	zm._process(0.0)

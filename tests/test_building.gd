@@ -66,12 +66,12 @@ func test_house_footprint_is_independent_of_its_view() -> void:
 	var world := fx.create()
 	var anchor := Vector2i(20, 20)
 	var house := world.spawn_building(HOUSE, anchor)
-	var view := house.get_node("View") as Node2D
+	var view := house.get_node("View") as Node3D
 	var bounds := Rect2(
 		Vector2(anchor) * world.tile_size(), Vector2(HOUSE.size) * world.tile_size()
 	)
-	assert_eq(view.position, bounds.position, "draws at the footprint")
-	view.position += Vector2(600, 100)
+	assert_eq(view.position, world.to_view(bounds.get_center()), "draws at the footprint")
+	view.position += Vector3(60, 0, 10)
 	assert_eq(house.sim_bounds(), bounds, "moving the art preserves the footprint")
 	assert_eq(house.sim_center(), bounds.get_center(), "center of an even-sized footprint")
 	assert_eq(world.spawn_building(HOUSE, anchor), null, "unpaid spawns also check for overlap")

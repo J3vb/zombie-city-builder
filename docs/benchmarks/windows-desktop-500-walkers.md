@@ -15,7 +15,7 @@ Measured on 24 November 2026 at commit `963821b8c3ddd4ebeef12659b0ebca95467d12f2
 | 3D benchmark, night, shadows on and 30 lights enabled | 607 | 1.86 ms | 0.213 ms | 0.226 ms |
 | Playable 2D town, daytime, 500 active Walkers | 258 | 4.09 ms | 1.225 ms | 1.292 ms |
 
-The 3D test uses the benchmark's scripted crowd movement. The playable town also runs horde movement, spatial queries and building interaction. These are distinct workloads. The 3D gameplay and exported ARM64 laptop checks remain open.
+The 3D test uses the benchmark's scripted crowd movement. The playable town also runs horde movement, spatial queries and building interaction. These are distinct workloads. These readings predate the playable 3D port. The owner subsequently selected this Windows x64 desktop as the sole target.
 
 ## Repeating the checks
 
@@ -25,3 +25,20 @@ The 3D test uses the benchmark's scripted crowd movement. The playable town also
 4. Run `godot --headless --script res://tests/bench_flow_field.gd` three times. Each invocation reports the mean of ten rebuilds after one warm-up on a synthetic 128 × 128 cost grid. The three means here were 17.40, 16.95 and 16.91 ms.
 
 The playable world already rebuilds a dirty flow field on a worker after startup. The rebuild result measures work duration. To assess its effect on play, capture frame times while placing buildings or changing a gate once gates are implemented.
+
+
+## Playable 3D town
+
+The first playable 3D port runs the ordinary main scene on the same Windows x64 desktop. The benchmark fixes the camera, places 500 Walkers in five rings around Station 4 and lets them use normal movement and routing. Each day or night run starts a fresh town. After a two-second warm-up, the script measures eight seconds of rendered frames.
+
+| 1920 × 1080, uncapped, Godot 4.7.2 | Average FPS | 95th-percentile frame |
+|---|---:|---:|
+| Day | 603.6 | 1.73 ms |
+| Night | 581.8 | 1.86 ms |
+
+Run from an imported project on the reference PC with a display. The scene uses placeholder buildings and Walker meshes. Repeat after the art pass.
+
+```sh
+godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_playable_3d.gd
+godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_playable_3d.gd -- night
+```

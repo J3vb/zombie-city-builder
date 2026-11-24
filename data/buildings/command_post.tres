@@ -10,5 +10,6 @@ display_name = "Command Post"
 size = Vector2i(3, 3)
 cost = Dictionary[StringName, int]({})
 max_health = 500
+view_height = 6.0
 scene = ExtResource("2_scene")
 color = Color(0.75, 0.62, 0.3, 1)

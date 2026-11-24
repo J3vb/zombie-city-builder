@@ -9,6 +9,7 @@ extends Resource
 @export var max_health: int = 100
 @export var is_goal: bool = true
 @export var scene: PackedScene
+@export var view_height: float = 3.0
 @export var color: Color = Color(0.6, 0.6, 0.6)
 
 

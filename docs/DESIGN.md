@@ -175,7 +175,7 @@ The owner chose a full 3D view with a city-builder camera (decided 2026-11-21, a
 *   **Zombies** are drawn by one `MultiMeshInstance3D` (shadows off). Each zombie turns towards where it walks and bobs a little, so the crowd does not look frozen.
 *   **Camera:** pan (WASD, screen edges), rotate (Q/E, middle mouse drag), zoom (wheel), tilt (R/F; right mouse stays "cancel"), pitch 30 to 75 degrees, the point it looks at kept inside the map.
 *   **Light:** a `DayNight` node moves the sun and changes light colour, fog and ambient light from `GameClock.time_of_day` (curves in `LightingDef`). It replaces the 2D `NightTint`. Lights are visual only until floodlights matter for gameplay (M3/M4).
-*   **Renderer:** Compatibility, kept for low-end laptops. The owner's Windows ARM laptop is the reference machine for M1.5.
+*   **Renderer:** Compatibility. The reference PC runs Windows x64 with a Ryzen 9 7950X3D and RTX 4080 Super. Measure the playable scene at 1920 × 1080 with 500 active Walkers.
 *   **3D test scene** (`scenes/tests/bench_3d.tscn`, merged in #58, exported with the "Windows ARM64 3D bench" preset): walled town, 30 street lights, shadows, 500 to 2000 zombies in one MultiMesh. It measures draw cost only (its zombies walk straight to the centre).
 
 ### Zones and growth (M1.5)
@@ -294,7 +294,7 @@ docs/        design docs, reviews/
 
 *   **Pros**: city look with less performance risk; sprites instead of models.
 *   **Cons**: fixed camera angle (no rotation), every building needs sprites drawn for the angle, depth sorting work.
-*   **Reason for Rejection**: the owner chose full 3D. Kept as the fallback if the 3D test fails on the target laptop.
+*   **Reason for Rejection**: the owner chose full 3D after playing M1.
 
 #### Alternative C3: move the simulation to metres in 3D space
 
@@ -341,7 +341,7 @@ docs/        design docs, reviews/
 | GDScript can't reach the target | Scope cut | Swap `ZombieManager` core to C#/GDExtension behind the same API | After M1 profile |
 | Crowds jam at gates and breaches | Zombies stuck | Clamp + separation; accept queueing; tune in M3 | M3 playtest |
 | Many 2D lights slow on the Compatibility renderer | Night runs slow | M1 light test scene: 30 lights + 500 zombies. Replaced by the 3D test scene in M1.5 | M1 |
-| 3D too slow on the owner's low-end ARM laptop | Unplayable on the test machine | 3D test scene before the rebuild (draw cost only); exported ARM64 build re-measured after PR A (real zombie update) and PR C (final art); shadow and light settings; fall back to isometric 2D (Alternative C2) | Fewer than 30 fps with 500 zombies at any check |
+| 3D town misses its desktop frame budget | Sluggish placement or camera movement | Measure day and night with 500 active Walkers on the reference PC and profile the slowest frames | Below 60 fps |
 | Compatibility renderer light limits (8 lights per object by default) | Night lights pop or look wrong | Terrain in 16 x 16 tile chunks; few real lights (Command Post, fires); fake glow with emissive meshes | M1.5 night test |
 | Zombies look stiff without skeletal animation | Crowd looks fake | Turn to heading, height bob, per-zombie colour and size variation; vertex-shader shamble later | M1.5 playtest |
 | No artist: placeholder 3D looks cheap | Owner loses interest | Low-poly kit with shared gritty materials, fog and lighting carry the mood; real models in M6 | After M1.5 screenshots |
@@ -352,11 +352,11 @@ docs/        design docs, reviews/
 
 ## Non-Functional Requirements
 
-*   **Performance budget (M1):** 60 fps with 500 zombies on a 128 x 128 map, on a mid-range laptop (4-core CPU, integrated GPU). The author's own laptop is the reference machine; record its specs in the M1 benchmark issue.
+*   **Performance budget (M1):** 60 fps with 500 zombies on the 128 × 128 starter map on the owner’s Windows x64 desktop.
     *   flow-field rebuild: 8 ms or less
     *   zombie update + draw: 6 ms or less per frame
     *   M2 adds 50 citizens with the same 60 fps target.
-*   **Performance floor (M1.5, 3D):** 30 fps with 500 zombies on the owner's low-end Windows ARM laptop (the reference machine from M1.5 on) at the lowest settings. Measured with exported ARM64 builds: the 3D test scene before PR A, the game after PR A and after PR C. The 60 fps target stays for a mid-range laptop and is checked again in M6.
+*   **Performance target (M1.5, 3D):** 60 fps with 500 active Walkers at 1080p on the reference desktop. Recheck the playable town after the view port and final lighting.
 *   **Saves:** carry a version number from M5 on.
 *   **Accessibility:** UI scale setting, OpenDyslexic font option. No information by colour alone: the blocked ghost also shows a cross icon, and zombie types differ in size and shape, not only colour.
 
@@ -540,7 +540,7 @@ Tests that need nodes add them to the tree root, and free them at the end.
 ### Verification Plan
 
 *   **CI (every push):** lint, format check, import with no errors, all tests pass, main scene runs 120 frames with no errors.
-*   **M1 pass criteria (manual, on the reference laptop):**
+*   **M1 manual pass criteria on the reference desktop**
     *   `bench_flow_field.gd` reports 8 ms or less.
     *   With 500 zombies, the debug overlay shows 60 fps and `ZombieManager.last_update_ms` 6 or less.
     *   Light test scene holds 60 fps, or the result is recorded and a renderer decision is made.
@@ -554,12 +554,12 @@ Goal: the M1 game in 3D with a city-builder camera, curved streets, road-facing 
 
 | PR | Contents | Playable after it? |
 |---|---|---|
-| 0 | 3D test scene and ARM64 test export. **Merged (#58).** Owner reports fps before PR A | n/a |
+| 0 | 3D crowd scene from #58, measured on the reference desktop in #64 | Standalone rendering benchmark |
 | A | Terrain from data, World/camera/picking/build ghost/buildings/zombies/day-night in 3D, debug overlay text only | Yes: box buildings, capsule zombies |
 | B | Curved streets and frontage plots, flow arrows, building levels, farm and storage zones, growth, selection, temporary income | Lay out a bend and see the homes face the street as they grow |
 | C | Gritty art kit: materials, models per level, zombie mesh, props, final lighting | Yes: final M1.5 look |
 
-After PR A and PR C: export Windows x86_64 and ARM64 builds; the owner reads fps on the ARM laptop (Performance floor).
+After PR A and PR C, measure the playable Windows x64 town with 500 active Walkers on the reference desktop.
 
 #### Rules every M1.5 file follows
 
@@ -775,8 +775,8 @@ Before B4, implement the curved street and frontage tools in the order in [ROADM
 #### Verification (M1.5)
 
 *   CI as before (lint, format, import, tests, main scene 120 frames).
-*   Before PR A: the owner reports the 3D test scene's fps on the ARM laptop. 30 or more with 500 zombies at some setting = go; otherwise stop and revisit Alternative C2.
-*   After PR A and after PR C: exported ARM64 build, owner reads fps with 500 zombies (F3 overlay). Below 30: lower settings first, then cut art.
+*   The desktop crowd baseline is recorded in [the benchmark report](benchmarks/windows-desktop-500-walkers.md).
+*   After the playable port and after the art pass, measure the ordinary town in daylight and at night. Record the build, machine, resolution, crowd count and frame times.
 *   After PR C, by hand: CUJ 1 in 3D; mark two plots on a curved road and watch homes grow and reach level 3 over a few days; rotate and zoom at night; the night readability screenshot (Art direction). Screenshots in the PR.
 
 --------------------------------------------------------------------------------
