@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/materials/running_bond.svg" id="Bond"]
+[ext_resource type="Texture2D" path="res://assets/materials/building_grime.tres" id="Grime"]
+
+[resource]
+resource_name = "Weathered Running Bond"
+albedo_texture = ExtResource("Bond")
+roughness = 0.96
+roughness_texture = ExtResource("Grime")
+uv1_triplanar = true
+uv1_scale = Vector3(0.83, 0.83, 0.83)

@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/materials/building_grime.tres" id="Grime"]
+
+[resource]
+resource_name = "Blackened Iron"
+albedo_color = Color(0.2549, 0.2784, 0.2784, 1)
+metallic = 0.08
+roughness = 0.88
+albedo_texture = ExtResource("Grime")
+uv1_triplanar = true
+uv1_scale = Vector3(0.38, 0.38, 0.38)
+uv1_world_triplanar = true

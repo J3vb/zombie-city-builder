@@ -1,0 +1,17 @@
+[gd_resource type="NoiseTexture2D" load_steps=3 format=3]
+
+[sub_resource type="FastNoiseLite" id="SurfaceNoise"]
+seed = 41
+frequency = 0.036
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="DustAndPitting"]
+offsets = PackedFloat32Array(0, 0.34, 0.58, 1)
+colors = PackedColorArray(0.79, 0.77, 0.74, 1, 0.89, 0.88, 0.86, 1, 0.95, 0.95, 0.94, 1, 1, 1, 1, 1)
+
+[resource]
+width = 256
+height = 256
+seamless = true
+color_ramp = SubResource("DustAndPitting")
+noise = SubResource("SurfaceNoise")
