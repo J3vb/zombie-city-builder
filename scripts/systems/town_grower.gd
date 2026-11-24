@@ -13,7 +13,7 @@ var world: World
 var rules: BalanceDef
 var _farm: BuildingDef
 var _storage: BuildingDef
-var _last_income_day := 0
+var _last_reset_day := 0
 var _turn := 0
 var _hours := 0.0
 var _grown := 0
@@ -24,7 +24,7 @@ var _nearby := PackedInt32Array()
 func setup(owner_world: World) -> void:
 	world = owner_world
 	rules = world.plots.rules
-	_last_income_day = GameClock.day
+	_last_reset_day = GameClock.day
 	_farm = load("res://data/buildings/farm.tres")
 	_storage = load("res://data/buildings/storage.tres")
 	GameClock.sim_tick.connect(_tick)
@@ -57,13 +57,11 @@ func paint(rect: Rect2i, zone: BuildingDef) -> void:
 
 
 func _dawn(day: int) -> void:
-	if day <= _last_income_day:
+	if day <= _last_reset_day:
 		return
-	_last_income_day = day
+	_last_reset_day = day
 	_grown = 0
 	_upgraded = 0
-	for id: StringName in rules.daily_income:
-		Economy.add(id, rules.daily_income[id])
 
 
 func _tick(dt: float) -> void:

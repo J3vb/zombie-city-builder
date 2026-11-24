@@ -6,7 +6,7 @@ Made with **Godot 4.5** and **GDScript**.
 
 ## Status
 
-The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Place small gardens and scrap workshops on individual sites. Farms grow from plots into fenced fields and greenhouses. Storage grows from tarp piles into sheds and warehouses. Click a building to check its health or see what its next upgrade needs. See [the roadmap](docs/ROADMAP.md).
+The playable 3D prototype includes Station 4, timed construction, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Place small gardens and scrap workshops on individual sites. Farms grow from plots into fenced fields and greenhouses. Storage grows from tarp piles into sheds and warehouses. Click a building to check its health or see what its next upgrade needs. See [the roadmap](docs/ROADMAP.md).
 
 ### Construction
 
@@ -16,7 +16,11 @@ Station 4 starts with Ada, the town builder. Order a building or mark land for g
 
 Grow a home on a connected street and place a garden or scrap workshop nearby. One named resident moves into each completed home. Inspect the site to see who works there and how far their shift has progressed. **Manage worker** lets you reassign a resident or pause hiring. A completed garden shift earns 4 food. A workshop shift earns 4 scrap. Farms earn 6, 9 or 12 food as they upgrade.
 
-Goods arrive at dawn. Each resident then uses one food and one water. The dawn report shows output, use and shortages. The temporary construction grant still supplies 40 wood and 15 scrap per day. [See the garden shift in the playable town](docs/benchmarks/resident-shift.webp).
+A well earns 12 water per shift and a lumber yard earns 16 wood. Goods arrive at dawn, then everyone, including Ada, uses one food and one water. The dawn report lists goods stored, rations used, shortages and deliveries that could not fit. Missed rations slow work until the resident receives both again. [See a garden shift](docs/benchmarks/resident-shift.webp).
+
+Station 4 holds 100 of each resource. A finished tarp pile, shed or warehouse adds 40, 80 or 140 spaces respectively. Reserve enough starting wood for a home, a well and a lumber yard if you want to keep expanding.
+
+To try the five-day supply town, open `scenes/tests/supply_town.tscn` in Godot and press **F6**. Ten residents share two fields, a well, a lumber yard and a scrap workshop. Hordes are disabled and automatic growth starts paused so you can observe the accounts. Let the town reach dawn on day 6, pause hiring at the well, and reopen it after the water runs out. [See the day-six town](docs/benchmarks/supply-town.webp).
 
 ## Docs
 
@@ -44,7 +48,7 @@ Controls:
 | Mouse wheel | Zoom |
 | Home plot, then left click beside a connected street | Reserve the house and its street entrance |
 | Left click a building with no tool active | Inspect its level, health, next upgrade and current blocker |
-| Garden / Scrap workshop, then left click | Build a 1 × 1 garden or 2 × 2 workshop on clear land. Click again to place another. |
+| Garden / Well / Scrap workshop / Lumber yard, then left click | Order a one-tile garden or well, or a 2 × 2 workshop or yard, on clear land. Click again to place another. |
 | Farm zone / Storage zone, then drag | Paint land for automatic construction |
 | Land tools | Demolish a building, release an empty plot, remove a street or erase zoning |
 | Pause growth / Resume growth | Control automatic building and upgrades |

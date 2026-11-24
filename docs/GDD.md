@@ -75,6 +75,8 @@ These are the rules we check every feature against.
 | Ammo | Workshop (from scrap) | Towers, armed defenders |
 | Power | Generators (uses fuel) | Floodlights, electric fences |
 
+In the current prototype, gardens and fields produce food, wells supply water, lumber yards supply wood, and independent scrap workshops supply scrap. Residents deliver completed shifts at dawn, then use one food and one water each. Missed rations slow work until a fully supplied dawn. Finished storage increases the amount the town can keep.
+
 Rare items (radio parts, vehicle parts, blueprints) are only found outside. They unlock tech.
 
 ## 7. Citizens

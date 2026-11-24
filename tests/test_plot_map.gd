@@ -81,7 +81,7 @@ func test_growth_keeps_its_plot_facing_health_and_cost() -> void:
 	assert_eq(home.level, 3, "brick house on day four")
 	assert_eq(home.health, 150, "brick house retained half health")
 	assert_eq(original, home.cells, "same occupied cells through upgrades")
-	assert_eq(Economy.get_amount(&"wood"), before - 20 + 3 * 40 - 30 - 40, "each stage paid once")
+	assert_eq(Economy.get_amount(&"wood"), before - 20 - 30 - 40, "each stage paid once")
 	assert_eq(w.grid.get_cost(plot.door), 1, "walking access after upgrades")
 	fx.destroy()
 

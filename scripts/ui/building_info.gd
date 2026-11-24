@@ -69,6 +69,13 @@ func refresh(building: Building, grower: TownGrower) -> void:
 	if building.target_level == 1:
 		%Staff.hide()
 		%Assignment.hide()
+	elif building.storage_capacity() > 0:
+		%Assignment.hide()
+		%Staff.show()
+		%Staff.text = (
+			"Storage   +%d per resource\nTown limit   %d per resource"
+			% [building.storage_capacity(), Economy.capacity]
+		)
 	elif building == grower.world.command_post:
 		var crew := grower.world.construction
 		%Assignment.hide()
@@ -77,6 +84,10 @@ func refresh(building: Building, grower: TownGrower) -> void:
 		%Staff.text = (
 			"Builder   %s\n%s · %s" % [crew.builder.display_name, crew.builder.activity(), task]
 		)
+		if crew.builder.work_pace() < 1.0:
+			%Staff.text += (
+				"\nRation shortage · work pace %d%%" % roundi(crew.builder.work_pace() * 100)
+			)
 	else:
 		_refresh_staff(building)
 
@@ -115,6 +126,8 @@ func _refresh_staff(building: Building) -> void:
 			lines.append(
 				"Shift   %d%%" % int(100.0 * resident.shift_seconds / _jobs.rules.shift_seconds)
 			)
+		if resident.work_pace() < 1.0:
+			lines.append("Work pace   %d%%" % roundi(resident.work_pace() * 100))
 		if resident.hungry:
 			lines.append("Missed food at dawn")
 		if resident.thirsty:

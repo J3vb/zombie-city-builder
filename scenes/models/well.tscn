@@ -1,0 +1,94 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="Wood"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="Steel"]
+[ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="Stone"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="Paint"]
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="Iron"]
+
+[sub_resource type="CylinderMesh" id="Curb"]
+material = ExtResource("Stone")
+top_radius = 1.04
+bottom_radius = 1.04
+height = 0.74
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="Water"]
+material = ExtResource("Iron")
+top_radius = 0.78
+bottom_radius = 0.78
+height = 0.015
+radial_segments = 12
+
+[sub_resource type="BoxMesh" id="Post"]
+material = ExtResource("Wood")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="CylinderMesh" id="Wheel"]
+material = ExtResource("Steel")
+top_radius = 0.25
+bottom_radius = 0.25
+height = 0.09
+radial_segments = 12
+
+[sub_resource type="BoxMesh" id="Roof"]
+material = ExtResource("Paint")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="CylinderMesh" id="Bucket"]
+material = ExtResource("Steel")
+top_radius = 0.21
+bottom_radius = 0.21
+height = 0.35
+radial_segments = 12
+
+[node name="Well" type="Node3D"]
+
+[node name="WellCurb" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.37, 0)
+mesh = SubResource("Curb")
+
+[node name="WaterOpening" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.75, 0)
+mesh = SubResource("Water")
+
+[node name="LeftPost" type="MeshInstance3D" parent="."]
+position = Vector3(-1.07, 1.16, 0)
+scale = Vector3(0.16, 2.32, 0.18)
+mesh = SubResource("Post")
+
+[node name="RightPost" type="MeshInstance3D" parent="."]
+position = Vector3(1.07, 1.16, 0)
+scale = Vector3(0.16, 2.32, 0.18)
+mesh = SubResource("Post")
+
+[node name="Windlass" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.54, 0)
+scale = Vector3(2.50, 0.14, 0.15)
+mesh = SubResource("Post")
+
+[node name="Crank" type="MeshInstance3D" parent="."]
+position = Vector3(1.32, 1.54, 0)
+rotation = Vector3(0, 0, 1.57)
+mesh = SubResource("Wheel")
+
+[node name="LeftPitch" type="MeshInstance3D" parent="."]
+position = Vector3(-0.60, 2.35, 0)
+scale = Vector3(1.37, 0.12, 2.0)
+rotation = Vector3(0, 0, 0.32)
+mesh = SubResource("Roof")
+
+[node name="RightPitch" type="MeshInstance3D" parent="."]
+position = Vector3(0.60, 2.35, 0)
+scale = Vector3(1.37, 0.12, 2.0)
+rotation = Vector3(0, 0, -0.32)
+mesh = SubResource("Roof")
+
+[node name="Bucket" type="MeshInstance3D" parent="."]
+position = Vector3(0.35, 1.04, 0)
+mesh = SubResource("Bucket")
+
+[node name="Rope" type="MeshInstance3D" parent="."]
+position = Vector3(0.35, 1.33, 0)
+scale = Vector3(0.035, 0.35, 0.035)
+mesh = SubResource("Post")

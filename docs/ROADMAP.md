@@ -47,10 +47,10 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - Day/night sun, fog and night lighting
 - Playable now: draw a curved street from Station 4 ([#67](https://github.com/J3vb/zombie-city-builder/issues/67)). Preview, cancel and commit the curve, join two ends or make a T-junction. Validate the full road width against terrain and occupied cells.
 - Playable now: mark a residential plot on either side of a bend ([#68](https://github.com/J3vb/zombie-city-builder/issues/68)). Face the entrance toward the street, reserve the house and its entrance, and reject overlapping plots. Allow an empty plot to be removed and explain why an occupied plot prevents road removal.
-- Playable now: a tent grows into a shack and brick house on the same confirmed plot. Farms and storage grow in painted zones and advance through all three stages using placeholder models ([#75](https://github.com/J3vb/zombie-city-builder/issues/75)). Staffed farm output is playable in M2. Storage capacity is planned.
+- Playable now: a tent grows into a shack and brick house on the same confirmed plot. Farms and storage grow in painted zones and advance through all three stages using placeholder models ([#75](https://github.com/J3vb/zombie-city-builder/issues/75)). Staffed farm output is playable in M2. Each completed storage tier increases town capacity in M2.
 - Playable now: click a roof to inspect the building's health, level, upgrade cost, unlock day and current blocker ([#74](https://github.com/J3vb/zombie-city-builder/issues/74)).
 - Playable now: place a one-tile garden or a two-by-two scrap workshop on its own site, anywhere the building footprint is clear. Each can be inspected and demolished independently ([#77](https://github.com/J3vb/zombie-city-builder/issues/77)).
-- Playable now: temporary daily income pays for upgrades alongside staffed production until the well and lumber supply are playable.
+- Playable now: construction and upgrades draw on starting stock and staffed production.
 - Art: the tent, shack and brick house models and their shared materials are on main ([#65](https://github.com/J3vb/zombie-city-builder/pull/65)). Station 4, farm and storage models, the Walker and props remain.
 - Verify the Windows x64 game after the art pass.
 
@@ -62,13 +62,13 @@ Goal: citizens make the economy run.
 
 - Citizens with needs (food, water, sleep), pathfinding with AStarGrid2D. Named residents now walk from a road-facing home to a reachable worksite. Food and water rations and dusk shelter are playable. Sleep and further needs remain.
 - Zombies chase citizens within 4 tiles
-- Playable now: automatic and manual worker assignment for gardens, farms and scrap workshops. Each person works at most one completed shift per day.
+- Playable now: automatic and manual worker assignment for gardens, farms, wells, lumber yards and scrap workshops. Each person works at most one completed shift per day.
 - Playable now: the Station 4 builder travels to paid construction sites, completes buildings and upgrades over time, and returns at dawn to resume unfinished work. Inspect or cancel an order ([#17](https://github.com/J3vb/zombie-city-builder/issues/17)).
-- Production buildings: farm, well, lumber yard, scrap yard
-- Playable now: completed shifts supply food and scrap at dawn. The report shows food and water used and any shortage. Next add staffed water and lumber, storage limits and consequences for prolonged shortages.
+- Playable now: staffed production supplies food, water, wood and scrap at dawn. Completed storage increases capacity. Missed rations slow work until the next fully fed and watered dawn.
+- Five-day economy check passed with ten people, two fields and three other workplaces. It starts with finished sites, pauses automatic growth and disables hordes. The remaining M2 work is civilian danger, injury, death and shelter under attack.
 - Citizens flee to homes at night
 
-**Done when:** a town of 10 citizens can feed itself for 5 days.
+**Economy acceptance:** ten citizens can feed and water themselves for five days. Run `scenes/tests/supply_town.tscn` or the automated supply economy test.
 
 ## M3: Walls and defense
 

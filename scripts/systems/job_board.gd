@@ -9,6 +9,7 @@ var sites: Array[Building] = []
 var routes := ResidentRoutes.new()
 var pending: Dictionary[StringName, int] = {}
 var last_output: Dictionary[StringName, int] = {}
+var last_overflow: Dictionary[StringName, int] = {}
 var last_consumed: Dictionary[StringName, int] = {}
 var last_shortage: Dictionary[StringName, int] = {}
 var last_dawn := 0
@@ -190,7 +191,7 @@ func _tick(dt: float) -> void:
 		var on_site := resident.travel(dt, rules.resident_speed)
 		if resident.state != Resident.State.WORKING or on_site <= 0.0:
 			continue
-		resident.shift_seconds += on_site
+		resident.shift_seconds += on_site * resident.work_pace()
 		if resident.shift_seconds < rules.shift_seconds:
 			continue
 		var site := resident.job
@@ -205,16 +206,24 @@ func _dawn(day: int) -> void:
 	if day <= last_dawn:
 		return
 	last_dawn = day
-	last_output = pending.duplicate()
+	var harvested := pending.duplicate()
+	last_output.clear()
+	last_overflow.clear()
 	pending.clear()
 	last_consumed.clear()
 	last_shortage.clear()
-	for item in last_output:
-		Economy.add(item, last_output[item])
+	for item in harvested:
+		var received := Economy.add(item, harvested[item])
+		if received > 0:
+			last_output[item] = received
+		if harvested[item] > received:
+			last_overflow[item] = harvested[item] - received
 	var eaters := residents.duplicate()
 	eaters.append(world.construction.builder)
 	for resident in eaters:
 		resident.shift_seconds = 0.0
+		var hungry := false
+		var thirsty := false
 		for item in rules.daily_ration:
 			var need := rules.daily_ration[item]
 			var amount := mini(Economy.get_amount(item), need)
@@ -224,9 +233,10 @@ func _dawn(day: int) -> void:
 			if amount < need:
 				last_shortage[item] = last_shortage.get(item, 0) + need - amount
 			if item == &"food":
-				resident.hungry = amount < need
+				hungry = amount < need
 			elif item == &"water":
-				resident.thirsty = amount < need
+				thirsty = amount < need
+		resident.update_ration(hungry, thirsty)
 	_dirty = true
 
 
