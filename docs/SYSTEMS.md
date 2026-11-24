@@ -61,7 +61,7 @@ Each confirmed home plot stores its street ID, attachment point, frontage polygo
 
 The grower rotates through upgrades, housing, farms and storage during daylight. It skips an unavailable site and saves up on a valid turn that lacks resources. A tent costs 20 wood. From day two, a shack costs another 30 wood and 10 scrap. From day four, brick costs another 40 wood and 30 scrap. Upgrades keep the same footprint and health fraction. The temporary economy adds 40 wood and 15 scrap at dawn. Paint at least a 3 × 3 area for a farm or a 2 × 2 area for storage. Both can grow through three stages.
 
-Select Garden or Scrap workshop and click a clear footprint to build immediately. A garden occupies one tile and costs 10 wood. A workshop takes 2 × 2 tiles and costs 20 wood and 10 scrap. Both can be placed before the first home. They have their own health, footprint and demolition refund. Staffed output arrives in M2.
+Select Garden or Scrap workshop and click a clear footprint to build immediately. A garden occupies one tile and costs 10 wood. A workshop takes 2 × 2 tiles and costs 20 wood and 10 scrap. Both can be placed before the first home. They have their own health, footprint and demolition refund. During M2 a staffed garden or workshop pays its completed shift at dawn.
 
 Demolishing refunds half the initial construction cost once. A demolished home leaves its residential plot reserved. Remove Plot releases empty land. Removing a street clears its vacant plots. The game prevents removal of any road that would leave an occupied home without access to Station 4. Unzone leaves existing farm and storage buildings standing.
 
@@ -107,6 +107,14 @@ Run `res://scenes/tests/frontage_town.tscn` for a playable bend with a junction,
   - Morale: affected by food, deaths, infections inside, and wins. Low morale = slower work, and later, citizens leave.
 - **Depends on:** Grid, Buildings, Economy, Clock.
 - **Milestone:** M2.
+
+### Playable first shifts
+
+A home on confirmed frontage houses one named resident. A displaced resident can shelter at Station 4 and takes a vacant bed before a new resident joins. Each garden, farm or scrap workshop offers one job. The world job board assigns the nearest reachable vacancy. The building inspector can transfer a named worker or pause hiring. Grid passability and terrain weights feed a four-direction A* route to a free edge cell. A layout change invalidates the route. Residents leave for shelter after their shift or at dusk.
+
+One shift requires 60 simulated seconds on site. Reassignment, demolition or dawn discards unfinished work. A completed shift survives demolition and pays once the next dawn, before each resident uses one food and one water. A garden produces 4 food, a farm produces 6, 9 or 12 food, and a workshop produces 4 scrap. The HUD reports earned output separately from the temporary 40 wood and 15 scrap construction grant. Unmet rations appear on the resident and in the dawn report.
+
+Run the staffing and crowd benchmark on the reference PC with `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_residents.gd`. It builds and staffs 50 homes and workplaces, then measures six seconds with 500 active Walkers after a two-second warmup.
 
 ## 6. Walls, gates and checkpoints
 

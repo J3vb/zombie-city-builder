@@ -22,6 +22,7 @@ var _task_started_usec := 0
 @onready var grid: Grid = $Grid
 @onready var buildings: Node3D = $Buildings
 @onready var plots: PlotMap = $PlotMap
+@onready var jobs: JobBoard = $JobBoard
 @onready var grower: TownGrower = $Grower
 @onready var plot_tool: PlotTool = $PlotTool
 @onready var roads: RoadNetwork = $RoadNetwork
@@ -45,6 +46,7 @@ func _ready() -> void:
 	road_tool.setup(self)
 	plots.setup(self)
 	grower.setup(self)
+	jobs.setup(self)
 	plot_tool.setup(self)
 	camera.position = to_view(command_post.sim_center())
 	grid.changed.connect(_on_grid_changed)
@@ -92,7 +94,7 @@ func can_build_on(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -
 		)
 	):
 		return false
-	if not grid.is_free(cells, site.id if site != null else 0):
+	if not grid.is_free(cells, site.id if site != null else 0) or jobs.blocks_placement(cells):
 		return false
 	for c in cells:
 		if zombies.query(grid.cell_to_world(c), grid.tile_size * 0.71, _nearby_zombies) > 0:
@@ -126,7 +128,7 @@ func spawn_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null)
 		return null
 	var building := def.scene.instantiate() as Building
 	building.setup(def, cell, grid, site)
-	if not grid.occupy(building.cells, building):
+	if jobs.blocks_placement(building.cells) or not grid.occupy(building.cells, building):
 		building.free()
 		return null
 	if site != null:

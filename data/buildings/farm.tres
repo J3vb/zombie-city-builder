@@ -36,6 +36,8 @@ model_path = "res://scenes/models/farm_3.tscn"
 [resource]
 script = ExtResource("1_def")
 id = &"farm"
+output_resource = &"food"
+shift_yields = PackedInt32Array(6, 9, 12)
 placement = 2
 display_name = "Farm"
 size = Vector2i(3, 3)

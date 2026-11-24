@@ -63,3 +63,12 @@ extends Resource
 	&"medicine": 5,
 	&"ammo": 0,
 }
+
+@export_group("Residents")
+@export var resident_limit: int = 100
+@export var resident_speed: float = 40.0
+@export var shift_seconds: float = 60.0
+@export var resident_names := PackedStringArray(
+	["Mara", "Elias", "Noor", "Bram", "Lena", "Raf", "Ada", "Ivo", "Nina", "Otis"]
+)
+@export var daily_ration: Dictionary[StringName, int] = {&"food": 1, &"water": 1}

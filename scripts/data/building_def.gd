@@ -4,6 +4,8 @@ extends Resource
 
 enum Placement { DIRECT, HOME_PLOT, ZONE }
 
+@export var output_resource: StringName
+@export var shift_yields := PackedInt32Array()
 @export var placement := Placement.DIRECT
 @export var id: StringName
 @export var display_name: String

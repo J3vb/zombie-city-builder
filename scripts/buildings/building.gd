@@ -42,6 +42,14 @@ func sim_center() -> Vector2:
 	return plot.center if plot != null else sim_bounds().get_center()
 
 
+func shift_output() -> int:
+	return (
+		def.shift_yields[mini(level, def.shift_yields.size()) - 1]
+		if not def.shift_yields.is_empty()
+		else 0
+	)
+
+
 func max_health() -> int:
 	return def.levels[level - 1].max_health if not def.levels.is_empty() else def.max_health
 

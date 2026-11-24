@@ -6,6 +6,7 @@ const SHOWN_RESOURCES: Array[StringName] = [&"food", &"water", &"wood", &"scrap"
 const CATALOG := preload("res://data/buildings/catalog.tres")
 
 var _land_buttons: Dictionary[int, Button] = {}
+var _displayed_dawn := 0
 var _growth := Button.new()
 var _road_button := Button.new()
 var _build_tool: BuildTool
@@ -86,7 +87,9 @@ func _ready() -> void:
 
 func bind(build_tool: BuildTool) -> void:
 	_build_tool = build_tool
-	$BuildingInfo.hide()
+	$BuildingInfo.reset()
+	%DawnReport.hide()
+	_displayed_dawn = 0
 
 
 func _process(_delta: float) -> void:
@@ -98,6 +101,21 @@ func _process(_delta: float) -> void:
 		return
 	var world := _build_tool.world
 	var tool := world.plot_tool
+	%Residents.text = "Residents %d" % world.jobs.residents.size()
+	if world.jobs.last_dawn != _displayed_dawn:
+		_displayed_dawn = world.jobs.last_dawn
+		%DawnReport.visible = not world.jobs.last_consumed.is_empty()
+		var report := (
+			"Dawn %d   ·   Produced %s   ·   Used %s"
+			% [
+				_displayed_dawn,
+				_amounts(world.jobs.last_output),
+				_amounts(world.jobs.last_consumed)
+			]
+		)
+		if not world.jobs.last_shortage.is_empty():
+			report += "   ·   Short %s" % _amounts(world.jobs.last_shortage)
+		%DawnReport.text = report
 	$BuildingInfo.refresh(tool.selected_building, world.grower)
 	_road_button.set_pressed_no_signal(world.road_tool.active)
 	_growth.text = "Resume growth" if world.grower.paused else "Pause growth"
@@ -118,6 +136,10 @@ func _process(_delta: float) -> void:
 		_build_buttons[def].set_pressed_no_signal(active)
 	for action in _land_buttons:
 		_land_buttons[action].set_pressed_no_signal(action == tool.mode)
+
+
+func _amounts(amounts: Dictionary[StringName, int]) -> String:
+	return "0" if amounts.is_empty() else BuildingDef.format_cost(amounts)
 
 
 func _hour() -> int:

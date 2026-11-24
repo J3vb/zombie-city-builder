@@ -47,10 +47,10 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - Day/night sun, fog and night lighting
 - Playable now: draw a curved street from Station 4 ([#67](https://github.com/J3vb/zombie-city-builder/issues/67)). Preview, cancel and commit the curve, join two ends or make a T-junction. Validate the full road width against terrain and occupied cells.
 - Playable now: mark a residential plot on either side of a bend ([#68](https://github.com/J3vb/zombie-city-builder/issues/68)). Face the entrance toward the street, reserve the house and its entrance, and reject overlapping plots. Allow an empty plot to be removed and explain why an occupied plot prevents road removal.
-- Playable now: a tent grows into a shack and brick house on the same confirmed plot. Farms and storage grow in painted zones and advance through all three stages using placeholder models ([#75](https://github.com/J3vb/zombie-city-builder/issues/75)). Farm output and storage capacity belong to M2.
+- Playable now: a tent grows into a shack and brick house on the same confirmed plot. Farms and storage grow in painted zones and advance through all three stages using placeholder models ([#75](https://github.com/J3vb/zombie-city-builder/issues/75)). Staffed farm output is playable in M2. Storage capacity is planned.
 - Playable now: click a roof to inspect the building's health, level, upgrade cost, unlock day and current blocker ([#74](https://github.com/J3vb/zombie-city-builder/issues/74)).
 - Playable now: place a one-tile garden or a two-by-two scrap workshop on its own site, anywhere the building footprint is clear. Each can be inspected and demolished independently ([#77](https://github.com/J3vb/zombie-city-builder/issues/77)).
-- Playable now: temporary daily income pays for upgrades before M2 introduces production.
+- Playable now: temporary daily income pays for upgrades alongside staffed production until the well and lumber supply are playable.
 - Art: the tent, shack and brick house models and their shared materials are on main ([#65](https://github.com/J3vb/zombie-city-builder/pull/65)). Station 4, farm and storage models, the Walker and props remain.
 - Verify the Windows x64 game after the art pass.
 
@@ -60,12 +60,12 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 
 Goal: citizens make the economy run.
 
-- Citizens with needs (food, water, sleep), pathfinding with AStarGrid2D. First route a resident from their front door to an independent garden or farm and verify a staffed food yield at dawn.
+- Citizens with needs (food, water, sleep), pathfinding with AStarGrid2D. Named residents now walk from a road-facing home to a reachable worksite. Food and water rations and dusk shelter are playable. Sleep and further needs remain.
 - Zombies chase citizens within 4 tiles
-- Job board and job assignment
+- Playable now: automatic and manual worker assignment for gardens, farms and scrap workshops. Each person works at most one completed shift per day.
 - Builders build construction sites over time
 - Production buildings: farm, well, lumber yard, scrap yard
-- Daily upkeep and shortages
+- Playable now: completed shifts supply food and scrap at dawn. The report shows food and water used and any shortage. Next add staffed water and lumber, storage limits and consequences for prolonged shortages.
 - Citizens flee to homes at night
 
 **Done when:** a town of 10 citizens can feed itself for 5 days.
