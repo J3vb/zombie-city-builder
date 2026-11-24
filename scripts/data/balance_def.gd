@@ -68,6 +68,8 @@ extends Resource
 @export var builder_name: String = "Ada"
 @export var resident_limit: int = 100
 @export var resident_speed: float = 40.0
+@export var resident_health: int = 40
+@export var resident_radius: float = 6.0
 @export_range(0.0, 1.0) var shortage_pace_loss: float = 0.1
 @export_range(0.01, 1.0) var minimum_work_pace: float = 0.5
 @export var shift_seconds: float = 60.0

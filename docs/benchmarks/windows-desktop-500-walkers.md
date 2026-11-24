@@ -49,3 +49,10 @@ godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench
 The frontage test scene places two homes on opposite sides of a curved street with a T-junction. On the same desktop at 1920 × 1080 uncapped, both homes reached the brick stage before the crowd was introduced. A short rendered check with 500 active Walkers averaged 514 FPS during the day and 508 FPS at night. Frame p95 was 2.32 ms and 2.30 ms respectively. Each sample ran for two seconds after a 0.3-second warm-up. This snapshot used the prototype meshes.
 
 [Daytime screenshot with 500 Walkers](frontage-town.webp)
+
+
+## Civilian pursuit and shelter
+
+On the reference Windows desktop (Ryzen 9 7950X3D, RTX 4080 Super), the staffed town averaged **153.8 FPS**, with a **7.05 ms** 95th-percentile frame in Godot 4.7.2 at 1920 × 1080 uncapped. The trial used 50 housed workers, the Station 4 builder and 500 active Walkers. After a two-second warm-up, it sampled six seconds of rendered frames. The benchmark’s Walkers use zero civilian damage to keep the population fixed. Pursuit, collision and flight run normally.
+
+In a separate rendered encounter with normal damage, Noor left the well and reached home with 40/40 health. The inspector showed her departure and the HUD displayed the shelter alert. [Windows capture](civilian-shelter.webp).

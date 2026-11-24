@@ -102,7 +102,14 @@ func _process(_delta: float) -> void:
 		return
 	var world := _build_tool.world
 	var tool := world.plot_tool
-	%Residents.text = "Residents %d" % (world.jobs.residents.size() + 1)
+	%Residents.text = "Residents %d" % world.safety.people.size()
+	var alarm := PackedStringArray()
+	if world.safety.threatened > 0:
+		alarm.append("Shelter alert · Walkers near %d" % world.safety.threatened)
+	if not world.safety.last_loss.is_empty():
+		alarm.append("Last casualty: %s" % world.safety.last_loss)
+	%CivilianAlert.text = "   ·   ".join(alarm)
+	%CivilianAlert.visible = not alarm.is_empty()
 	if world.jobs.last_dawn != _displayed_dawn:
 		_displayed_dawn = world.jobs.last_dawn
 		%DawnReport.visible = not world.jobs.last_consumed.is_empty()

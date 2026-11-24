@@ -12,6 +12,7 @@ func _ready() -> void:
 	%NewGame.pressed.connect(func() -> void: new_game_pressed.emit())
 
 
-func show_result(day: int) -> void:
-	_label.text = "The Command Post has fallen.\nYou held out until day %d." % day
+func show_result(day: int, no_survivors: bool = false) -> void:
+	var reason := "The last resident has died." if no_survivors else "The Command Post has fallen."
+	_label.text = "%s\nYou held out until day %d." % [reason, day]
 	show()

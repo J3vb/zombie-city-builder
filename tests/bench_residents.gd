@@ -99,7 +99,9 @@ func _run() -> void:
 	w.camera.position = w.to_view(center)
 	w.camera.distance = 215
 	w.camera._apply()
-	var walker: Resource = load("res://data/zombies/walker.tres")
+	# Keep the measured population constant while exercising pursuit, contact and shelter.
+	var walker: Resource = load("res://data/zombies/walker.tres").duplicate()
+	walker.civilian_damage = 0
 	for i in WALKERS:
 		var point: Vector2 = (
 			center
