@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/materials/building_grime.tres" id="Grime"]
+
+[resource]
+resource_name = "Faded Teal"
+albedo_color = Color(0.299, 0.432, 0.414, 1)
+roughness = 0.93
+albedo_texture = ExtResource("Grime")
+uv1_triplanar = true
+uv1_world_triplanar = true
+uv1_scale = Vector3(0.59, 0.35, 0.59)

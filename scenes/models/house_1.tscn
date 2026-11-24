@@ -1,0 +1,183 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/olive_canvas.tres" id="tarp"]
+[ext_resource type="ArrayMesh" path="res://scenes/models/tent_canvas.obj" id="CanvasCut"]
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="iron"]
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="wood"]
+[ext_resource type="Material" path="res://assets/materials/old_ivory_paint.tres" id="paint"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="teal"]
+[ext_resource type="Material" path="res://assets/materials/amber_glass.tres" id="warm"]
+
+[sub_resource type="BoxMesh" id="BoxIron"]
+material = ExtResource("iron")
+
+[sub_resource type="BoxMesh" id="BoxWood"]
+material = ExtResource("wood")
+
+[sub_resource type="MultiMesh" id="TimberFrames"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0, 1.85, 0.05503, -0.945, 0, 1.89, -0.05386, 1.015, -0.077, 0, 0, -2.39,
+    0, -1.85, -0.05503, 0.945, 0, 1.89, -0.05386, 1.015, 0.077, 0, 0, -2.39,
+    0, 1.85, 0.05503, -0.945, 0, 1.89, -0.05386, 1.015, -0.077, 0, 0, 2.14,
+    0, -1.85, -0.05503, 0.945, 0, 1.89, -0.05386, 1.015, 0.077, 0, 0, 2.14
+)
+
+[sub_resource type="MultiMesh" id="RidgeSupports"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.07, 0, 0, 0, 0, -0.1, -0.06974, 1.866, 0, 1.15, -0.00606, -1.885,
+    0.07, 0, 0, 0, 0, -0.05, -0.06993, 1.791, 0, 1.13, -0.00309, -0.745,
+    0.07, 0, 0, 0, 0, 0.04, -0.06996, 1.786, 0, 1.23, 0.00228, 0.435,
+    0.07, 0, 0, 0, 0, 0.11, -0.0697, 1.861, 0, 1.18, 0.0065, 1.64
+)
+
+[sub_resource type="MultiMesh" id="RidgePins"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.09, 0, 0, 0, 0, 0.108, 0, 1.946, 0, 0, 0.18, -2.46,
+    0.09, 0, 0, 0, 0, 0.108, 0, 1.946, 0, 0, 0.18, 2.23
+)
+
+[sub_resource type="BoxMesh" id="BoxTarp"]
+material = ExtResource("tarp")
+
+[sub_resource type="MultiMesh" id="CanvasWebbing"]
+transform_format = 1
+instance_count = 8
+mesh = SubResource("BoxTarp")
+buffer = PackedFloat32Array(
+    0, 1.06, 0.0228, -1.72, 0, 0.605, -0.03995, 0.8875, -0.046, 0, 0, -1.31,
+    0, 1.19, 0.02357, -0.595, 0, 0.71, -0.0395, 1.545, -0.046, 0, 0, -1.31,
+    0, 1.19, -0.02357, 0.595, 0, -0.71, -0.0395, 1.545, -0.046, 0, 0, -1.31,
+    0, 1.06, -0.0228, 1.72, 0, -0.605, -0.03995, 0.8875, -0.046, 0, 0, -1.31,
+    0, 1.06, 0.02259, -1.72, 0, 0.5975, -0.04007, 0.88125, -0.046, 0, 0, 1.05,
+    0, 1.19, 0.02357, -0.595, 0, 0.71, -0.0395, 1.535, -0.046, 0, 0, 1.05,
+    0, 1.19, -0.02357, 0.595, 0, -0.71, -0.0395, 1.535, -0.046, 0, 0, 1.05,
+    0, 1.06, -0.02259, 1.72, 0, -0.5975, -0.04007, 0.88125, -0.046, 0, 0, 1.05
+)
+
+[sub_resource type="BoxMesh" id="BoxPaint"]
+material = ExtResource("paint")
+
+[sub_resource type="MultiMesh" id="GuyLines"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxPaint")
+buffer = PackedFloat32Array(
+    -0.01207, -0.8, 0.01006, -2.64, 0, -0.41, -0.02454, 0.365, 0.02415, -0.4, 0.00503, -2.49,
+    -0.01207, 0.8, -0.01006, 2.64, 0, -0.41, -0.02454, 0.365, -0.02415, -0.4, 0.00503, -2.49,
+    0.01207, -0.8, 0.01006, -2.64, 0, -0.41, -0.02454, 0.365, 0.02415, 0.4, -0.00503, 2.17,
+    0.01207, 0.8, -0.01006, 2.64, 0, -0.41, -0.02454, 0.365, -0.02415, 0.4, -0.00503, 2.17
+)
+
+[sub_resource type="MultiMesh" id="GroundPegs"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.0763, -0.05822, 0, -3.04, 0.01622, 0.27388, 0, 0.146, 0, 0, 0.078, -2.69,
+    0.0763, 0.05822, 0, 3.04, -0.01622, 0.27388, 0, 0.146, 0, 0, 0.078, -2.69,
+    0.0763, -0.05822, 0, -3.04, 0.01622, 0.27388, 0, 0.146, 0, 0, 0.078, 2.37,
+    0.0763, 0.05822, 0, 3.04, -0.01622, 0.27388, 0, 0.146, 0, 0, 0.078, 2.37
+)
+
+[sub_resource type="BoxMesh" id="BoxTeal"]
+material = ExtResource("teal")
+
+[sub_resource type="MultiMesh" id="Bedrolls"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxTeal")
+buffer = PackedFloat32Array(
+    0.7, 0, 0, -1.09, 0, 0.17, 0, 0.15, 0, 0, 1.76, -0.97,
+    0.7, 0, 0, 1.09, 0, 0.17, 0, 0.15, 0, 0, 1.76, -0.97
+)
+
+[sub_resource type="CylinderMesh" id="CylinderTarp"]
+material = ExtResource("tarp")
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 10
+rings = 0
+
+[sub_resource type="MultiMesh" id="RolledBlankets"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("CylinderTarp")
+buffer = PackedFloat32Array(
+    0, -0.69, 0, -1.09, 0.29, 0, 0, 0.31, 0, 0, 0.29, -1.59,
+    0, -0.69, 0, 1.09, 0.29, 0, 0, 0.31, 0, 0, 0.29, -1.59
+)
+
+[sub_resource type="MultiMesh" id="CrateBands"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxIron")
+buffer = PackedFloat32Array(
+    0.77, 0, 0, 1.73, 0, 0.048, 0, 0.11, 0, 0, 0.63, 2.61,
+    0.77, 0, 0, 1.73, 0, 0.048, 0, 0.37, 0, 0, 0.63, 2.61
+)
+
+[sub_resource type="BoxMesh" id="BoxWarm"]
+material = ExtResource("warm")
+
+[node name="RidgeTent" type="Node3D"]
+
+[node name="CanvasShell" type="MeshInstance3D" parent="."]
+material_override = ExtResource("tarp")
+mesh = ExtResource("CanvasCut")
+
+[node name="Groundsheet" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.47, 0, 0, 0, 0.07, 0, 0, 0, 4.7, 0, 0.035, -0.12)
+mesh = SubResource("BoxIron")
+
+[node name="TimberFrames" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("TimberFrames")
+
+[node name="RidgeSupports" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RidgeSupports")
+
+[node name="RidgePins" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RidgePins")
+
+[node name="CanvasWebbing" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("CanvasWebbing")
+
+[node name="GuyLines" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("GuyLines")
+
+[node name="GroundPegs" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("GroundPegs")
+
+[node name="Bedrolls" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("Bedrolls")
+
+[node name="RolledBlankets" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RolledBlankets")
+
+[node name="EntryCrate" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.75, 0, 0, 0, 0.48, 0, 0, 0, 0.61, 1.73, 0.24, 2.61)
+mesh = SubResource("BoxWood")
+
+[node name="CrateBands" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("CrateBands")
+
+[node name="LanternBase" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.19, 0, 0, 0, 0.08, 0, 0, 0, 0.19, 1.73, 0.52, 2.61)
+mesh = SubResource("BoxIron")
+
+[node name="LanternGlass" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.14, 0, 0, 0, 0.16, 0, 0, 0, 0.14, 1.73, 0.635, 2.61)
+mesh = SubResource("BoxWarm")
+
+[node name="LanternCap" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.21, 0, 0, 0, 0.055, 0, 0, 0, 0.21, 1.73, 0.74, 2.61)
+mesh = SubResource("BoxIron")

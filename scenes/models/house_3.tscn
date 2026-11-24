@@ -1,0 +1,597 @@
+[gd_scene load_steps=47 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="stone"]
+[ext_resource type="Material" path="res://assets/materials/fired_brick.tres" id="brick"]
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="iron"]
+[ext_resource type="Material" path="res://assets/materials/oxide_red.tres" id="red"]
+[ext_resource type="Material" path="res://assets/materials/old_ivory_paint.tres" id="paint"]
+[ext_resource type="Material" path="res://assets/materials/amber_glass.tres" id="warm"]
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="wood"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="steel"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="teal"]
+
+[sub_resource type="BoxMesh" id="Masonry"]
+material = ExtResource("brick")
+size = Vector3(5.04, 4.28, 5.18)
+
+[sub_resource type="PrismMesh" id="BrickGables"]
+material = ExtResource("brick")
+size = Vector3(5.04, 1.49, 5.18)
+
+[sub_resource type="BoxMesh" id="ChimneyStack"]
+material = ExtResource("brick")
+size = Vector3(0.67, 1.15, 0.78)
+
+[sub_resource type="BoxMesh" id="BoxStone"]
+material = ExtResource("stone")
+
+[sub_resource type="BoxMesh" id="BoxIron"]
+material = ExtResource("iron")
+
+[sub_resource type="MultiMesh" id="RoofDecks"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxIron")
+buffer = PackedFloat32Array(
+    2.78, -0.05853, 0, -1.38, 1.64373, 0.09899, 0, 5.20905, 0, 0, 5.63, -0.24,
+    2.78, 0.05853, 0, 1.38, -1.64373, 0.09899, 0, 5.20905, 0, 0, 5.63, -0.24
+)
+
+[sub_resource type="BoxMesh" id="BoxRed"]
+material = ExtResource("red")
+
+[sub_resource type="MultiMesh" id="Pantiles"]
+transform_format = 1
+instance_count = 146
+mesh = SubResource("BoxRed")
+buffer = PackedFloat32Array(
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -2.7015,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -2.1545,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -1.6075,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -1.0605,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -0.5135,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 0.0335,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 0.5805,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 1.1275,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 1.6745,
+    0.42481, -0.03496, 0, -0.19, 0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 2.2215,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.2545, -2.83825,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -2.428,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -1.881,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -1.334,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -0.787,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -0.24,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 0.307,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 0.854,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 1.401,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 1.948,
+    0.42481, -0.03496, 0, -0.582, 0.22773, 0.06522, 0, 5.76388, 0, 0, 0.2545, 2.35825,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -2.7015,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -2.1545,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -1.6075,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -1.0605,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -0.5135,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 0.0335,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 0.5805,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 1.1275,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 1.6745,
+    0.42481, -0.03496, 0, -0.974, 0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 2.2215,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.2545, -2.83825,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -2.428,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -1.881,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -1.334,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -0.787,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -0.24,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 0.307,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 0.854,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 1.401,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 1.948,
+    0.42481, -0.03496, 0, -1.366, 0.22773, 0.06522, 0, 5.30033, 0, 0, 0.2545, 2.35825,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -2.7015,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -2.1545,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -1.6075,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -1.0605,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -0.5135,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 0.0335,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 0.5805,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 1.1275,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 1.6745,
+    0.42481, -0.03496, 0, -1.758, 0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 2.2215,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.2545, -2.83825,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -2.428,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -1.881,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -1.334,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -0.787,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -0.24,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 0.307,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 0.854,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 1.401,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 1.948,
+    0.42481, -0.03496, 0, -2.15, 0.22773, 0.06522, 0, 4.83677, 0, 0, 0.2545, 2.35825,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -2.7015,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -2.1545,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -1.6075,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -1.0605,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -0.5135,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 0.0335,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 0.5805,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 1.1275,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 1.6745,
+    0.42481, -0.03496, 0, -2.542, 0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 2.2215,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -2.7015,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -2.1545,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -1.6075,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -1.0605,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, -0.5135,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 0.0335,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 0.5805,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 1.1275,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 1.6745,
+    0.42481, 0.03496, 0, 0.19, -0.22773, 0.06522, 0, 5.99566, 0, 0, 0.528, 2.2215,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.2545, -2.83825,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -2.428,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -1.881,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -1.334,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -0.787,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, -0.24,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 0.307,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 0.854,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 1.401,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.528, 1.948,
+    0.42481, 0.03496, 0, 0.582, -0.22773, 0.06522, 0, 5.76388, 0, 0, 0.2545, 2.35825,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -2.7015,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -2.1545,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -1.6075,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -1.0605,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, -0.5135,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 0.0335,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 0.5805,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 1.1275,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 1.6745,
+    0.42481, 0.03496, 0, 0.974, -0.22773, 0.06522, 0, 5.5321, 0, 0, 0.528, 2.2215,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.2545, -2.83825,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -2.428,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -1.881,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -1.334,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -0.787,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, -0.24,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 0.307,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 0.854,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 1.401,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.528, 1.948,
+    0.42481, 0.03496, 0, 1.366, -0.22773, 0.06522, 0, 5.30033, 0, 0, 0.2545, 2.35825,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -2.7015,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -2.1545,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -1.6075,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -1.0605,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, -0.5135,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 0.0335,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 0.5805,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 1.1275,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 1.6745,
+    0.42481, 0.03496, 0, 1.758, -0.22773, 0.06522, 0, 5.06855, 0, 0, 0.528, 2.2215,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.2545, -2.83825,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -2.428,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -1.881,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -1.334,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -0.787,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, -0.24,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 0.307,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 0.854,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 1.401,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.528, 1.948,
+    0.42481, 0.03496, 0, 2.15, -0.22773, 0.06522, 0, 4.83677, 0, 0, 0.2545, 2.35825,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -2.7015,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -2.1545,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -1.6075,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -1.0605,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, -0.5135,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 0.0335,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 0.5805,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 1.1275,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 1.6745,
+    0.42481, 0.03496, 0, 2.542, -0.22773, 0.06522, 0, 4.60499, 0, 0, 0.528, 2.2215
+)
+
+[sub_resource type="CylinderMesh" id="CylinderRed"]
+material = ExtResource("red")
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 10
+rings = 0
+
+[sub_resource type="MultiMesh" id="ClayPots"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("CylinderRed")
+buffer = PackedFloat32Array(
+    0.25, 0, 0, -1.03, 0, 0.15, 0, 6.425, 0, 0, 0.25, -1.77,
+    0.25, 0, 0, -1.03, 0, 0.15, 0, 6.425, 0, 0, 0.25, -1.34
+)
+
+[sub_resource type="CylinderMesh" id="CylinderIron"]
+material = ExtResource("iron")
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 10
+rings = 0
+
+[sub_resource type="MultiMesh" id="FlueThroats"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("CylinderIron")
+buffer = PackedFloat32Array(
+    0.16, 0, 0, -1.03, 0, 0.008, 0, 6.496, 0, 0, 0.16, -1.77,
+    0.16, 0, 0, -1.03, 0, 0.008, 0, 6.496, 0, 0, 0.16, -1.34
+)
+
+[sub_resource type="BoxMesh" id="BoxPaint"]
+material = ExtResource("paint")
+
+[sub_resource type="MultiMesh" id="FrontCasings"]
+transform_format = 1
+instance_count = 3
+mesh = SubResource("BoxPaint")
+buffer = PackedFloat32Array(
+    1.29, 0, 0, -1.29, 0, 1.23, 0, 1.55, 0, 0, 0.12, 2.38,
+    1.29, 0, 0, -1.29, 0, 1.23, 0, 3.66, 0, 0, 0.12, 2.38,
+    1.29, 0, 0, 1.05, 0, 1.23, 0, 3.66, 0, 0, 0.12, 2.38
+)
+
+[sub_resource type="MultiMesh" id="FrontFrames"]
+transform_format = 1
+instance_count = 3
+mesh = SubResource("BoxIron")
+buffer = PackedFloat32Array(
+    1.13, 0, 0, -1.29, 0, 1.06, 0, 1.55, 0, 0, 0.044, 2.449,
+    1.13, 0, 0, -1.29, 0, 1.06, 0, 3.66, 0, 0, 0.044, 2.449,
+    1.13, 0, 0, 1.05, 0, 1.06, 0, 3.66, 0, 0, 0.044, 2.449
+)
+
+[sub_resource type="BoxMesh" id="BoxWarm"]
+material = ExtResource("warm")
+
+[sub_resource type="MultiMesh" id="FrontPanes"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxWarm")
+buffer = PackedFloat32Array(
+    0.96, 0, 0, -1.29, 0, 0.91, 0, 1.55, 0, 0, 0.03, 2.478,
+    0.96, 0, 0, -1.29, 0, 0.91, 0, 3.66, 0, 0, 0.03, 2.478
+)
+
+[sub_resource type="BoxMesh" id="BoxWood"]
+material = ExtResource("wood")
+
+[sub_resource type="MultiMesh" id="FrontMullions"]
+transform_format = 1
+instance_count = 3
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.061, 0, 0, -1.29, 0, 0.93, 0, 1.55, 0, 0, 0.033, 2.506,
+    0.061, 0, 0, -1.29, 0, 0.93, 0, 3.66, 0, 0, 0.033, 2.506,
+    0.061, 0, 0, 1.05, 0, 0.93, 0, 3.66, 0, 0, 0.033, 2.506
+)
+
+[sub_resource type="MultiMesh" id="FrontSashes"]
+transform_format = 1
+instance_count = 3
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.98, 0, 0, -1.29, 0, 0.055, 0, 1.624, 0, 0, 0.033, 2.508,
+    0.98, 0, 0, -1.29, 0, 0.055, 0, 3.734, 0, 0, 0.033, 2.508,
+    0.98, 0, 0, 1.05, 0, 0.055, 0, 3.734, 0, 0, 0.033, 2.508
+)
+
+[sub_resource type="MultiMesh" id="StoneSills"]
+transform_format = 1
+instance_count = 3
+mesh = SubResource("BoxStone")
+buffer = PackedFloat32Array(
+    1.45, 0, 0, -1.29, 0, 0.11, 0, 0.885, 0, 0, 0.29, 2.41,
+    1.45, 0, 0, -1.29, 0, 0.11, 0, 2.995, 0, 0, 0.29, 2.41,
+    1.45, 0, 0, 1.05, 0, 0.11, 0, 2.995, 0, 0, 0.29, 2.41
+)
+
+[sub_resource type="MultiMesh" id="StoneHeads"]
+transform_format = 1
+instance_count = 3
+mesh = SubResource("BoxStone")
+buffer = PackedFloat32Array(
+    1.49, 0, 0, -1.29, 0, 0.16, 0, 2.226, 0, 0, 0.2, 2.38,
+    1.49, 0, 0, -1.29, 0, 0.16, 0, 4.336, 0, 0, 0.2, 2.38,
+    1.49, 0, 0, 1.05, 0, 0.16, 0, 4.336, 0, 0, 0.2, 2.38
+)
+
+[sub_resource type="BoxMesh" id="BoxSteel"]
+material = ExtResource("steel")
+
+[sub_resource type="BoxMesh" id="BoxTeal"]
+material = ExtResource("teal")
+
+[sub_resource type="MultiMesh" id="ParlourShutters"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxTeal")
+buffer = PackedFloat32Array(
+    0.32, 0, 0, -2.13, 0, 1.15, 0, 1.55, 0, 0, 0.08, 2.43,
+    0.32, 0, 0, -0.45, 0, 1.15, 0, 1.55, 0, 0, 0.08, 2.43
+)
+
+[sub_resource type="MultiMesh" id="ShutterBattens"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.32, 0, 0, -2.13, 0, 0.065, 0, 1.13, 0, 0, 0.04, 2.48,
+    0.32, 0, 0, -2.13, 0, 0.065, 0, 1.94, 0, 0, 0.04, 2.48,
+    0.32, 0, 0, -0.45, 0, 0.065, 0, 1.13, 0, 0, 0.04, 2.48,
+    0.32, 0, 0, -0.45, 0, 0.065, 0, 1.94, 0, 0, 0.04, 2.48
+)
+
+[sub_resource type="MultiMesh" id="SideCasings"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxStone")
+buffer = PackedFloat32Array(
+    0.14, 0, 0, -2.54, 0, 1.24, 0, 1.43, 0, 0, 1.1, -1.41,
+    0.14, 0, 0, -2.54, 0, 1.24, 0, 3.55, 0, 0, 1.1, 0.53,
+    0.14, 0, 0, 2.54, 0, 1.24, 0, 1.43, 0, 0, 1.1, -1.41,
+    0.14, 0, 0, 2.54, 0, 1.24, 0, 3.55, 0, 0, 1.1, 0.53
+)
+
+[sub_resource type="MultiMesh" id="SideFrames"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxIron")
+buffer = PackedFloat32Array(
+    0.033, 0, 0, -2.625, 0, 1.04, 0, 1.43, 0, 0, 0.91, -1.41,
+    0.033, 0, 0, -2.625, 0, 1.04, 0, 3.55, 0, 0, 0.91, 0.53,
+    0.033, 0, 0, 2.625, 0, 1.04, 0, 1.43, 0, 0, 0.91, -1.41,
+    0.033, 0, 0, 2.625, 0, 1.04, 0, 3.55, 0, 0, 0.91, 0.53
+)
+
+[sub_resource type="MultiMesh" id="SideGlass"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxSteel")
+buffer = PackedFloat32Array(
+    0.024, 0, 0, -2.649, 0, 0.9, 0, 1.43, 0, 0, 0.78, -1.41,
+    0.024, 0, 0, -2.649, 0, 0.9, 0, 3.55, 0, 0, 0.78, 0.53,
+    0.024, 0, 0, 2.649, 0, 0.9, 0, 1.43, 0, 0, 0.78, -1.41,
+    0.024, 0, 0, 2.649, 0, 0.9, 0, 3.55, 0, 0, 0.78, 0.53
+)
+
+[sub_resource type="MultiMesh" id="SideMullions"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.034, 0, 0, -2.665, 0, 0.91, 0, 1.43, 0, 0, 0.063, -1.41,
+    0.034, 0, 0, -2.665, 0, 0.91, 0, 3.55, 0, 0, 0.063, 0.53,
+    0.034, 0, 0, 2.665, 0, 0.91, 0, 1.43, 0, 0, 0.063, -1.41,
+    0.034, 0, 0, 2.665, 0, 0.91, 0, 3.55, 0, 0, 0.063, 0.53
+)
+
+[sub_resource type="MultiMesh" id="RearWindowFrames"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxStone")
+buffer = PackedFloat32Array(
+    1.18, 0, 0, -1.25, 0, 1.12, 0, 1.58, 0, 0, 0.12, -2.85,
+    1.18, 0, 0, -1.25, 0, 1.12, 0, 3.64, 0, 0, 0.12, -2.85,
+    1.18, 0, 0, 1.05, 0, 1.12, 0, 1.58, 0, 0, 0.12, -2.85,
+    1.18, 0, 0, 1.05, 0, 1.12, 0, 3.64, 0, 0, 0.12, -2.85
+)
+
+[sub_resource type="MultiMesh" id="RearGlazing"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxSteel")
+buffer = PackedFloat32Array(
+    0.96, 0, 0, -1.25, 0, 0.9, 0, 1.58, 0, 0, 0.05, -2.927,
+    0.96, 0, 0, -1.25, 0, 0.9, 0, 3.64, 0, 0, 0.05, -2.927,
+    0.96, 0, 0, 1.05, 0, 0.9, 0, 1.58, 0, 0, 0.05, -2.927,
+    0.96, 0, 0, 1.05, 0, 0.9, 0, 3.64, 0, 0, 0.05, -2.927
+)
+
+[sub_resource type="MultiMesh" id="RearMullions"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.062, 0, 0, -1.25, 0, 0.91, 0, 1.58, 0, 0, 0.022, -2.958,
+    0.062, 0, 0, -1.25, 0, 0.91, 0, 3.64, 0, 0, 0.022, -2.958,
+    0.062, 0, 0, 1.05, 0, 0.91, 0, 1.58, 0, 0, 0.022, -2.958,
+    0.062, 0, 0, 1.05, 0, 0.91, 0, 3.64, 0, 0, 0.022, -2.958
+)
+
+[sub_resource type="MultiMesh" id="HoodBrackets"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.09, 0, 0, 0.17, 0, 0.39, -0.07428, 2.255, 0, 0.57, 0.05082, 2.705,
+    0.09, 0, 0, 1.73, 0, 0.39, -0.07428, 2.255, 0, 0.57, 0.05082, 2.705
+)
+
+[sub_resource type="MultiMesh" id="VentSlats"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.63, 0, 0, 0, 0, 0.059, 0, 4.95, 0, 0, 0.067, 2.415,
+    0.63, 0, 0, 0, 0, 0.059, 0, 5.065, 0, 0, 0.067, 2.415,
+    0.63, 0, 0, 0, 0, 0.059, 0, 5.18, 0, 0, 0.067, 2.415,
+    0.63, 0, 0, 0, 0, 0.059, 0, 5.295, 0, 0, 0.067, 2.415
+)
+
+[sub_resource type="MultiMesh" id="Gutters"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxIron")
+buffer = PackedFloat32Array(
+    0.15, 0, 0, -2.68, 0, 0.105, 0, 4.405, 0, 0, 5.55, -0.24,
+    0.15, 0, 0, 2.68, 0, 0.105, 0, 4.405, 0, 0, 5.55, -0.24
+)
+
+[sub_resource type="MultiMesh" id="Downpipes"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("CylinderIron")
+buffer = PackedFloat32Array(
+    0.092, 0, 0, -2.68, 0, 4.16, 0, 2.3, 0, 0, 0.092, -2.68,
+    0.092, 0, 0, 2.68, 0, 4.16, 0, 2.3, 0, 0, 0.092, -2.68
+)
+
+[node name="BrickHouse" type="Node3D"]
+
+[node name="Masonry" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.4, -0.24)
+mesh = SubResource("Masonry")
+
+[node name="BrickGables" type="MeshInstance3D" parent="."]
+position = Vector3(0, 5.265, -0.24)
+mesh = SubResource("BrickGables")
+
+[node name="ChimneyStack" type="MeshInstance3D" parent="."]
+position = Vector3(-1.03, 5.78, -1.55)
+mesh = SubResource("ChimneyStack")
+
+[node name="StonePlinth" type="MeshInstance3D" parent="."]
+transform = Transform3D(5.23, 0, 0, 0, 0.32, 0, 0, 0, 5.34, 0, 0.16, -0.24)
+mesh = SubResource("BoxStone")
+
+[node name="FloorStringcourse" type="MeshInstance3D" parent="."]
+transform = Transform3D(5.12, 0, 0, 0, 0.085, 0, 0, 0, 5.24, 0, 2.68, -0.24)
+mesh = SubResource("BoxStone")
+
+[node name="RoofDecks" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RoofDecks")
+
+[node name="Pantiles" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("Pantiles")
+
+[node name="RidgeTiles" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.194, 0, 0, 0, 0, -0.194, 0, 5.6, 0, 0, 6.15, -0.24)
+mesh = SubResource("CylinderRed")
+
+[node name="ChimneyFlashing" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7575, -0.07125, 0, 0.44788, 0.12051, 0, 0, 0, 0.98, -1.03, 5.58, -1.55)
+mesh = SubResource("BoxIron")
+
+[node name="ChimneyCrown" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.81, 0, 0, 0, 0.15, 0, 0, 0, 0.92, -1.03, 6.3, -1.55)
+mesh = SubResource("BoxStone")
+
+[node name="ClayPots" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("ClayPots")
+
+[node name="FlueThroats" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("FlueThroats")
+
+[node name="FrontCasings" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("FrontCasings")
+
+[node name="FrontFrames" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("FrontFrames")
+
+[node name="FrontPanes" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("FrontPanes")
+
+[node name="FrontMullions" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("FrontMullions")
+
+[node name="FrontSashes" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("FrontSashes")
+
+[node name="StoneSills" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("StoneSills")
+
+[node name="StoneHeads" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("StoneHeads")
+
+[node name="BedroomPane" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.96, 0, 0, 0, 0.91, 0, 0, 0, 0.03, 1.05, 3.66, 2.478)
+mesh = SubResource("BoxSteel")
+
+[node name="ParlourShutters" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("ParlourShutters")
+
+[node name="ShutterBattens" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("ShutterBattens")
+
+[node name="SideCasings" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("SideCasings")
+
+[node name="SideFrames" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("SideFrames")
+
+[node name="SideGlass" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("SideGlass")
+
+[node name="SideMullions" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("SideMullions")
+
+[node name="RearWindowFrames" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RearWindowFrames")
+
+[node name="RearGlazing" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RearGlazing")
+
+[node name="RearMullions" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RearMullions")
+
+[node name="DoorSurround" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.52, 0, 0, 0, 2.25, 0, 0, 0, 0.17, 0.95, 1.34, 2.395)
+mesh = SubResource("BoxStone")
+
+[node name="DoorReveal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.27, 0, 0, 0, 2.11, 0, 0, 0, 0.085, 0.95, 1.33, 2.49)
+mesh = SubResource("BoxIron")
+
+[node name="RehungDoor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.09, 0, 0, 0, 2.02, 0, 0, 0, 0.044, 0.95, 1.29, 2.54)
+mesh = SubResource("BoxTeal")
+
+[node name="DoorLight" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.67, 0, 0, 0, 0.54, 0, 0, 0, 0.038, 0.95, 1.85, 2.576)
+mesh = SubResource("BoxWarm")
+
+[node name="DoorLetterSlot" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.33, 0, 0, 0, 0.07, 0, 0, 0, 0.023, 0.95, 1.16, 2.573)
+mesh = SubResource("BoxIron")
+
+[node name="DoorHandle" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.07, 0, 0, 0, 0.2, 0, 0, 0, 0.058, 1.35, 1.28, 2.593)
+mesh = SubResource("BoxPaint")
+
+[node name="PorchHood" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.9, 0, 0, 0, 0.11818, -0.15976, 0, 0.02084, 0.90602, 0.95, 2.52, 2.69)
+mesh = SubResource("BoxIron")
+
+[node name="HoodBrackets" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("HoodBrackets")
+
+[node name="PorchLanding" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.63, 0, 0, 0, 0.32, 0, 0, 0, 0.76, 0.95, 0.16, 2.7)
+mesh = SubResource("BoxStone")
+
+[node name="FrontStep" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.76, 0, 0, 0, 0.16, 0, 0, 0, 0.4, 0.95, 0.08, 3.23)
+mesh = SubResource("BoxStone")
+
+[node name="GableVent" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.67, 0, 0, 0, 0.52, 0, 0, 0, 0.06, 0, 5.12, 2.373)
+mesh = SubResource("BoxIron")
+
+[node name="VentSlats" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("VentSlats")
+
+[node name="Gutters" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("Gutters")
+
+[node name="Downpipes" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("Downpipes")

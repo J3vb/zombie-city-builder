@@ -1,0 +1,296 @@
+[gd_scene load_steps=23 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="wood"]
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="iron"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="steel"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="teal"]
+[ext_resource type="Material" path="res://assets/materials/oxide_red.tres" id="red"]
+[ext_resource type="Material" path="res://assets/materials/amber_glass.tres" id="warm"]
+
+[sub_resource type="BoxMesh" id="BoxWood"]
+material = ExtResource("wood")
+
+[sub_resource type="BoxMesh" id="BoxIron"]
+material = ExtResource("iron")
+
+[sub_resource type="MultiMesh" id="VerticalWeatherboards"]
+transform_format = 1
+instance_count = 32
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.294, 0, 0, -2.31, 0, 2.91255, 0, 1.62627, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -2.31, 0, 2.91255, 0, 1.62627, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, -2.002, 0, 2.88021, 0, 1.6101, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -2.002, 0, 2.88021, 0, 1.6101, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, -1.694, 0, 2.84787, 0, 1.59393, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -1.694, 0, 2.84787, 0, 1.59393, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, -1.386, 0, 2.81553, 0, 1.57776, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -1.386, 0, 2.81553, 0, 1.57776, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, -1.078, 0, 2.78319, 0, 1.56159, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -1.078, 0, 2.78319, 0, 1.56159, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, -0.77, 0, 2.75085, 0, 1.54542, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -0.77, 0, 2.75085, 0, 1.54542, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, -0.462, 0, 2.71851, 0, 1.52925, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -0.462, 0, 2.71851, 0, 1.52925, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, -0.154, 0, 2.68617, 0, 1.51308, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, -0.154, 0, 2.68617, 0, 1.51308, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 0.154, 0, 2.65383, 0, 1.49691, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 0.154, 0, 2.65383, 0, 1.49691, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 0.462, 0, 2.62149, 0, 1.48074, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 0.462, 0, 2.62149, 0, 1.48074, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 0.77, 0, 2.58915, 0, 1.46457, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 0.77, 0, 2.58915, 0, 1.46457, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 1.078, 0, 2.55681, 0, 1.4484, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 1.078, 0, 2.55681, 0, 1.4484, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 1.386, 0, 2.52447, 0, 1.43223, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 1.386, 0, 2.52447, 0, 1.43223, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 1.694, 0, 2.49213, 0, 1.41606, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 1.694, 0, 2.49213, 0, 1.41606, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 2.002, 0, 2.45979, 0, 1.39989, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 2.002, 0, 2.45979, 0, 1.39989, 0, 0, 0.15, 2.05,
+    0.294, 0, 0, 2.31, 0, 2.42745, 0, 1.38372, 0, 0, 0.15, -2.49,
+    0.294, 0, 0, 2.31, 0, 2.42745, 0, 1.38372, 0, 0, 0.15, 2.05
+)
+
+[sub_resource type="MultiMesh" id="SideWeatherboards"]
+transform_format = 1
+instance_count = 24
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 0.30146, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 0.54439, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 0.78732, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 1.03025, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 1.27318, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 1.51611, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 1.75904, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 2.00197, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 2.2449, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 2.48783, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 2.73076, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, -2.43, 0, 0.22993, 0, 2.97369, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 0.2802, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 0.48061, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 0.68101, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 0.88141, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 1.08182, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 1.28222, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 1.48263, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 1.68303, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 1.88344, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 2.08384, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 2.28424, 0, 0, 4.56, -0.22,
+    0.13, 0, 0, 2.43, 0, 0.1874, 0, 2.48465, 0, 0, 4.56, -0.22
+)
+
+[sub_resource type="MultiMesh" id="CornerPosts"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    0.17, 0, 0, -2.44, 0, 2.9262, 0, 1.6331, 0, 0, 0.19, 2.06,
+    0.17, 0, 0, -2.44, 0, 2.9262, 0, 1.6331, 0, 0, 0.19, -2.49,
+    0.17, 0, 0, 2.44, 0, 2.4138, 0, 1.3769, 0, 0, 0.19, 2.06,
+    0.17, 0, 0, 2.44, 0, 2.4138, 0, 1.3769, 0, 0, 0.19, -2.49
+)
+
+[sub_resource type="BoxMesh" id="BoxSteel"]
+material = ExtResource("steel")
+
+[sub_resource type="MultiMesh" id="BareSheets"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxSteel")
+buffer = PackedFloat32Array(
+    0.93983, 0.01253, 0, -2.31, -0.09868, 0.11934, 0, 3.13755, 0, 0, 5.14, -0.22,
+    0.93983, 0.01253, 0, 1.374, -0.09868, 0.11934, 0, 2.75073, 0, 0, 5.14, -0.22
+)
+
+[sub_resource type="BoxMesh" id="BoxTeal"]
+material = ExtResource("teal")
+
+[sub_resource type="MultiMesh" id="PaintedSheets"]
+transform_format = 1
+instance_count = 4
+mesh = SubResource("BoxTeal")
+buffer = PackedFloat32Array(
+    0.93983, 0.01253, 0, -1.389, -0.09868, 0.11934, 0, 3.04085, 0, 0, 5.14, -0.22,
+    0.93983, 0.01253, 0, -0.468, -0.09868, 0.11934, 0, 2.94414, 0, 0, 5.14, -0.22,
+    0.93983, 0.01253, 0, 0.453, -0.09868, 0.11934, 0, 2.84743, 0, 0, 5.14, -0.22,
+    0.93983, 0.01253, 0, 2.295, -0.09868, 0.11934, 0, 2.65402, 0, 0, 5.14, -0.22
+)
+
+[sub_resource type="MultiMesh" id="RoofRibs"]
+transform_format = 1
+instance_count = 25
+mesh = SubResource("BoxSteel")
+buffer = PackedFloat32Array(
+    0.04276, 0.00606, 0, -2.65, -0.00449, 0.05768, 0, 3.25925, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -2.43, -0.00449, 0.05768, 0, 3.23615, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -2.21, -0.00449, 0.05768, 0, 3.21305, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -1.99, -0.00449, 0.05768, 0, 3.18995, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -1.77, -0.00449, 0.05768, 0, 3.16685, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -1.55, -0.00449, 0.05768, 0, 3.14375, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -1.33, -0.00449, 0.05768, 0, 3.12065, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -1.11, -0.00449, 0.05768, 0, 3.09755, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -0.89, -0.00449, 0.05768, 0, 3.07445, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -0.67, -0.00449, 0.05768, 0, 3.05135, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -0.45, -0.00449, 0.05768, 0, 3.02825, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -0.23, -0.00449, 0.05768, 0, 3.00515, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, -0.01, -0.00449, 0.05768, 0, 2.98205, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 0.21, -0.00449, 0.05768, 0, 2.95895, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 0.43, -0.00449, 0.05768, 0, 2.93585, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 0.65, -0.00449, 0.05768, 0, 2.91275, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 0.87, -0.00449, 0.05768, 0, 2.88965, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 1.09, -0.00449, 0.05768, 0, 2.86655, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 1.31, -0.00449, 0.05768, 0, 2.84345, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 1.53, -0.00449, 0.05768, 0, 2.82035, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 1.75, -0.00449, 0.05768, 0, 2.79725, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 1.97, -0.00449, 0.05768, 0, 2.77415, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 2.19, -0.00449, 0.05768, 0, 2.75105, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 2.41, -0.00449, 0.05768, 0, 2.72795, 0, 0, 5.12, -0.22,
+    0.04276, 0.00606, 0, 2.63, -0.00449, 0.05768, 0, 2.70485, 0, 0, 5.12, -0.22
+)
+
+[sub_resource type="BoxMesh" id="BoxRed"]
+material = ExtResource("red")
+
+[sub_resource type="CylinderMesh" id="CylinderIron"]
+material = ExtResource("iron")
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 10
+rings = 0
+
+[sub_resource type="MultiMesh" id="DoorRails"]
+transform_format = 1
+instance_count = 2
+mesh = SubResource("BoxWood")
+buffer = PackedFloat32Array(
+    1.04, 0, 0, 0.75, 0, 0.11, 0, 0.55, 0, 0, 0.07, 2.3,
+    1.04, 0, 0, 0.75, 0, 0.11, 0, 1.84, 0, 0, 0.07, 2.3
+)
+
+[sub_resource type="BoxMesh" id="BoxWarm"]
+material = ExtResource("warm")
+
+[sub_resource type="CylinderMesh" id="CylinderTeal"]
+material = ExtResource("teal")
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 10
+rings = 0
+
+[sub_resource type="MultiMesh" id="BarrelHoops"]
+transform_format = 1
+instance_count = 3
+mesh = SubResource("CylinderIron")
+buffer = PackedFloat32Array(
+    0.81, 0, 0, -2.9, 0, 0.055, 0, 0.18, 0, 0, 0.81, 1.17,
+    0.81, 0, 0, -2.9, 0, 0.055, 0, 0.79, 0, 0, 0.81, 1.17,
+    0.81, 0, 0, -2.9, 0, 0.055, 0, 0.99, 0, 0, 0.81, 1.17
+)
+
+[node name="TimberShack" type="Node3D"]
+
+[node name="Sleepers" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.94, 0, 0, 0, 0.21, 0, 0, 0, 4.64, 0, 0.105, -0.2)
+mesh = SubResource("BoxWood")
+
+[node name="ShadowBehindBoards" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.72, 0, 0, 0, 2.35, 0, 0, 0, 4.48, 0, 1.365, -0.21)
+mesh = SubResource("BoxIron")
+
+[node name="VerticalWeatherboards" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("VerticalWeatherboards")
+
+[node name="SideWeatherboards" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("SideWeatherboards")
+
+[node name="CornerPosts" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("CornerPosts")
+
+[node name="BareSheets" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("BareSheets")
+
+[node name="PaintedSheets" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("PaintedSheets")
+
+[node name="RoofRibs" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("RoofRibs")
+
+[node name="SheetRepair" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.83541, 0.00877, 0, -0.08772, 0.08354, 0, 0, 0, 1.25, -1.49, 3.2, -1.57)
+mesh = SubResource("BoxRed")
+
+[node name="StoveFlue" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.18, 0, 0, 0, 0.46, 0, 0, 0, 0.18, -1.56, 3.2, -1.54)
+mesh = SubResource("CylinderIron")
+
+[node name="RainCap" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.33, 0, 0, 0, 0.07, 0, 0, 0, 0.33, -1.56, 3.465, -1.54)
+mesh = SubResource("CylinderIron")
+
+[node name="FrontDoorFrame" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.31, 0, 0, 0, 2.14, 0, 0, 0, 0.14, 0.75, 1.235, 2.16)
+mesh = SubResource("BoxIron")
+
+[node name="FrontDoor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.09, 0, 0, 0, 2, 0, 0, 0, 0.08, 0.75, 1.19, 2.25)
+mesh = SubResource("BoxTeal")
+
+[node name="DoorRails" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("DoorRails")
+
+[node name="DoorBrace" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0.89, 0.07718, 0, 1.24, -0.05539, -0.095, 0, 0, 0.735, 1.2, 2.31)
+mesh = SubResource("BoxWood")
+
+[node name="Latch" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.078, 0, 0, 0, 0.21, 0, 0, 0, 0.065, 1.14, 1.13, 2.36)
+mesh = SubResource("BoxIron")
+
+[node name="EntryStep" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.52, 0, 0, 0, 0.21, 0, 0, 0, 0.75, 0.75, 0.105, 2.64)
+mesh = SubResource("BoxWood")
+
+[node name="EntryHood" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.63, 0, 0, 0, 0.09877, -0.12828, 0, 0.01564, 0.8099, 0.75, 2.39, 2.37)
+mesh = SubResource("BoxSteel")
+
+[node name="WindowCasings" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.53, 0, 0, 0, 1.02, 0, 0, 0, 0.14, -1.08, 1.55, 2.15)
+mesh = SubResource("BoxIron")
+
+[node name="WindowGlass" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.32, 0, 0, 0, 0.8, 0, 0, 0, 0.038, -1.08, 1.56, 2.234)
+mesh = SubResource("BoxWarm")
+
+[node name="FrontMullion" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.083, 0, 0, 0, 0.82, 0, 0, 0, 0.074, -1.08, 1.56, 2.27)
+mesh = SubResource("BoxWood")
+
+[node name="WindowSill" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.69, 0, 0, 0, 0.13, 0, 0, 0, 0.27, -1.08, 1.02, 2.2)
+mesh = SubResource("BoxWood")
+
+[node name="SideWindow" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.07, 0, 0, 0, 0.9, 0, 0, 0, 1.4, -2.52, 1.62, -0.2)
+mesh = SubResource("BoxIron")
+
+[node name="SidePane" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.033, 0, 0, 0, 0.72, 0, 0, 0, 1.22, -2.568, 1.62, -0.2)
+mesh = SubResource("BoxWarm")
+
+[node name="BoardedPane" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.13, 0, 0, 0, 0.55, -0.11929, 0, 1.27, 0.05166, -2.6, 1.555, -0.195)
+mesh = SubResource("BoxWood")
+
+[node name="WaterButt" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.79, 0, 0, 0, 0.98, 0, 0, 0, 0.79, -2.9, 0.49, 1.17)
+mesh = SubResource("CylinderTeal")
+
+[node name="BarrelHoops" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("BarrelHoops")
