@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/world/terrain_mesh.gd" id="2_terrain"]
@@ -12,6 +12,10 @@
 
 [ext_resource type="Script" path="res://scripts/world/road_network.gd" id="10_roads"]
 [ext_resource type="Script" path="res://scripts/world/road_tool.gd" id="11_roads"]
+
+[ext_resource type="Script" path="res://scripts/world/plot_map.gd" id="12_plots"]
+[ext_resource type="Script" path="res://scripts/world/plot_tool.gd" id="13_tool"]
+[ext_resource type="Script" path="res://scripts/systems/town_grower.gd" id="14_grow"]
 
 [sub_resource type="Environment" id="Environment"]
 resource_local_to_scene = true
@@ -41,6 +45,15 @@ script = ExtResource("10_roads")
 
 [node name="RoadTool" type="Node3D" parent="."]
 script = ExtResource("11_roads")
+
+[node name="PlotMap" type="Node" parent="."]
+script = ExtResource("12_plots")
+
+[node name="Grower" type="Node" parent="."]
+script = ExtResource("14_grow")
+
+[node name="PlotTool" type="Node3D" parent="."]
+script = ExtResource("13_tool")
 
 [node name="BuildTool" type="Node3D" parent="."]
 script = ExtResource("5_build")

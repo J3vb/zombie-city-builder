@@ -6,7 +6,7 @@ Made with **Godot 4.5** and **GDScript**.
 
 ## Status
 
-The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets and connect branches to Station 4. Road-facing housing plots are next. See [the roadmap](docs/ROADMAP.md).
+The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Farms and storage grow in painted zones. See [the roadmap](docs/ROADMAP.md).
 
 ## Docs
 
@@ -32,7 +32,10 @@ Controls:
 | Q / E or middle-mouse drag | Orbit |
 | R / F | Tilt up / down |
 | Mouse wheel | Zoom |
-| Build bar button, then left click | Place a building |
+| Home plot, then left click beside a connected street | Reserve the shown house footprint and backyard |
+| Farm zone / Storage zone, then drag | Paint land for automatic construction |
+| Land tools | Demolish a building, release an empty plot, remove a street or erase zoning |
+| Pause growth / Resume growth | Control automatic building and upgrades |
 | Street, then left clicks | Set street points, starting at the gold Station 4 marker or open ground |
 | Enter / Backspace | Finish a street / undo its last point |
 | Right click / Esc | Cancel construction |
@@ -42,6 +45,8 @@ Controls:
 | F5 | Spawn 100 zombies (debug) |
 | F6 | +100 of every resource (debug) |
 | F7 | Skip to night (debug) |
+
+Open `scenes/tests/frontage_town.tscn` and press F6 in the Godot editor to try a prebuilt bend, T-junction and two occupied roadside plots. [View the town with 500 Walkers](docs/benchmarks/frontage-town.webp).
 
 A horde comes every night. In M1 you can't fight back yet (towers come in M3), so the game is about where you build before the Command Post falls.
 

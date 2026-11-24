@@ -13,6 +13,7 @@ var world: World
 
 var _surfaces: Dictionary[int, MeshInstance3D] = {}
 var _ghost := MeshInstance3D.new()
+var _apron := MeshInstance3D.new()
 var _entrance := MeshInstance3D.new()
 var _last_cursor := Vector2.INF
 var _preview_material := GroundShape.material(VALID)
@@ -33,11 +34,24 @@ func setup(owner_world: World) -> void:
 	add_child(_entrance)
 	_entrance.position = world.to_view(world.roads.entrance) + Vector3.UP * 0.09
 	_entrance.hide()
+	var start := Vector2(
+		world.roads.entrance.x - world.roads.width * 0.5, world.command_post.sim_bounds().end.y
+	)
+	var span := Vector2(world.roads.width, world.roads.entrance.y - start.y)
+	var strip := PackedVector2Array(
+		[start, start + Vector2.RIGHT * span.x, start + span, start + Vector2.DOWN * span.y]
+	)
+	_apron.mesh = GroundShape.surface([strip], world.map_def.view_scale)
+	_apron.material_override = _asphalt
+	_apron.position.y = 0.042
+	add_child(_apron)
+	_apron.hide()
 	world.roads.changed.connect(_sync_surfaces)
 
 
 func select() -> void:
 	world.build_tool.clear()
+	world.plot_tool.clear()
 	active = true
 	hint = "Start at the gold marker by Station 4 or click open ground."
 	_entrance.show()
@@ -140,6 +154,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _sync_surfaces() -> void:
+	_apron.visible = not (
+		world.roads.graph.get(world.roads.entrance, PackedVector2Array()).is_empty()
+	)
 	for id: int in _surfaces.keys():
 		if not world.roads.roads.has(id):
 			_surfaces[id].queue_free()

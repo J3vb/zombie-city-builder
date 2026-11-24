@@ -12,6 +12,7 @@ var tile_size: int
 var terrain_types: PackedByteArray
 var base_cost: PackedInt32Array
 var cost: PackedInt32Array
+var parcel_cells: Dictionary[Vector2i, int] = {}
 var road_cells: Dictionary[Vector2i, int] = {}
 var occupant: Dictionary[Vector2i, Building] = {}
 
@@ -26,6 +27,7 @@ func setup(map: MapDef, types: PackedByteArray, terrain: TerrainSet) -> void:
 	cost = base_cost.duplicate()
 	occupant.clear()
 	road_cells.clear()
+	parcel_cells.clear()
 
 
 func index(cell: Vector2i) -> int:
@@ -40,13 +42,14 @@ func get_cost(cell: Vector2i) -> int:
 	return cost[index(cell)] if in_bounds(cell) else BLOCKED
 
 
-func is_free(cells: Array[Vector2i]) -> bool:
+func is_free(cells: Array[Vector2i], parcel_id: int = 0) -> bool:
 	for cell in cells:
 		if (
 			not in_bounds(cell)
 			or cost[index(cell)] <= 0
 			or occupant.has(cell)
 			or road_cells.has(cell)
+			or parcel_cells.get(cell, 0) != parcel_id
 		):
 			return false
 	return true
@@ -66,7 +69,11 @@ func mark_road(cells: Array[Vector2i], delta: int) -> void:
 
 
 func occupy(cells: Array[Vector2i], building: Building) -> bool:
-	if building == null or cells.is_empty() or not is_free(cells):
+	if (
+		building == null
+		or cells.is_empty()
+		or not is_free(cells, building.plot.id if building.plot != null else 0)
+	):
 		return false
 	for cell in cells:
 		occupant[cell] = building

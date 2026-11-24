@@ -21,6 +21,9 @@ var _task_started_usec := 0
 @onready var terrain: TerrainMesh = $Terrain
 @onready var grid: Grid = $Grid
 @onready var buildings: Node3D = $Buildings
+@onready var plots: PlotMap = $PlotMap
+@onready var grower: TownGrower = $Grower
+@onready var plot_tool: PlotTool = $PlotTool
 @onready var roads: RoadNetwork = $RoadNetwork
 @onready var road_tool: RoadTool = $RoadTool
 @onready var build_tool: BuildTool = $BuildTool
@@ -40,6 +43,9 @@ func _ready() -> void:
 	command_post = spawn_building(load(COMMAND_POST_PATH) as BuildingDef, map_def.command_post_cell)
 	roads.setup(grid, command_post, load("res://data/balance.tres") as BalanceDef)
 	road_tool.setup(self)
+	plots.setup(self)
+	grower.setup(self)
+	plot_tool.setup(self)
 	camera.position = to_view(command_post.sim_center())
 	grid.changed.connect(_on_grid_changed)
 	_build_now()
@@ -70,9 +76,22 @@ func to_sim(point: Vector3) -> Vector2:
 	return Vector2(point.x, point.z) / map_def.view_scale
 
 
-func can_place_building(def: BuildingDef, cell: Vector2i) -> bool:
-	var cells := Grid.cells_of(cell, def.size)
-	if not grid.is_free(cells) or not Economy.can_afford(def.cost):
+func can_place_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -> bool:
+	return can_build_on(def, cell, site) and Economy.can_afford(def.cost)
+
+
+func can_build_on(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -> bool:
+	var cells := site.house_cells if site != null else Grid.cells_of(cell, def.size)
+	if (
+		site != null
+		and (
+			plots.plots.get(site.id) != site
+			or not plots.connected(site)
+			or is_instance_valid(site.home)
+		)
+	):
+		return false
+	if not grid.is_free(cells, site.id if site != null else 0):
 		return false
 	for c in cells:
 		if zombies.query(grid.cell_to_world(c), grid.tile_size * 0.71, _nearby_zombies) > 0:
@@ -81,10 +100,10 @@ func can_place_building(def: BuildingDef, cell: Vector2i) -> bool:
 
 
 ## Paid placement, shared by input and simulation callers.
-func try_place_building(def: BuildingDef, cell: Vector2i) -> Building:
-	if not can_place_building(def, cell) or not Economy.spend(def.cost):
+func try_place_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -> Building:
+	if not can_place_building(def, cell, site) or not Economy.spend(def.cost):
 		return null
-	var building := spawn_building(def, cell)
+	var building := spawn_building(def, cell, site)
 	if building == null:
 		# A resource listener can claim the cells before the purchase completes.
 		for id: StringName in def.cost:
@@ -93,12 +112,24 @@ func try_place_building(def: BuildingDef, cell: Vector2i) -> Building:
 
 
 ## Unpaid spawn for map setup. The grid still checks the whole footprint.
-func spawn_building(def: BuildingDef, cell: Vector2i) -> Building:
+func spawn_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -> Building:
+	if (
+		site != null
+		and (
+			def != plots.house_def
+			or plots.plots.get(site.id) != site
+			or not plots.connected(site)
+			or is_instance_valid(site.home)
+		)
+	):
+		return null
 	var building := def.scene.instantiate() as Building
-	building.setup(def, cell, grid)
+	building.setup(def, cell, grid, site)
 	if not grid.occupy(building.cells, building):
 		building.free()
 		return null
+	if site != null:
+		site.home = building
 	buildings.add_child(building)
 	EventBus.building_placed.emit(building)
 	return building
