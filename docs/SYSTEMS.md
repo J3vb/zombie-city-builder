@@ -61,7 +61,7 @@ Each confirmed home plot stores its street ID, attachment point, frontage polygo
 
 The grower rotates through upgrades, housing, farms and storage during daylight. It skips an unavailable site and saves up on a valid turn that lacks resources. A tent costs 20 wood. From day two, a shack costs another 30 wood and 10 scrap. From day four, brick costs another 40 wood and 30 scrap. Upgrades keep the same footprint and health fraction. The temporary economy adds 40 wood and 15 scrap at dawn. Paint at least a 3 × 3 area for a farm or a 2 × 2 area for storage. Both can grow through three stages.
 
-Select Garden or Scrap workshop and click a clear footprint to build immediately. A garden occupies one tile and costs 10 wood. A workshop takes 2 × 2 tiles and costs 20 wood and 10 scrap. Both can be placed before the first home. They have their own health, footprint and demolition refund. During M2 a staffed garden or workshop pays its completed shift at dawn.
+Select Garden or Scrap workshop and click a clear footprint to order construction. A garden occupies one tile and costs 10 wood. A workshop takes 2 × 2 tiles and costs 20 wood and 10 scrap. Both can be placed before the first home. They have their own health, footprint and demolition refund. During M2 a staffed garden or workshop pays its completed shift at dawn.
 
 Demolishing refunds half the initial construction cost once. A demolished home leaves its residential plot reserved. Remove Plot releases empty land. Removing a street clears its vacant plots. The game prevents removal of any road that would leave an occupied home without access to Station 4. Unzone leaves existing farm and storage buildings standing.
 
@@ -76,11 +76,17 @@ Run `res://scenes/tests/frontage_town.tscn` for a playable bend with a junction,
   - Walls use drag-to-draw (click start, drag, release) along a straight line.
   - On place: resources are reserved, a construction site appears, builders walk there and add work.
   - When done, the site swaps to the real building and the grid updates. Pathfinding gets a "dirty" signal.
-  - The playable prototype uses `World.try_place_building()` for paid placement. It checks the footprint, nearby Walkers and stock. Map setup uses `World.spawn_building()` for unpaid placement. Both claim cells through Grid.
+  - The playable town uses `World.try_place_building()` for paid placement. It checks the footprint, nearby Walkers and stock. Map setup uses `World.spawn_building()` for unpaid placement. Both claim cells through Grid.
   - Demolition refunds 50 percent once. Enemy damage that destroys a building releases its cells without a refund. Read `Building.sim_bounds()` and `sim_center()` for targeting and placement. The building scene has a separate child for drawing and the damage bar.
 - **Depends on:** Grid, Resources.
 - **Zones and upgrades (M1.5):** the player draws curved streets, marks road-facing residential plots, and paints farmland and storage zones. The `Grower` grows homes on confirmed plots and farm or storage buildings in their zones and upgrades buildings through their `levels` (`BuildingLevelDef`: model, health, upgrade cost, unlock day). Same footprint at every level. Instant in M1.5, done by builders from M2. Walls, gates and towers stay hand-placed.
 - **Milestone:** M1 (instant build), M1.5 (3D, upgrades), M2 (builders).
+
+### Timed construction
+
+Station 4 houses one dedicated builder who shares the town's food and water rations. Paid placement claims the footprint and debits the order once. The grower uses the same path for homes and zoned sites. Upgrades reserve their materials and keep the existing bed or production level active. An order takes its building definition's build time multiplied by the target level.
+
+The builder picks the first reachable order, walks along the resident routing grid, then adds work on site. At dusk the builder returns to Station 4. Unfinished work persists overnight and through route changes. Completion keeps the building's identity and grid claim. A newly finished house grants its bed once, while an upgraded house retains its tenant. The inspector shows the target, progress and builder status. Canceling returns the unworked fraction of each paid resource rounded down. Canceling an upgrade keeps the existing building. Walkers can destroy a site with no refund.
 
 ## 4. Resources and economy
 

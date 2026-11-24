@@ -21,8 +21,8 @@ func _ready() -> void:
 			return
 	if world.plots.reserve(point + normal * 10.0, rules.plot_frontage) != null:
 		push_error("Frontage demo accepted an overlapping plot.")
-	world.grower.step()
-	world.grower.step()
+	for plot: FrontagePlot in world.plots.plots.values():
+		world.spawn_building(world.plots.house_def, plot.house_cells[0], plot)
 	world.camera.position = world.to_view(point)
 	world.camera.rotation.y = 0.38
 	for click in 4:

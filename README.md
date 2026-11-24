@@ -8,9 +8,13 @@ Made with **Godot 4.5** and **GDScript**.
 
 The playable 3D prototype includes Station 4, instant building placement, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Place small gardens and scrap workshops on individual sites. Farms grow from plots into fenced fields and greenhouses. Storage grows from tarp piles into sheds and warehouses. Click a building to check its health or see what its next upgrade needs. See [the roadmap](docs/ROADMAP.md).
 
+### Construction
+
+Station 4 starts with Ada, the town builder. Order a building or mark land for growth. The order pays once and reserves its footprint. Ada walks to the first reachable site and works there during daylight. Inspect the frame to see progress, route status and the unused materials returned if you cancel. At dusk Ada heads home and resumes the next day. A home grants its bed and a workplace opens for hiring on completion. Existing buildings continue serving their current level during upgrades. [See construction in game](docs/benchmarks/construction.webp).
+
 ### Residents and shifts
 
-Grow a home on a connected street and place a garden or scrap workshop nearby. One named resident moves into each home. Inspect the site to see who works there and how far their shift has progressed. **Manage worker** lets you reassign a resident or pause hiring. A completed garden shift earns 4 food. A workshop shift earns 4 scrap. Farms earn 6, 9 or 12 food as they upgrade.
+Grow a home on a connected street and place a garden or scrap workshop nearby. One named resident moves into each completed home. Inspect the site to see who works there and how far their shift has progressed. **Manage worker** lets you reassign a resident or pause hiring. A completed garden shift earns 4 food. A workshop shift earns 4 scrap. Farms earn 6, 9 or 12 food as they upgrade.
 
 Goods arrive at dawn. Each resident then uses one food and one water. The dawn report shows output, use and shortages. The temporary construction grant still supplies 40 wood and 15 scrap per day. [See the garden shift in the playable town](docs/benchmarks/resident-shift.webp).
 

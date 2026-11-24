@@ -35,6 +35,7 @@ model_path = "res://scenes/models/house_3.tscn"
 [resource]
 script = ExtResource("1_def")
 id = &"house"
+build_seconds = 16.0
 placement = 1
 display_name = "House"
 size = Vector2i(2, 2)

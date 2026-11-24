@@ -37,7 +37,7 @@ func select(def: BuildingDef) -> void:
 	world.road_tool.clear()
 	world.plot_tool.clear()
 	selected = def
-	hint = "Click open ground to place %s for %s." % [def.display_name, def.cost_text()]
+	hint = "Click open ground to order %s for %s." % [def.display_name, def.cost_text()]
 	var size := Vector2(def.size) * world.view_tile()
 	_box.size = Vector3(size.x, 0.4, size.y)
 
@@ -87,7 +87,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		var cell := cell_at_screen(event.position)
 		if cell != NO_CELL:
 			if place(cell):
-				hint = "%s placed. Click to place another or press Esc." % selected.display_name
+				hint = (
+					"%s construction ordered. Click to order another or press Esc."
+					% selected.display_name
+				)
 			elif not Economy.can_afford(selected.cost):
 				hint = "%s costs %s." % [selected.display_name, selected.cost_text()]
 			else:

@@ -22,6 +22,7 @@ var _task_started_usec := 0
 @onready var grid: Grid = $Grid
 @onready var buildings: Node3D = $Buildings
 @onready var plots: PlotMap = $PlotMap
+@onready var construction: ConstructionCrew = $Construction
 @onready var jobs: JobBoard = $JobBoard
 @onready var grower: TownGrower = $Grower
 @onready var plot_tool: PlotTool = $PlotTool
@@ -47,6 +48,7 @@ func _ready() -> void:
 	plots.setup(self)
 	grower.setup(self)
 	jobs.setup(self)
+	construction.setup(self)
 	plot_tool.setup(self)
 	camera.position = to_view(command_post.sim_center())
 	grid.changed.connect(_on_grid_changed)
@@ -106,7 +108,7 @@ func can_build_on(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -
 func try_place_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -> Building:
 	if not can_place_building(def, cell, site) or not Economy.spend(def.cost):
 		return null
-	var building := spawn_building(def, cell, site)
+	var building := _place(def, cell, site, true)
 	if building == null:
 		# A resource listener can claim the cells before the purchase completes.
 		for id: StringName in def.cost:
@@ -116,6 +118,10 @@ func try_place_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = n
 
 ## Unpaid spawn for map setup. The grid still checks the whole footprint.
 func spawn_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -> Building:
+	return _place(def, cell, site, false)
+
+
+func _place(def: BuildingDef, cell: Vector2i, site: FrontagePlot, paid: bool) -> Building:
 	if (
 		site != null
 		and (
@@ -131,10 +137,16 @@ func spawn_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null)
 	if jobs.blocks_placement(building.cells) or not grid.occupy(building.cells, building):
 		building.free()
 		return null
+	if paid:
+		building.begin_construction(1, def.cost)
 	if site != null:
 		site.home = building
 	buildings.add_child(building)
-	EventBus.building_placed.emit(building)
+	building.construction_changed.connect(construction.site_changed.bind(building))
+	if paid:
+		construction.site_changed(building)
+	else:
+		EventBus.building_placed.emit(building)
 	return building
 
 

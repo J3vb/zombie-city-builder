@@ -57,7 +57,7 @@ func _placed(building: Building) -> void:
 		if resident.home == null:
 			resident.home = building
 			return
-	if residents.size() >= rules.resident_limit:
+	if residents.size() + 1 >= rules.resident_limit:
 		return
 	var id := residents.size() + 1
 	var given := "Resident %d" % id
@@ -85,6 +85,7 @@ func _removed(building: Building) -> void:
 			for house: Building in world.buildings.get_children():
 				if (
 					house.plot != null
+					and house.target_level != 1
 					and not house.is_queued_for_deletion()
 					and tenant(house) == null
 				):
@@ -210,7 +211,9 @@ func _dawn(day: int) -> void:
 	last_shortage.clear()
 	for item in last_output:
 		Economy.add(item, last_output[item])
-	for resident in residents:
+	var eaters := residents.duplicate()
+	eaters.append(world.construction.builder)
+	for resident in eaters:
 		resident.shift_seconds = 0.0
 		for item in rules.daily_ration:
 			var need := rules.daily_ration[item]
@@ -228,6 +231,12 @@ func _dawn(day: int) -> void:
 
 
 func blocks_placement(cells: Array[Vector2i]) -> bool:
+	if (
+		world != null
+		and world.construction.builder != null
+		and world.construction.builder.occupies(cells)
+	):
+		return true
 	for resident in residents:
 		if resident.occupies(cells):
 			return true

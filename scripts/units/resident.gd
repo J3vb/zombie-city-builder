@@ -27,7 +27,7 @@ func setup(world: World, house: Building, id: int, given_name: String) -> void:
 	resident_id = id
 	display_name = given_name
 	home = house
-	cell = house.plot.door
+	cell = house.plot.door if house.plot != null else world.grid.world_to_cell(world.roads.entrance)
 	_sim_position = world.grid.cell_to_world(cell)
 	position = world.to_view(_sim_position)
 	hide()

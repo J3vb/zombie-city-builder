@@ -200,11 +200,7 @@ func _building_at_screen(screen: Vector2) -> Building:
 			continue
 		var view := building.get_node("View") as Node3D
 		var base := Vector2(building.def.size) * world.view_tile()
-		var height := (
-			building.def.view_height
-			if building.def.levels.is_empty()
-			else building.def.levels[building.level - 1].height
-		)
+		var height := building.pick_height()
 		var box := AABB(Vector3(-base.x * 0.5, 0, -base.y * 0.5), Vector3(base.x, height, base.y))
 		var hit: Variant = box.intersects_ray(
 			view.to_local(origin), view.global_basis.inverse() * dir

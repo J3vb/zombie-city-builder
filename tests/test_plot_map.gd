@@ -56,6 +56,7 @@ func test_growth_keeps_its_plot_facing_health_and_cost() -> void:
 	var plot := _reserve(w, _cursor(street, 1))
 	var before := Economy.get_amount(&"wood")
 	w.grower.step()
+	finish_construction(w)
 	var home := plot.home
 	assert_true(is_instance_valid(home), "a tent grows on the eligible plot")
 	assert_eq(Economy.get_amount(&"wood"), before - 20, "pay once")
@@ -67,11 +68,13 @@ func test_growth_keeps_its_plot_facing_health_and_cost() -> void:
 	)
 	home.take_damage(50)
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(home.level, 1, "day one remains a tent")
 	for day in range(2, 5):
 		GameClock.day = day
 		EventBus.day_started.emit(day)
 		w.grower.step()
+		finish_construction(w)
 		if day == 2:
 			assert_eq(home.level, 2, "shack")
 			assert_eq(home.health, 90, "shack retained half health")
@@ -91,6 +94,7 @@ func test_removing_home_plot_and_branch_releases_only_their_claims() -> void:
 	var branch := w.roads.add_road(PackedVector2Array([p + Vector2(0, 215), p + Vector2(440, 215)]))
 	var plot := _reserve(w, _cursor(branch, 1))
 	w.grower.step()
+	finish_construction(w)
 	assert_true(not w.roads.remove_road(branch.id), "occupied frontage protects its street")
 	assert_true(not w.roads.remove_road(trunk.id), "cannot disconnect an occupied side street")
 	assert_true(not w.plots.remove_plot(plot.id), "cannot release an occupied plot")
@@ -116,10 +120,13 @@ func test_farm_and_storage_grow_from_painted_zones() -> void:
 	w.grower.paint(store, STORE)
 	w.grower.paused = true
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(w.grid.building_at(farm.position), null, "growth pause")
 	w.grower.paused = false
 	w.grower.step()
+	finish_construction(w)
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(w.grid.building_at(farm.position).def, FARM, "whole farm zone grew")
 	assert_eq(w.grid.building_at(store.position).def, STORE, "storage zone grew")
 	w.grower.paint(farm, null)
@@ -138,13 +145,16 @@ func test_disconnected_street_and_unaffordable_home_cannot_grow() -> void:
 	var empty: Dictionary[StringName,int] = {&"wood": 0}
 	Economy.reset(empty)
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(plot.home, null, "unaffordable plot stays vacant")
 	Economy.add(&"wood", 20)
 	GameClock.time_of_day = 0.8
 	w.grower.step()
+	finish_construction(w)
 	assert_eq(plot.home, null, "no growth at night")
 	GameClock.time_of_day = 0.1
 	w.grower.step()
+	finish_construction(w)
 	assert_true(is_instance_valid(plot.home), "eligible plot grows after funds and daylight")
 	fx.destroy()
 
@@ -168,6 +178,7 @@ func test_mouse_tools_reserve_demolish_release_and_remove() -> void:
 	_mouse(w.plot_tool, w.camera.lens.unproject_position(w.to_view(cursor)))
 	assert_eq(w.plots.plots.size(), 1, "picked frontage in 3D")
 	w.grower.step()
+	finish_construction(w)
 	var plot: FrontagePlot = w.plots.plots.values()[0]
 	var roof := w.to_view(plot.center) + Vector3.UP * plot.home.def.levels[0].height
 	w.camera.rotation.y = 0.8
@@ -222,9 +233,12 @@ func test_inspect_rotated_brick_house_on_a_bend() -> void:
 	var road := _street(w)
 	var plot := _reserve(w, _cursor(road, 1))
 	w.grower.step()
+	finish_construction(w)
 	GameClock.day = 4
 	plot.home.upgrade()
+	finish_construction(w)
 	plot.home.upgrade()
+	finish_construction(w)
 	w.camera.position = w.to_view(plot.center)
 	w.camera.rotation.y = 0.9
 	w.camera.pitch_deg = 30

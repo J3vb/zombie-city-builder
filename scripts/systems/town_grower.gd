@@ -142,7 +142,7 @@ func _grow_home() -> Result:
 	if world.try_place_building(def, plot.house_cells[0], plot) == null:
 		return Result.SKIP
 	_grown += 1
-	status = "A tent grew on a street plot."
+	status = "Tent construction ordered."
 	return Result.DONE
 
 
@@ -178,7 +178,12 @@ func _upgrade_building() -> Result:
 	var origin := world.command_post.sim_center()
 	for building: Building in world.buildings.get_children():
 		var next := building.next_level()
-		if building.is_queued_for_deletion() or next == null or GameClock.day < next.min_day:
+		if (
+			building.target_level != 0
+			or building.is_queued_for_deletion()
+			or next == null
+			or GameClock.day < next.min_day
+		):
 			continue
 		if not _has_upgrade_site(building):
 			continue
@@ -203,7 +208,7 @@ func _upgrade_building() -> Result:
 	if not best.upgrade():
 		return Result.SKIP
 	_upgraded += 1
-	status = "%s upgraded to %s." % [best.def.display_name, next.title]
+	status = "%s upgrade to %s ordered." % [best.def.display_name, next.title]
 	return Result.DONE
 
 
@@ -231,7 +236,7 @@ func _grow_zone(def: BuildingDef) -> Result:
 	if world.try_place_building(def, best) == null:
 		return Result.SKIP
 	_grown += 1
-	status = "%s grew in its zone." % def.display_name
+	status = "%s construction ordered." % def.display_name
 	return Result.DONE
 
 

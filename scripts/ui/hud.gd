@@ -101,7 +101,7 @@ func _process(_delta: float) -> void:
 		return
 	var world := _build_tool.world
 	var tool := world.plot_tool
-	%Residents.text = "Residents %d" % world.jobs.residents.size()
+	%Residents.text = "Residents %d" % (world.jobs.residents.size() + 1)
 	if world.jobs.last_dawn != _displayed_dawn:
 		_displayed_dawn = world.jobs.last_dawn
 		%DawnReport.visible = not world.jobs.last_consumed.is_empty()

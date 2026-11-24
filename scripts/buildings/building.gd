@@ -4,6 +4,7 @@ extends Node
 
 signal health_changed
 signal upgraded
+signal construction_changed
 
 var def: BuildingDef
 var cell: Vector2i
@@ -12,6 +13,9 @@ var cells: Array[Vector2i] = []
 
 var plot: FrontagePlot
 var level := 1
+var target_level := 0
+var work_done := 0.0
+var _paid: Dictionary[StringName, int] = {}
 var _upgrading := false
 
 var _grid: Grid
@@ -43,6 +47,8 @@ func sim_center() -> Vector2:
 
 
 func shift_output() -> int:
+	if target_level == 1:
+		return 0
 	return (
 		def.shift_yields[mini(level, def.shift_yields.size()) - 1]
 		if not def.shift_yields.is_empty()
@@ -59,6 +65,8 @@ func next_level() -> BuildingLevelDef:
 
 
 func upgrade_blocker() -> String:
+	if target_level != 0:
+		return "Under construction"
 	var next := next_level()
 	if next == null:
 		return "Max level"
@@ -85,12 +93,83 @@ func upgrade() -> bool:
 			Economy.add(id, next.cost[id])
 		paid = false
 	if paid:
-		health = maxi(1, roundi(float(health) / max_health() * next.max_health))
-		level += 1
-		upgraded.emit()
-		health_changed.emit()
+		begin_construction(level + 1, next.cost)
 	_upgrading = false
 	return paid
+
+
+func begin_construction(target: int, cost: Dictionary[StringName, int]) -> void:
+	target_level = target
+	work_done = 0.0
+	_paid = cost.duplicate()
+	construction_changed.emit()
+
+
+func required_work() -> float:
+	return def.build_seconds * target_level
+
+
+func project_name() -> String:
+	if target_level > 0 and not def.levels.is_empty():
+		return def.levels[target_level - 1].title
+	return def.display_name
+
+
+func pick_height() -> float:
+	var height := def.view_height if def.levels.is_empty() else def.levels[level - 1].height
+	if target_level == 1:
+		return 2.0
+	return maxf(2.0, height + 0.4) if target_level > 1 else height
+
+
+func add_build_work(seconds: float) -> void:
+	if target_level == 0 or is_queued_for_deletion() or seconds <= 0.0:
+		return
+	work_done = minf(work_done + seconds, required_work())
+	if work_done < required_work():
+		return
+	var completed := target_level
+	if completed > 1:
+		var new_max := def.levels[completed - 1].max_health
+		health = maxi(1, roundi(float(health) / max_health() * new_max))
+		level = completed
+	_clear_project()
+	if completed == 1:
+		EventBus.building_placed.emit(self)
+	else:
+		upgraded.emit()
+		health_changed.emit()
+
+
+func unused_materials() -> Dictionary[StringName, int]:
+	var result: Dictionary[StringName, int] = {}
+	if target_level == 0:
+		return result
+	var unused := 1.0 - work_done / required_work()
+	for id in _paid:
+		var amount := floori(_paid[id] * unused)
+		if amount > 0:
+			result[id] = amount
+	return result
+
+
+func _clear_project() -> void:
+	target_level = 0
+	work_done = 0.0
+	_paid.clear()
+	construction_changed.emit()
+
+
+func cancel_construction() -> void:
+	if target_level == 0 or is_queued_for_deletion():
+		return
+	if target_level == 1:
+		demolish()
+		return
+	var refund := unused_materials()
+	_clear_project()
+	for id in refund:
+		Economy.add(id, refund[id])
 
 
 func take_damage(amount: int) -> void:
@@ -113,8 +192,12 @@ func _remove(demolished: bool) -> void:
 	queue_free()
 	_grid.release(cells, self)
 	if demolished:
-		for id: StringName in def.cost:
-			Economy.add(id, floori(def.cost[id] * _balance.demolish_refund))
+		var refund := unused_materials()
+		if target_level != 1:
+			for id in def.cost:
+				refund[id] = refund.get(id, 0) + floori(def.cost[id] * _balance.demolish_refund)
+		for id in refund:
+			Economy.add(id, refund[id])
 	else:
 		_on_destroyed()
 	EventBus.building_destroyed.emit(self)

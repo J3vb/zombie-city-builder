@@ -17,3 +17,12 @@ func assert_eq(actual: Variant, expected: Variant, message: String = "") -> void
 
 func fail(message: String) -> void:
 	failures.append(message)
+
+
+## Advance only the builder when a test needs a finished building at a fixed hour.
+func finish_construction(w: Node) -> void:
+	for tick in 1600:
+		if w.construction.projects.is_empty():
+			return
+		w.construction.tick(0.25)
+	fail("Construction did not finish within 400 simulation seconds")
