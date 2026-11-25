@@ -1,5 +1,6 @@
-[gd_scene load_steps=45 format=3]
+[gd_scene load_steps=46 format=3]
 
+[ext_resource type="Material" path="res://assets/materials/station_facade.tres" id="Facade"]
 [ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="Concrete"]
 [ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="Metal"]
 [ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="Iron"]
@@ -252,6 +253,7 @@ multimesh = SubResource("FoundationDrainBars")
 [node name="EngineHall" type="Node3D" parent="."]
 
 [node name="Hall" type="MeshInstance3D" parent="EngineHall"]
+material_override = ExtResource("Facade")
 position = Vector3(-0.97, 2.44, -0.32)
 scale = Vector3(5.26, 4.55, 8.14)
 mesh = SubResource("BoxConcrete")
@@ -318,11 +320,13 @@ multimesh = SubResource("EngineHallBollardBands")
 [node name="WatchRoom" type="Node3D" parent="."]
 
 [node name="LowerWing" type="MeshInstance3D" parent="WatchRoom"]
+material_override = ExtResource("Facade")
 position = Vector3(3.38, 2.34, -0.94)
 scale = Vector3(3.42, 4.35, 7.84)
 mesh = SubResource("BoxConcrete")
 
 [node name="UpperWing" type="MeshInstance3D" parent="WatchRoom"]
+material_override = ExtResource("Facade")
 position = Vector3(1.87, 5.87, -1.17)
 scale = Vector3(6.44, 2.84, 7.4)
 mesh = SubResource("BoxConcrete")

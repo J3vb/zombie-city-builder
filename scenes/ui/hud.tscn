@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 
@@ -14,87 +14,116 @@
 
 [ext_resource type="Script" path="res://scripts/ui/opening_guide.gd" id="7_guide"]
 
+[ext_resource type="Script" path="res://scripts/ui/build_palette.gd" id="Palette"]
+
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
-[node name="TopBar" type="PanelContainer" parent="."]
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 48.0
+[node name="ResourcesPanel" type="PanelContainer" parent="."]
+offset_left = 14.0
+offset_top = 12.0
 
-[node name="Scroll" type="ScrollContainer" parent="TopBar"]
-vertical_scroll_mode = 0
-follow_focus = true
-
-[node name="Row" type="HBoxContainer" parent="TopBar/Scroll"]
-size_flags_horizontal = 3
-layout_mode = 2
-theme_override_constants/separation = 32
-
-[node name="Resources" type="HBoxContainer" parent="TopBar/Scroll/Row"]
+[node name="Resources" type="HBoxContainer" parent="ResourcesPanel"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 18
 
-[node name="Trips" type="Button" parent="TopBar/Scroll/Row"]
+[node name="Watch" type="PanelContainer" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -16.0
+offset_right = -16.0
+offset_top = 12.0
+grow_horizontal = 0
+
+[node name="Row" type="HBoxContainer" parent="Watch"]
+theme_override_constants/separation = 14
+
+[node name="Residents" type="Label" parent="Watch/Row"]
+unique_name_in_owner = true
+
+
+[node name="Clock" type="Label" parent="Watch/Row"]
+unique_name_in_owner = true
+
+
+[node name="Speed" type="HBoxContainer" parent="Watch/Row"]
+unique_name_in_owner = true
+
+
+[node name="Dock" type="VBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_bottom = -14.0
+offset_top = -14.0
+grow_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="Palette" type="PanelContainer" parent="Dock"]
+unique_name_in_owner = true
+script = ExtResource("Palette")
+size_flags_horizontal = 0
+
+[node name="Body" type="VBoxContainer" parent="Dock/Palette"]
+theme_override_constants/separation = 6
+
+[node name="Heading" type="Label" parent="Dock/Palette/Body"]
+theme_type_variation = &"Heading"
+text = "Build"
+theme_override_font_sizes/font_size = 30
+
+[node name="Tools" type="HBoxContainer" parent="Dock/Palette/Body"]
+theme_override_constants/separation = 12
+
+[node name="Categories" type="VBoxContainer" parent="Dock/Palette/Body/Tools"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120,0)
+
+[node name="Build" type="GridContainer" parent="Dock/Palette/Body/Tools"]
+unique_name_in_owner = true
+columns = 2
+size_flags_vertical = 0
+
+[node name="Actions" type="HBoxContainer" parent="Dock"]
+theme_override_constants/separation = 5
+
+[node name="ToggleBuild" type="Button" parent="Dock/Actions"]
+unique_name_in_owner = true
+text = "Build"
+
+[node name="Trips" type="Button" parent="Dock/Actions"]
 unique_name_in_owner = true
 text = "Expeditions"
 
-[node name="Services" type="MenuButton" parent="TopBar/Scroll/Row"]
+[node name="Services" type="MenuButton" parent="Dock/Actions"]
 unique_name_in_owner = true
 text = "Services"
 
-[node name="GuideButton" type="Button" parent="TopBar/Scroll/Row"]
+[node name="Places" type="MenuButton" parent="Dock/Actions"]
+unique_name_in_owner = true
+text = "Region"
+visible = false
+
+[node name="GuideButton" type="Button" parent="Dock/Actions"]
 unique_name_in_owner = true
 text = "Guide"
 visible = false
 
-[node name="Menu" type="Button" parent="TopBar/Scroll/Row"]
+[node name="Menu" type="Button" parent="Dock/Actions"]
 unique_name_in_owner = true
-visible = false
 text = "Menu"
-
-[node name="Spacer" type="Control" parent="TopBar/Scroll/Row"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Residents" type="Label" parent="TopBar/Scroll/Row"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Clock" type="Label" parent="TopBar/Scroll/Row"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Speed" type="HBoxContainer" parent="TopBar/Scroll/Row"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="BottomBar" type="PanelContainer" parent="."]
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -80.0
-grow_vertical = 0
-
-[node name="Scroll" type="ScrollContainer" parent="BottomBar"]
-vertical_scroll_mode = 0
-follow_focus = true
-
-[node name="Build" type="HBoxContainer" parent="BottomBar/Scroll"]
-size_flags_horizontal = 3
-unique_name_in_owner = true
-layout_mode = 2
-alignment = 1
+visible = false
 
 [node name="ToolHint" type="Label" parent="."]
 unique_name_in_owner = true
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -126.0
-offset_bottom = -82.0
+offset_left = 600.0
+offset_top = -60.0
+offset_right = -12.0
+offset_bottom = -12.0
+autowrap_mode = 3
 horizontal_alignment = 1
 mouse_filter = 2
 theme_override_constants/outline_size = 7
@@ -104,7 +133,7 @@ unique_name_in_owner = true
 visible = false
 anchor_right = 1.0
 offset_left = 8.0
-offset_top = 52.0
+offset_top = 80.0
 mouse_filter = 2
 theme_override_constants/outline_size = 6
 
@@ -112,7 +141,7 @@ theme_override_constants/outline_size = 6
 unique_name_in_owner = true
 visible = false
 offset_left = 8.0
-offset_top = 80.0
+offset_top = 115.0
 mouse_filter = 2
 theme_override_constants/outline_size = 6
 theme_override_colors/font_color = Color(1, 0.82, 0.56, 1)

@@ -4,7 +4,9 @@ extends Node
 
 const GAME := preload("res://scenes/main/main.tscn")
 const MAPS: Array[MapDef] = [
-	preload("res://data/maps/starter_map.tres"), preload("res://data/maps/mill_crossing.tres")
+	preload("res://data/maps/starter_map.tres"),
+	preload("res://data/maps/mill_crossing.tres"),
+	preload("res://data/maps/veydam_basin.tres")
 ]
 
 var game: Main
@@ -22,6 +24,7 @@ func _ready() -> void:
 	_choice.item_selected.connect(_describe)
 	%SettingsCenter.add_child(_slots)
 	_slots.add_theme_stylebox_override("panel", _panel.get_theme_stylebox("panel"))
+	%Continue.pressed.connect(_continue_game)
 	%Saves.pressed.connect(_open_slots)
 	_slots.closed.connect(_close_slots)
 	_slots.load_requested.connect(_load_slot)
@@ -35,7 +38,7 @@ func _ready() -> void:
 	%Quit.pressed.connect(AudioManager.quit_game)
 	%Confirm.pressed.connect(return_to_title)
 	%Back.pressed.connect(pause_game)
-	$TitleSet/Camera.look_at(Vector3(-3, 2, 4))
+	$TitleSet/Camera.look_at(Vector3(-1.4, 2.6, 2.4))
 	show_title()
 
 
@@ -46,7 +49,17 @@ func show_title() -> void:
 	(_set.get_node("Camera") as Camera3D).make_current()
 	_display(true)
 	_describe(_choice.selected)
-	%Start.grab_focus()
+	if %Continue.visible:
+		%Continue.grab_focus()
+	else:
+		%Start.grab_focus()
+
+
+func _continue_game() -> void:
+	_open_slots()
+	var slot := SaveManager.latest_slot()
+	if slot >= 0:
+		_load_slot(slot)
 
 
 func start_game() -> void:
@@ -99,7 +112,8 @@ func _display(title: bool) -> void:
 	_confirming = false
 	_panel.show()
 	%Shade.show()
-	%Heading.text = "Hold the Gates" if title else "Settlement paused"
+	%Heading.text = "HOLD THE\nGATES" if title else "Settlement paused"
+	%Continue.visible = title and SaveManager.latest_slot() >= 0
 	%Map.visible = title
 	%Description.visible = title
 	%Start.visible = title

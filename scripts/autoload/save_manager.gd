@@ -144,6 +144,20 @@ func _parse(text: String) -> Variant:
 	return parser.data if parser.parse(text) == OK else null
 
 
+func latest_slot() -> int:
+	var latest := -1
+	var time := -1
+	for slot in [0, 1, 2, 3]:
+		for suffix: String in ["", ".bak"]:
+			var path := _path(slot) + suffix
+			if FileAccess.file_exists(path):
+				var modified := FileAccess.get_modified_time(path)
+				if modified > time:
+					latest = slot
+					time = modified
+	return latest
+
+
 func occupied(slot: int) -> bool:
 	return (
 		_valid_slot(slot)

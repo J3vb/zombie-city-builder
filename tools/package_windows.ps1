@@ -49,12 +49,13 @@ try {
     if (!(Select-String -LiteralPath $flowLog -Pattern 'ms per build' -Quiet)) { throw "No flow timing from package" }
 
     # Launch away from the checkout so all assets must come from the embedded game.
+    $smokeScript = Join-Path $project 'tools/windows_smoke.gd'
     foreach ($scene in @('default','settlement')) {
         $smokeLog = Join-Path $out "smoke-$scene.log"
-        $opts = @('--quit-after','150','--log-file',('"' + $smokeLog + '"'))
+        $opts = @('--log-file',('"' + $smokeLog + '"'),'--script',('"' + $smokeScript + '"'))
         if ($Render) { $opts += @('--resolution','1920x1080','--disable-vsync') }
         else { $opts += '--headless' }
-        if ($scene -eq 'settlement') { $opts += 'res://scenes/main/main.tscn' }
+        $opts += @('--', $scene)
         $proc = Start-Process -FilePath $game -WorkingDirectory $out -ArgumentList $opts -WindowStyle Hidden -PassThru
         if (!$proc.WaitForExit(90000)) { $proc.Kill(); throw "Packaged game timed out" }
         if ($proc.ExitCode -ne 0) { throw "Packaged game exited with $($proc.ExitCode)" }

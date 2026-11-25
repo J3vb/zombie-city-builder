@@ -20,9 +20,18 @@ const ACTIONS: Array[StringName] = [
 const SCALES := [0.85, 1.0, 1.15, 1.3]
 const FONT_PATH := "res://assets/fonts/OpenDyslexic-Regular.otf"
 
+const RESOLUTIONS := [
+	Vector2i(1280, 720),
+	Vector2i(1600, 900),
+	Vector2i(1920, 1080),
+	Vector2i(2560, 1440),
+	Vector2i(3440, 1440),
+	Vector2i(3840, 2160)
+]
 var edge_scroll := true
 var gate_close := true
 var dyslexic_font := false
+var resolution := Vector2i.ZERO
 var fullscreen := false
 var ui_scale := 1.0
 var _theme: Theme = preload("res://data/settlement_theme.tres")
@@ -47,6 +56,8 @@ func load_preferences(path: String) -> void:
 	dyslexic_font = _flag("dyslexic_font", false)
 	var scale: Variant = config.get_value("display", "ui_scale", 1.0)
 	ui_scale = float(scale) if scale in SCALES else 1.0
+	var stored: Variant = config.get_value("display", "resolution", Vector2i.ZERO)
+	resolution = stored if stored is Vector2i and stored in window_sizes() else Vector2i.ZERO
 	apply_display()
 	for bus: String in BUSES:
 		var level: Variant = config.get_value("audio", bus, 1.0)
@@ -69,13 +80,49 @@ func _flag(key: String, fallback: bool) -> bool:
 	return value if typeof(value) == TYPE_BOOL else fallback
 
 
-func apply_display() -> void:
+func window_sizes() -> Array[Vector2i]:
+	var options: Array[Vector2i] = [Vector2i.ZERO]
+	var screen := Vector2i(3840, 2160)
+	if DisplayServer.get_name() != "headless":
+		screen = DisplayServer.screen_get_size(get_window().current_screen)
+	for preset: Vector2i in RESOLUTIONS:
+		if preset.x <= screen.x and preset.y <= screen.y:
+			options.append(preset)
+	if screen.x >= 800 and screen.y >= 600 and not options.has(screen):
+		options.append(screen)
+	return options
+
+
+func apply_display(reset_window: bool = false) -> void:
 	get_window().content_scale_factor = ui_scale
-	_theme.default_font = load(FONT_PATH) as Font if dyslexic_font else null
+	_theme.default_font = (
+		load(FONT_PATH if dyslexic_font else "res://assets/fonts/BarlowSemiCondensed-Regular.ttf")
+		as Font
+	)
+	_theme.set_font(
+		"font",
+		"Heading",
+		(
+			_theme.default_font
+			if dyslexic_font
+			else load("res://assets/fonts/BarlowSemiCondensed-SemiBold.ttf")
+		)
+	)
 	if DisplayServer.get_name() != "headless":
 		var mode := Window.MODE_FULLSCREEN if fullscreen else Window.MODE_WINDOWED
 		if get_window().mode != mode:
 			get_window().mode = mode
+		if not fullscreen and (reset_window or resolution != Vector2i.ZERO):
+			var usable := DisplayServer.screen_get_usable_rect(get_window().current_screen)
+			var target := (
+				resolution
+				if resolution != Vector2i.ZERO
+				else get_window().content_scale_size.min(usable.size - Vector2i(32, 64))
+			)
+			get_window().size = target
+			get_window().position = (
+				usable.position + ((usable.size - target) / 2).max(Vector2i.ZERO)
+			)
 
 
 func volume(bus: String) -> float:
@@ -138,7 +185,9 @@ func reset_keys() -> void:
 func save_preferences(path: String = PATH) -> Error:
 	for bus: String in BUSES:
 		_config.set_value("audio", bus, volume(bus))
-	for key: String in ["edge_scroll", "gate_close", "fullscreen", "dyslexic_font", "ui_scale"]:
+	for key: String in [
+		"edge_scroll", "gate_close", "fullscreen", "dyslexic_font", "ui_scale", "resolution"
+	]:
 		_config.set_value("display", key, get(key))
 	for action in ACTIONS:
 		_config.set_value("keys", action, key_for(action))

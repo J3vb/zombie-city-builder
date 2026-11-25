@@ -4,6 +4,7 @@ extends Node
 ## cost[i] = base terrain cost, or BLOCKED where a building stands.
 
 signal changed
+signal cell_edited(cell: Vector2i)
 
 const BLOCKED := -1
 
@@ -80,6 +81,7 @@ func occupy(cells: Array[Vector2i], building: Building) -> bool:
 	for cell in cells:
 		occupant[cell] = building
 		cost[index(cell)] = BLOCKED
+		cell_edited.emit(cell)
 	changed.emit()
 	return true
 
@@ -103,6 +105,8 @@ func restore_ground(cell: Vector2i) -> void:
 		cost[index(cell)] = BLOCKED
 	else:
 		cost[index(cell)] = 1 if road_cells.has(cell) else base_cost[index(cell)]
+
+	cell_edited.emit(cell)
 
 
 func horde_costs() -> PackedInt32Array:

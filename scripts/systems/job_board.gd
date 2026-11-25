@@ -63,7 +63,7 @@ func _placed(building: Building) -> void:
 
 
 func arrive(building: Building = null) -> Resident:
-	if world.safety.people.size() >= rules.resident_limit:
+	if world.safety.people.size() >= world.resident_capacity():
 		return null
 	var id := _next_id
 	_next_id += 1

@@ -34,7 +34,12 @@ func test_playable_world_draws_generated_terrain() -> void:
 	var fixture := WorldFixture.new()
 	var world := fixture.create()
 	var chunks := world.terrain.get_children()
-	assert_eq(chunks.size(), 64, "128 × 128 tiles in 16 × 16 chunks")
+	var chunky := TerrainMesh.CHUNK_SIZE
+	assert_eq(
+		chunks.size(),
+		ceili(float(world.grid.size.x) / chunky) * ceili(float(world.grid.size.y) / chunky),
+		"Every terrain chunk is present"
+	)
 	var last := (chunks.back() as MeshInstance3D).mesh.get_aabb()
 	assert_eq(last.end.x, world.grid.size.x * world.view_tile(), "full width")
 	assert_eq(last.end.z, world.grid.size.y * world.view_tile(), "full depth")

@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="MapDef" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/map_def.gd" id="Map"]
+[ext_resource type="Script" path="res://scripts/data/basin_place.gd" id="Place"]
+
+[sub_resource type="Resource" id="Veydam"]
+script = ExtResource("Place")
+title = "Veydam City"
+origin = Vector2i(270, 91)
+blocks = Vector2i(11, 8)
+city = true
+seed_value = 704
+
+[sub_resource type="Resource" id="Westhaven"]
+script = ExtResource("Place")
+title = "Westhaven"
+origin = Vector2i(44, 59)
+blocks = Vector2i(8, 6)
+city = true
+seed_value = 178
+
+[sub_resource type="Resource" id="Verbeek"]
+script = ExtResource("Place")
+title = "Verbeek"
+origin = Vector2i(56, 215)
+blocks = Vector2i(5, 4)
+seed_value = 34
+
+[sub_resource type="Resource" id="Ringway"]
+script = ExtResource("Place")
+title = "Ringway"
+origin = Vector2i(248, 292)
+blocks = Vector2i(5, 3)
+seed_value = 61
+
+[sub_resource type="Resource" id="NorthMill"]
+script = ExtResource("Place")
+title = "North Mill"
+origin = Vector2i(174, 41)
+blocks = Vector2i(4, 3)
+seed_value = 103
+
+[resource]
+script = ExtResource("Map")
+display_name = "Veydam Basin"
+description = "Build across the basin between two ruined cities and three market towns. 384 × 384 tiles · up to 500 residents."
+size = Vector2i(384, 384)
+map_seed = 9157
+command_post_cell = Vector2i(168, 241)
+overview_distance = 440.0
+population_limit = 500
+lakes = Array[Rect2i]([Rect2i(93, 131, 41, 24), Rect2i(206, 167, 51, 39), Rect2i(35, 281, 32, 45), Rect2i(286, 221, 32, 18), Rect2i(143, 312, 30, 25)])
+rubble_rects = Array[Rect2i]([Rect2i(180, 193, 9, 7), Rect2i(254, 157, 11, 9)])
+highways = Array[PackedVector2Array]([PackedVector2Array(91,229,112,219,135,200,149,186,154,155,160,127,153,106,137,88,100,80),PackedVector2Array(100,80,114,77,145,60,174,55),PackedVector2Array(202,55,225,68,244,80,257,100,270,105),PackedVector2Array(298,147,292,167,273,195,267,219,263,250,256,274,255,292),PackedVector2Array(91,229,102,242,125,251,153,256,179,265,202,274,226,282,248,299)])
+places = Array[ExtResource("Place")]([SubResource("Veydam"), SubResource("Westhaven"), SubResource("Verbeek"), SubResource("Ringway"), SubResource("NorthMill")])

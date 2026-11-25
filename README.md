@@ -8,6 +8,12 @@ Made with **Godot 4.5** and **GDScript**.
 
 The playable 3D prototype includes Station 4, timed construction, night hordes and a city-builder camera. Draw curved streets from Station 4 and reserve homes on either side. Tents grow into shacks and brick houses. Place small gardens and scrap workshops on individual sites. Farms grow from plots into fenced fields and greenhouses. Storage grows from tarp piles into sheds and warehouses. Click a building to check its health or see what its next upgrade needs. See [the roadmap](docs/ROADMAP.md).
 
+### Veydam Basin
+
+Choose **Veydam Basin** on the title screen for 384 × 384 tiles (1.54 km per side), nine times the land area of Halder Ford. One settlement can grow to 500 people, including the builder. Use **Region** to move between Station 4, Veydam City, Westhaven and the market towns of Verbeek, Ringway and North Mill. Old highways connect the five settlements, and their streets are walkable. Standing buildings and lakes occupy their footprints. Meadow and woodland can become streets, home plots or independent farms. [Explore Veydam City](docs/benchmarks/basin-city.webp).
+
+**Build** opens a category menu. Choose **Housing** for road-facing homes or **Production** for gardens, farms, storage and workplaces. Click **Build** again to leave the map clear. [See the construction menu](docs/benchmarks/basin-build-menu.webp).
+
 ### Construction
 
 Station 4 starts with Ada, the town builder. Order a building or mark land for growth. The order pays once and reserves its footprint. Ada walks to the first reachable site and works there during daylight. Inspect the frame to see progress, route status and the unused materials returned if you cancel. At dusk Ada heads home and resumes the next day. A home grants its bed and a workplace opens for hiring on completion. Existing buildings continue serving their current level during upgrades. [See construction in game](docs/benchmarks/construction.webp).
@@ -56,7 +62,7 @@ To reproduce the package on Windows with Python 3.12, Git, CMake and a C++17 com
 
 1. Install [Godot 4.5](https://godotengine.org/download) (standard build, not .NET).
 2. Open Godot, click **Import**, pick `project.godot` in this folder.
-3. Press **F5**, choose **Halder Ford** or **Mill Crossing**, then **Start settlement**. Open **Menu** to pause. **Settings** includes interface size, OpenDyslexic, audio and key bindings.
+3. Press **F5**, choose **Halder Ford**, **Mill Crossing** or **Veydam Basin**, then **New settlement**. Open **Menu** to pause. In **Settings → Display**, choose a window size and interface scale, or use fullscreen at desktop resolution. Select **Apply changes** to keep them. [View display options](docs/benchmarks/basin-display.webp).
 
 Controls:
 
@@ -96,7 +102,7 @@ godot --headless --export-release "Windows Desktop" build/windows/HoldTheGates.e
 
 The reference PC is a Windows x64 desktop with a Ryzen 9 7950X3D and RTX 4080 Super. The playable target is 60 FPS with 500 Walkers at 1080p.
 
-The game files are packed inside the .exe, so you only share that one file.
+The executable contains the game assets. Distribute it with the pathfinding DLL and license from the same Windows package.
 
 ## Tests and lint
 

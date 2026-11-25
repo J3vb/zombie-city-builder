@@ -3,6 +3,7 @@ extends Node3D
 ## Pans, orbits and tilts a camera around a point on the playable ground.
 
 var bounds := Rect2()
+var overview_distance := 0.0
 var distance: float
 var pitch_deg: float
 
@@ -44,7 +45,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		distance = maxf(_balance.camera_zoom_min, distance / _balance.camera_zoom_step)
 		_apply()
 	elif event.is_action_pressed("camera_zoom_out"):
-		distance = minf(_balance.camera_zoom_max, distance * _balance.camera_zoom_step)
+		distance = minf(
+			maxf(overview_distance, _balance.camera_zoom_max), distance * _balance.camera_zoom_step
+		)
 		_apply()
 	elif event is InputEventMouseMotion and event.button_mask & MOUSE_BUTTON_MASK_MIDDLE:
 		rotation.y -= event.relative.x * _balance.camera_drag_speed
