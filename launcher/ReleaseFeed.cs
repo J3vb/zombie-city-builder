@@ -68,6 +68,7 @@ namespace HoldTheGates
                     !(uri.Host == "github.com" || uri.Host.EndsWith(".githubusercontent.com", StringComparison.OrdinalIgnoreCase)))
                     throw new InvalidDataException("GitHub returned an unexpected download location.");
                 var request = (HttpWebRequest)WebRequest.Create(uri);
+                request.Proxy = ProxySettings.For(uri);
                 request.UserAgent = "HoldTheGatesLauncher/1";
                 request.AllowAutoRedirect = false;
                 request.Timeout = 20000;
