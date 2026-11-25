@@ -117,3 +117,27 @@ func test_open_gate_then_cheapest_breach_and_actual_destruction() -> void:
 	assert_true(w.grid.get_cost(weak) > 0)
 	assert_true(w.grid.barriers[gate_cell].blocks())
 	fx.destroy()
+
+
+func test_builder_repairs_only_safe_reachable_damage_and_resumes_after_danger() -> void:
+	var fx := WorldFixture.new()
+	var w := fx.create()
+	var cell := Vector2i(52, 66)
+	w.perimeter.order(Perimeter.WALL, cell, cell)
+	_finish(w)
+	var wall: BarrierSegment = w.grid.barriers[cell]
+	w.perimeter.hit(wall, 45)
+	var hp := wall.health
+	w.zombies.spawn(w.grid.cell_to_world(cell + Vector2i.LEFT), WALKER)
+	for i in 240:
+		w.construction.tick(0.25)
+	assert_eq(wall.health, hp)
+	w.zombies.kill(0)
+	for i in 240:
+		w.construction.tick(0.25)
+	assert_eq(wall.health, wall.def.health)
+	assert_true(w.perimeter.damaged.is_empty())
+	w.perimeter.hit(wall, 1)
+	w.perimeter.hit(wall, wall.def.health)
+	assert_true(w.perimeter.damaged.is_empty())
+	fx.destroy()

@@ -65,3 +65,51 @@ func test_pack_ammo_debits_once_and_requires_room_for_the_whole_batch() -> void:
 	assert_true(not Economy.pack_ammo(rules))
 	assert_eq(Economy.get_amount(&"ammo"), 0)
 	fx.destroy()
+
+
+func test_wall_sentry_melee_releases_on_breach_and_rifle_has_longer_range() -> void:
+	var fx := WorldFixture.new()
+	var w := fx.create()
+	var p := w.roads.entrance
+	w.roads.add_road(PackedVector2Array([p, p + Vector2.DOWN * 500]))
+	var plot := w.plots.reserve(p + Vector2(8, 150), w.plots.rules.plot_frontage)
+	w.spawn_building(w.plots.house_def, plot.house_cells[0], plot)
+	var person := w.jobs.residents[0]
+	var cell := Vector2i(59, 68)
+	w.perimeter.order(Perimeter.WALL, cell, cell)
+	var wall: BarrierSegment = w.grid.barriers[cell]
+	assert_true(not w.perimeter.staff_wall(wall, person))
+	w.perimeter.add_work(wall, wall.def.build_seconds)
+	assert_true(w.perimeter.staff_wall(wall, person))
+	w.jobs._tick(45.0)
+	assert_true(person.on_watch())
+	var ammo := Economy.get_amount(&"ammo")
+	w.zombies.spawn(w.grid.cell_to_world(cell + Vector2i.DOWN), WALKER)
+	w.zombies._process(0.1)
+	assert_eq(wall.post.shots, 1)
+	assert_eq(Economy.get_amount(&"ammo"), ammo)
+	w.perimeter.hit(wall, wall.health)
+	assert_true(person.job == null and person.exposed())
+	var rifle := load("res://data/buildings/rifle_tower.tres") as TowerDef
+	assert_true(rifle.range_tiles > TOWER.range_tiles)
+	assert_true(w.try_place_building(rifle, cell + Vector2i.RIGHT * 3) is DefenseTower)
+	fx.destroy()
+
+
+func test_gunfire_attracts_only_living_walkers_in_earshot_until_it_fades() -> void:
+	var fx := WorldFixture.new()
+	var w := fx.create()
+	var source := w.grid.cell_to_world(Vector2i(49, 71))
+	var start := source + Vector2.RIGHT * w.grid.tile_size * 3
+	w.zombies.spawn(start, WALKER)
+	w.zombies.spawn(start + Vector2.RIGHT * 400, WALKER)
+	w.zombies._process(0.0)
+	w.zombies.alert(source, w.grid.tile_size * 4)
+	w.zombies._process(0.05)
+	assert_true(w.zombies.position_of(0).x < start.x, "Moved toward the shot")
+	assert_eq(w.zombies._state[0], ZombieManager.State.INVESTIGATE)
+	assert_eq(w.zombies._state[1], ZombieManager.State.HORDE)
+	for i in 80:
+		w.zombies._process(0.1)
+	assert_true(w.zombies._state[0] != ZombieManager.State.INVESTIGATE)
+	fx.destroy()

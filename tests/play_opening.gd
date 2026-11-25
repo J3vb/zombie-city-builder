@@ -6,6 +6,8 @@ var clock: Node
 var stock: Node
 var posts: Array[Node] = []
 var last_watch := 0
+var yard: Node
+var shop: Node
 
 
 func _initialize() -> void:
@@ -29,14 +31,17 @@ func _street() -> bool:
 
 func _order(id: String, cell: Vector2i) -> Node:
 	var def := load("res://data/buildings/%s.tres" % id)
-	return world.try_place_building(def, cell)
+	var site: Node = world.try_place_building(def, cell)
+	if site == null:
+		push_error("Could not order %s at %s" % [id, cell])
+	return site
 
 
 func _build(defended: bool) -> bool:
 	if not _street():
 		return false
 	if defended:
-		for cell: Vector2i in [Vector2i(67, 66), Vector2i(60, 65)]:
+		for cell: Vector2i in [Vector2i(64, 58), Vector2i(60, 65)]:
 			var tower := _order("watchtower", cell)
 			if tower == null:
 				return false
@@ -49,7 +54,8 @@ func _build(defended: bool) -> bool:
 			or not world.perimeter.order(fence, Vector2i(66, 67), Vector2i(66, 67))
 		):
 			return false
-	if _order("lumber_yard", Vector2i(72, 80)) == null:
+	yard = _order("lumber_yard", Vector2i(57, 63) if defended else Vector2i(72, 80))
+	if yard == null:
 		return false
 	if not defended:
 		if _order("well", Vector2i(56, 76)) == null:
@@ -87,12 +93,46 @@ func _run() -> void:
 	var step: float = 1.0 / world.plots.rules.sim_ticks_per_second
 	var post: Node = world.command_post
 	var waves := 0
-	while clock.day < 6 and not clock.ended:
+	var major_hordes := 0
+	while clock.day < 11 and not clock.ended:
 		var previous_day: int = clock.day
 		clock._advance(step)
 		if defended:
+			if world.jobs.residents.size() >= 3:
+				world.grower.paused = true
+			if clock.day != previous_day and not world.jobs.residents.is_empty():
+				world.jobs.assign(world.jobs.residents[0], yard)
+				if clock.day == 4:
+					shop = _order("scrap_workshop", Vector2i(56, 60))
+					if shop == null:
+						quit(1)
+						return
+				if clock.day == 5:
+					var third := _order("watchtower", Vector2i(67, 64))
+					if third == null:
+						quit(1)
+						return
+					posts.append(third)
+				if shop != null and world.jobs.residents.size() > 1:
+					world.jobs.assign(world.jobs.residents[1], shop)
 			_prepare_watch()
+			if clock.is_night() and world.zombies.count() > 0 and stock.get_amount(&"ammo") == 0:
+				stock.pack_ammo(world.plots.rules)
+		if clock.day != previous_day and clock.day <= 10:
+			print(
+				(
+					"Reserves: %d wood, %d scrap; output %s"
+					% [
+						stock.get_amount(&"wood"),
+						stock.get_amount(&"scrap"),
+						world.jobs.last_output
+					]
+				)
+			)
 		if world.horde.queued > 0 and waves < clock.day:
+			if not world.horde.warning().is_empty():
+				major_hordes += 1
+				print(world.horde.warning())
 			waves = clock.day
 			print(
 				(
@@ -139,4 +179,4 @@ func _run() -> void:
 			]
 		)
 	)
-	quit(0 if clock.day == 6 and not clock.ended else 1)
+	quit(0 if clock.day == 11 and waves == 10 and major_hordes == 3 and not clock.ended else 1)

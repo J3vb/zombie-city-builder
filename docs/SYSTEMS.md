@@ -168,6 +168,10 @@ One completed tower offers one job. An assigned resident walks to the platform, 
 
 A new town starts with 36 ammo. The Station 4 inspector exchanges 2 scrap for a batch of 24 only when there is room for the full batch. The defended opening makes supplies and assignments before the night starts.
 
+Palisades have an optional sentry slot in the wall inspector. A guard walks to the segment and fights within 1.8 tiles. A breach releases the guard immediately. The rifle tower reaches 23 tiles, the watchtower 16. A shot alerts nearby Walkers for up to six seconds. A visible civilian takes priority over sound.
+
+Builders finish queued construction first, then travel to a damaged segment by daylight. They restore six HP per work second when no living Walker is within four tiles. Danger interrupts the repair and the builder checks again after the area clears. A destroyed segment needs a new paid order.
+
 ## 8. Zombie AI
 
 - **What:** hundreds of zombies, cheap per unit.
@@ -209,6 +213,8 @@ A new town starts with 36 ammo. The Station 4 inspector exchanges 2 scrap for a 
   - Reacts to the player: big noise or a large city raises pressure.
 - **Depends on:** Clock, Zombie AI.
 - **Milestone:** M1 (horde every night), M3 (horde nights, roamers), M5 (adaptive).
+
+The director announces the approach edge at dusk before nights 3, 6 and 9, then spawns that major wave along the announced edge. The other nights send one fifth of the major-wave count from across the border. These values are configurable in BalanceDef.
 
 ## 11. Infection
 

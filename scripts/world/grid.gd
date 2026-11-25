@@ -135,3 +135,11 @@ static func cells_of(anchor: Vector2i, footprint: Vector2i) -> Array[Vector2i]:
 		for x in footprint.x:
 			cells.append(anchor + Vector2i(x, y))
 	return cells
+
+
+func can_cross_corner(p: Vector2, end: Vector2) -> bool:
+	var a := world_to_cell(p)
+	var b := world_to_cell(end)
+	if a.x == b.x or a.y == b.y:
+		return true
+	return get_cost(Vector2i(a.x, b.y)) > 0 and get_cost(Vector2i(b.x, a.y)) > 0

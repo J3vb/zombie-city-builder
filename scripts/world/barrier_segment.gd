@@ -11,6 +11,8 @@ var complete := false
 var opened := true
 var auto_close := true
 var close_pending := false
+var repair_fraction := 0.0
+var post: DefenseTower
 
 
 func blocks() -> bool:

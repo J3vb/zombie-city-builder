@@ -186,7 +186,7 @@ func test_nearest_exposed_civilian_takes_hit_and_a_closed_corner_blocks_contact(
 	var corner := w.grid.cell_to_world(Vector2i(55, 75)) + Vector2.ONE * (w.grid.tile_size * 0.5)
 	var before := corner - Vector2.ONE
 	var after := corner + Vector2.ONE
-	assert_true(w.zombies._clear_contact(before, after, w.grid))
+	assert_true(w.grid.can_cross_corner(before, after))
 	w.spawn_building(GARDEN, Vector2i(56, 75))
-	assert_true(not w.zombies._clear_contact(before, after, w.grid))
+	assert_true(not w.grid.can_cross_corner(before, after))
 	fx.destroy()
