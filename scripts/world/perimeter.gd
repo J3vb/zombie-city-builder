@@ -128,6 +128,7 @@ func set_gate(segment: BarrierSegment, open: bool) -> void:
 		_closing.append(segment)
 	elif segment.opened != open:
 		segment.opened = open
+		AudioManager.effect("gate")
 		world.grid.restore_ground(segment.cell)
 		_changed()
 
@@ -153,6 +154,7 @@ func hit(segment: BarrierSegment, damage: int) -> void:
 	if segment.complete and segment.health > 0 and not damaged.has(segment):
 		damaged.append(segment)
 	if segment.health == 0:
+		AudioManager.effect("breach")
 		remove(segment, false)
 
 

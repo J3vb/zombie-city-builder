@@ -4,6 +4,7 @@ extends Node
 
 const WORLD_SCENE := preload("res://scenes/world/world.tscn")
 
+var guided := false
 var selected_map: MapDef
 var world: World
 
@@ -30,7 +31,8 @@ func new_game() -> void:
 	world.map_def = selected_map
 	add_child(world)
 	move_child(world, 0)
-	_hud.bind(world.build_tool)
+	AudioManager.bind(world)
+	_hud.bind(world.build_tool, guided)
 	_hud.show()
 
 

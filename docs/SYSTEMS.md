@@ -325,3 +325,9 @@ Later waves mix fast Runners, wall-breaking Brutes, noise-making Screamers and l
 The title offers Halder Ford and Mill Crossing. Both use the same town simulation and expedition region. Mill Crossing has a different Station 4 site and a canal with two crossings. Menu freezes simulation and camera movement. Resume preserves the previous speed. Escape cancels an active construction tool before opening the pause menu. Returning to the title asks for confirmation. Game over offers a restart on the current map or a return to map selection.
 
 Display and control settings are available from the title and pause menu. The optional OpenDyslexic font ships with its SIL Open Font License. Set volume for Master, Music, SFX and UI independently. Movement, camera rotation, tilt and speed keys can be rebound. Reserved and duplicate keys stay unavailable. New gates inherit the dusk setting, and individual gates can still be changed at their inspector.
+
+## Opening guide and sound
+
+A new game shows a three-day guide. Build a connected curved street, two road-facing plots and a staffed defense before the first night. The next objectives cover a separate garden or farm, a staffed well, and a finished gate. The third day highlights the direction warning and the result at dawn four. Hide the guide at any time and reopen it with Guide.
+
+The original score changes from the day watch to dusk, then to a pulse on major horde nights. The sound mixer reserves alert and button players and caps ordinary effects at ten voices. Nearby crowds share a groan cue. Gate movement, breaches, gunfire, construction and expedition radio calls have their own cues. All four bus volumes use the saved settings.

@@ -17,6 +17,7 @@ Settings="*res://scripts/autoload/settings.gd"
 EventBus="*res://scripts/autoload/event_bus.gd"
 GameClock="*res://scripts/autoload/game_clock.gd"
 Economy="*res://scripts/autoload/economy.gd"
+AudioManager="*res://scripts/autoload/audio_manager.gd"
 
 [display]
 

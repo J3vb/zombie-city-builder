@@ -120,9 +120,9 @@ Goal: a game you can keep playing.
 Goal: something you can share.
 
 - Real art (replace the low-poly kit with final models)
-- Music and sound effects
+- Original day, dusk and horde music, pooled crowd and combat sounds, a separate UI bus and reserved alert audio.
 - Choose Halder Ford or Mill Crossing. The latter has a 144 × 112-tile canal with two land crossings and a different start.
-- Tutorial (first 3 days guided)
+- A skippable first-three-day guide follows a connected street, two home plots, posted defenses, separate food and water jobs, a gate, the direction warning and survival through dawn four.
 - CI exports a commit-versioned Windows x64 build and launches both the packaged entry point and settlement. The README gives the download and local build instructions.
 - The 1080p Windows benchmark exercises 1,000 Drawn of all five types by day and night, including repeated gate changes. It fails if the 95th-percentile frame exceeds 16.67 ms.
 

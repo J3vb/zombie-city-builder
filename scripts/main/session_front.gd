@@ -26,7 +26,7 @@ func _ready() -> void:
 	%Start.pressed.connect(start_game)
 	%Resume.pressed.connect(resume_game)
 	%Return.pressed.connect(_ask_return)
-	%Quit.pressed.connect(func() -> void: get_tree().quit())
+	%Quit.pressed.connect(AudioManager.quit_game)
 	%Confirm.pressed.connect(return_to_title)
 	%Back.pressed.connect(pause_game)
 	$TitleSet/Camera.look_at(Vector3(-3, 2, 4))
@@ -50,6 +50,7 @@ func start_game() -> void:
 	remove_child(_set)
 	game = GAME.instantiate() as Main
 	game.selected_map = MAPS[_choice.selected]
+	game.guided = true
 	game.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(game)
 	game.world.camera.lens.make_current()

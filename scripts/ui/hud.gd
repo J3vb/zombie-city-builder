@@ -26,6 +26,7 @@ var _build_buttons: Dictionary[BuildingDef, Button] = {}
 
 
 func _ready() -> void:
+	%GuideButton.pressed.connect($OpeningGuide.toggle)
 	for id in ["clinic", "cold_room", "generator", "floodlight"]:
 		_services.append(load("res://data/buildings/%s.tres" % id) as ServiceDef)
 	%Services.get_popup().add_item("Town health and power", 0)
@@ -135,7 +136,10 @@ func _open_trips() -> void:
 		$ExpeditionPanel.open(_build_tool.world.expeditions)
 
 
-func bind(build_tool: BuildTool) -> void:
+func bind(build_tool: BuildTool, guided: bool = false) -> void:
+	%GuideButton.visible = guided
+	if guided:
+		$OpeningGuide.bind(build_tool.world)
 	$ResearchPanel.hide()
 	_build_tool = build_tool
 	$ServicePanel.hide()

@@ -105,6 +105,7 @@ func _forecast(day: int) -> void:
 				available.append(side)
 		if not available.is_empty():
 			approach = available[rng.randi_range(0, available.size() - 1)]
+			AudioManager.effect("warning")
 	warning_day = day
 
 
