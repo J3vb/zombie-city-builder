@@ -11,6 +11,9 @@ extends Resource
 
 @export_group("Zombies")
 @export var max_zombies: int = 2000
+@export_range(1, 30) var major_horde_interval := 3
+@export_range(0.0, 1.0) var minor_wave_share := 0.2
+@export var investigate_seconds := 6.0
 @export var horde_base: int = 20
 @export var horde_growth: int = 10
 @export var spawns_per_frame: int = 50
@@ -67,6 +70,8 @@ extends Resource
 }
 
 @export_group("Residents")
+@export var repair_health_per_second := 6.0
+@export var repair_retry_seconds := 1.0
 @export var builder_name: String = "Ada"
 @export var resident_limit: int = 100
 @export var resident_speed: float = 40.0

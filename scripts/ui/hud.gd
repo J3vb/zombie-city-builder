@@ -4,6 +4,7 @@ extends CanvasLayer
 
 const SHOWN_RESOURCES: Array[StringName] = [&"food", &"water", &"wood", &"scrap", &"ammo"]
 const WATCHTOWER := preload("res://data/buildings/watchtower.tres")
+const RIFLE_TOWER := preload("res://data/buildings/rifle_tower.tres")
 const BARRIERS: Array[BarrierDef] = [Perimeter.BARRICADE, Perimeter.WALL, Perimeter.GATE]
 const CATALOG := preload("res://data/buildings/catalog.tres")
 
@@ -88,6 +89,7 @@ func _ready() -> void:
 	for barrier in BARRIERS:
 		_defenses.get_popup().add_item(barrier.title)
 	_defenses.get_popup().add_item(WATCHTOWER.display_name)
+	_defenses.get_popup().add_item(RIFLE_TOWER.display_name)
 	_defenses.get_popup().id_pressed.connect(_select_defense)
 	_build_box.add_child(_defenses)
 	_growth.toggle_mode = true
@@ -114,6 +116,8 @@ func _process(_delta: float) -> void:
 	var tool := world.plot_tool
 	%Residents.text = "Residents %d" % world.safety.people.size()
 	var alarm := PackedStringArray()
+	if not world.horde.warning().is_empty():
+		alarm.append(world.horde.warning())
 	if world.safety.threatened > 0:
 		alarm.append("Shelter alert · Walkers near %d" % world.safety.threatened)
 	if not world.safety.last_loss.is_empty():
@@ -202,7 +206,7 @@ func _select_defense(index: int) -> void:
 	if index < BARRIERS.size():
 		_build_tool.world.plot_tool.select_barrier(BARRIERS[index])
 	else:
-		_build_tool.select(WATCHTOWER)
+		_build_tool.select(WATCHTOWER if index == BARRIERS.size() else RIFLE_TOWER)
 
 
 func _land_pressed(mode: PlotTool.Mode) -> void:

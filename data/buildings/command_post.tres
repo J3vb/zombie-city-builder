@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="BuildingDef" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/building_def.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/buildings/command_post.tscn" id="2_scene"]
+
+[ext_resource type="PackedScene" path="res://scenes/models/command_post_1.tscn" id="3_model"]
 
 [resource]
 script = ExtResource("1_def")
@@ -10,6 +12,7 @@ display_name = "Command Post"
 size = Vector2i(3, 3)
 cost = Dictionary[StringName, int]({})
 max_health = 500
-view_height = 6.0
+view_height = 10.0
+model = ExtResource("3_model")
 scene = ExtResource("2_scene")
 color = Color(0.75, 0.62, 0.3, 1)

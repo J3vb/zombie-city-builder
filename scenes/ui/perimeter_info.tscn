@@ -44,3 +44,8 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 text = "Close at dusk"
+
+[node name="Guard" type="MenuButton" parent="Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Assign sentry"

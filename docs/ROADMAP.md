@@ -51,7 +51,7 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - Playable now: click a roof to inspect the building's health, level, upgrade cost, unlock day and current blocker ([#74](https://github.com/J3vb/zombie-city-builder/issues/74)).
 - Playable now: place a one-tile garden or a two-by-two scrap workshop on its own site, anywhere the building footprint is clear. Each can be inspected and demolished independently ([#77](https://github.com/J3vb/zombie-city-builder/issues/77)).
 - Playable now: construction and upgrades draw on starting stock and staffed production.
-- Art: the tent, shack and brick house models and their shared materials are on main ([#65](https://github.com/J3vb/zombie-city-builder/pull/65)). Station 4, farm and storage models, the Walker and props remain.
+- Art: the tent, shack and brick house models and their shared materials are on main ([#65](https://github.com/J3vb/zombie-city-builder/pull/65)). Station 4 now uses its fire-station model in the playable town. Farm and storage models, the Walker and props remain.
 - Verify the Windows x64 game after the art pass.
 
 **Done when:** you can draw a bend, mark two road-facing plots on it, watch a home reach level 3, and watch a horde attack the town at night in 3D, at 60 fps with 500 active Walkers on the reference desktop at 1080p.
@@ -78,14 +78,14 @@ Goal: the core fantasy. Build walls, hold the line.
 - Playable: drag barricades and palisades, preview the cost, pay for the entire line and have the builder complete it tile by tile (#21).
 - Playable: gate tiles allow street crossings, manual opening and closing, and optional dusk closing. Closing waits for traffic to clear (#22).
 - Playable: the Walker flow field weighs a breach by tier. Walkers use the open gate or attack a cheaper barrier when it closes. Destroyed segments reopen immediately (#23).
-- Wall damage is playable. Safe builder repairs remain (#24).
-- A staffed watchtower uses ammo. Station 4 can pack reserves from scrap. The rifle tower and wall-post assignments remain (#25, #26).
-- Horde nights every 3rd night with a warning and direction
-- Noise system (gunfire draws zombies)
+- Builders repair reachable damaged segments in daylight when the area is clear (#24). Rebuild destroyed segments with a paid order.
+- Both tower types need a defender and ammo. The rifle tower reaches farther. Assign a named sentry to a completed palisade for close defense without ammo (#25, #26).
+- A dusk warning gives the approach edge on every third night. Smaller groups arrive on the other nights (#27).
+- Tower gunfire draws nearby Walkers toward the shot until the sound expires or they reach it (#28).
 
-**Opening check passed.** Two posted defenders, a gated barricade and three residents reached dawn six against waves of 30, 40, 50, 60 and 70. Station 4 retained all 500 HP and the town had 2 ammo left. The matching undefended replay lost on night one.
+**Earlier five-night opening.** Two posted defenders, a gated barricade and three residents reached dawn six against waves of 30, 40, 50, 60 and 70. Station 4 retained all 500 HP and the town had 2 ammo left. The matching undefended replay lost on night one.
 
-**Milestone acceptance:** survive ten days, repair a breach and hold off three warned major hordes.
+**Ten-night opening passed.** A lumber yard, scrap workshop and three staffed watchtowers held the north, east and north major waves on nights 3, 6 and 9. Four people reached dawn 11 with 12 food, 12 water and six rounds. Separate regression tests exercise wall damage, repair safety, breaches and sentry loss.
 
 ## M4: The outside and infection
 

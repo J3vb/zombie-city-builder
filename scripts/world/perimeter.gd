@@ -6,6 +6,9 @@ const BARRICADE := preload("res://data/defenses/barricade.tres")
 const WALL := preload("res://data/defenses/wall.tres")
 const GATE := preload("res://data/defenses/gate.tres")
 
+const WALL_POST := preload("res://data/defenses/wall_post.tres")
+
+var damaged: Array[BarrierSegment] = []
 var towers: Array[DefenseTower] = []
 var world: World
 var orders: Array[BarrierSegment] = []
@@ -142,14 +145,74 @@ func _tick(_dt: float) -> void:
 
 
 func hit(segment: BarrierSegment, damage: int) -> void:
+	if damage <= 0 or world.grid.barriers.get(segment.cell) != segment:
+		return
 	segment.health = maxi(0, segment.health - damage)
+	if segment.complete and segment.health > 0 and not damaged.has(segment):
+		damaged.append(segment)
 	if segment.health == 0:
 		remove(segment, false)
+
+
+func repair(segment: BarrierSegment, seconds: float) -> void:
+	if not damaged.has(segment) or not safe_to_repair(segment):
+		return
+	segment.repair_fraction += seconds * world.plots.rules.repair_health_per_second
+	var hp := floori(segment.repair_fraction)
+	segment.repair_fraction -= hp
+	segment.health = mini(segment.health + hp, segment.def.health)
+	if segment.health == segment.def.health:
+		damaged.erase(segment)
+		segment.repair_fraction = 0.0
+
+
+func safe_to_repair(segment: BarrierSegment) -> bool:
+	var center := world.grid.cell_to_world(segment.cell)
+	var radius := world.grid.tile_size * world.plots.rules.chase_radius_tiles
+	return not world.zombies.has_living_near(center, radius)
+
+
+func staff_wall(segment: BarrierSegment, person: Resident) -> bool:
+	if (
+		world.grid.barriers.get(segment.cell) != segment
+		or not segment.complete
+		or segment.def != WALL
+		or person == null
+	):
+		return false
+	if segment.post == null:
+		var post := DefenseTower.new()
+		post.setup(WALL_POST, segment.cell, world.grid)
+		add_child(post)
+		segment.post = post
+		world.jobs.sites.append(post)
+		towers.append(post)
+	if world.jobs.assign(person, segment.post):
+		return true
+	if world.jobs.worker_at(segment.post) == null:
+		release_post(segment)
+	return false
+
+
+func release_post(segment: BarrierSegment) -> void:
+	var post := segment.post
+	if post == null:
+		return
+	world.safety.shelter_removed(post)
+	var guard := world.jobs.worker_at(post)
+	if guard != null:
+		world.jobs.release_assignment(guard)
+	world.jobs.sites.erase(post)
+	towers.erase(post)
+	segment.post = null
+	post.queue_free()
 
 
 func remove(segment: BarrierSegment, refund: bool) -> void:
 	if world.grid.barriers.get(segment.cell) != segment:
 		return
+	release_post(segment)
+	damaged.erase(segment)
 	world.grid.barriers.erase(segment.cell)
 	orders.erase(segment)
 	_closing.erase(segment)

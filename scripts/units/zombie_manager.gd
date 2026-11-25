@@ -13,7 +13,7 @@ signal crowd_updated(
 	count: int
 )
 
-enum State { HORDE, ATTACK, CHASE }
+enum State { HORDE, ATTACK, CHASE, INVESTIGATE }
 
 var world: World
 var last_update_ms: float = 0.0
@@ -26,6 +26,8 @@ var _health := PackedInt32Array()
 var _type := PackedByteArray()
 var _state := PackedByteArray()
 var _cooldown := PackedFloat32Array()
+var _noise_left := PackedFloat32Array()
+var _noise_target := PackedVector2Array()
 var _dying := PackedInt32Array()
 var _hash := SpatialHash.new()
 var _near := PackedInt32Array()
@@ -43,6 +45,8 @@ func setup(owner_world: World) -> void:
 	_type.resize(cap)
 	_state.resize(cap)
 	_cooldown.resize(cap)
+	_noise_left.resize(cap)
+	_noise_target.resize(cap)
 	_hash.setup(world.grid.world_size(), _tile * 2.0)
 	crowd_configured.emit(cap, world.grid.world_size())
 
@@ -67,6 +71,7 @@ func spawn(pos: Vector2, def: ZombieDef) -> bool:
 	_type[_count] = t
 	_state[_count] = State.HORDE
 	_cooldown[_count] = 0.0
+	_noise_left[_count] = 0.0
 	_count += 1
 	return true
 
@@ -85,6 +90,26 @@ func damage(index: int, amount: int) -> void:
 
 func kill(index: int) -> void:
 	damage(index, _health[index])
+
+
+## Called during the crowd update, after the spatial hash has been rebuilt.
+func alert(origin: Vector2, radius: float) -> void:
+	if radius <= 0.0:
+		return
+	var n := _hash.query(origin, radius, _near)
+	for k in n:
+		var i := _near[k]
+		if is_alive(i):
+			_noise_target[i] = origin
+			_noise_left[i] = _balance.investigate_seconds
+
+
+func has_living_near(center: Vector2, radius: float) -> bool:
+	var radius_squared := radius * radius
+	for i in _count:
+		if _health[i] > 0 and _pos[i].distance_squared_to(center) <= radius_squared:
+			return true
+	return false
 
 
 func occupies_cell(cell: Vector2i) -> bool:
@@ -159,20 +184,29 @@ func _step_all(dt: float) -> void:
 		var cell := Vector2i(floori(p.x / _tile), floori(p.y / _tile))
 		var victim: Resident = _civilians.get(i)
 		var chasing := victim != null and victim.exposed()
+		_noise_left[i] = maxf(0, _noise_left[i] - dt)
+		var investigating := not chasing and _noise_left[i] > 0
 		var dir := field.direction_at(cell)
 		if chasing:
 			var towards := victim.sim_position() - p
 			var reach := def.radius + _balance.resident_radius
 			if (
 				towards.length_squared() <= reach * reach
-				and _clear_contact(p, victim.sim_position(), grid)
+				and grid.can_cross_corner(p, victim.sim_position())
 			):
 				_state[i] = State.ATTACK
 				if _can_strike(i, dt, def):
 					victim.take_hit(def.civilian_damage)
 				continue
 			dir = towards.normalized()
-		elif dir == Vector2.ZERO:
+		elif investigating:
+			var to_sound := _noise_target[i] - p
+			if to_sound.length_squared() > def.radius * def.radius:
+				dir = to_sound.normalized()
+			else:
+				_noise_left[i] = 0.0
+				investigating = false
+		if dir == Vector2.ZERO:
 			dir = (target - p).normalized()
 		var ahead := p + dir * _tile * 0.5
 		var ahead_cell := Vector2i(floori(ahead.x / _tile), floori(ahead.y / _tile))
@@ -188,7 +222,9 @@ func _step_all(dt: float) -> void:
 			if _can_strike(i, dt, def):
 				building.take_damage(def.building_damage)
 			continue
-		_state[i] = State.CHASE if chasing else State.HORDE
+		_state[i] = (
+			State.CHASE if chasing else (State.INVESTIGATE if investigating else State.HORDE)
+		)
 		_cooldown[i] = maxf(0, _cooldown[i] - dt)
 		var velocity := dir * def.speed
 		if (i + _frame) % 2 == 0:
@@ -203,14 +239,6 @@ func _can_strike(i: int, dt: float, def: ZombieDef) -> bool:
 		return false
 	_cooldown[i] = def.attack_cooldown
 	return true
-
-
-func _clear_contact(p: Vector2, end: Vector2, grid: Grid) -> bool:
-	var a := grid.world_to_cell(p)
-	var b := grid.world_to_cell(end)
-	if a.x == b.x or a.y == b.y:
-		return true
-	return grid.get_cost(Vector2i(a.x, b.y)) > 0 and grid.get_cost(Vector2i(b.x, a.y)) > 0
 
 
 func _separation(i: int, p: Vector2, radius: float) -> Vector2:
@@ -235,7 +263,7 @@ func _move(p: Vector2, motion: Vector2, grid: Grid) -> Vector2:
 	var step := motion / steps
 	for s in steps:
 		var next := p + step
-		if _walkable(next, grid) and _clear_contact(p, next, grid):
+		if _walkable(next, grid) and grid.can_cross_corner(p, next):
 			p = next
 		elif _walkable(Vector2(next.x, p.y), grid):
 			p.x = next.x
@@ -264,5 +292,7 @@ func _remove_dead() -> void:
 		_type[i] = _type[last]
 		_state[i] = _state[last]
 		_cooldown[i] = _cooldown[last]
+		_noise_left[i] = _noise_left[last]
+		_noise_target[i] = _noise_target[last]
 		_count -= 1
 	_dying.clear()

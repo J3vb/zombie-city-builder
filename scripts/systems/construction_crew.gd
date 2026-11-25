@@ -5,7 +5,9 @@ extends Node3D
 var builder: Resident
 var target: Building
 var segment: BarrierSegment
+var repair_job := false
 var projects: Array[Building] = []
+var _retry := 0.0
 var _blocked: Dictionary[Building, bool] = {}
 var _world: World
 var _dirty := true
@@ -63,6 +65,7 @@ func _choose() -> void:
 	var routes := _world.jobs.routes
 	target = null
 	segment = null
+	repair_job = false
 	_blocked.clear()
 	if not _after_dusk and not builder.retreating:
 		for site in projects:
@@ -79,6 +82,15 @@ func _choose() -> void:
 				segment = order
 				builder.send(path, true)
 				return
+		for damaged in _world.perimeter.damaged:
+			if not _world.perimeter.safe_to_repair(damaged):
+				continue
+			var path := routes.to_edges(origin, [damaged.cell])
+			if not path.is_empty():
+				segment = damaged
+				repair_job = true
+				builder.send(path, true)
+				return
 	builder.seek_shelter(_world.command_post)
 
 
@@ -90,6 +102,24 @@ func tick(dt: float) -> void:
 	):
 		return
 	var after_dusk := GameClock.time_of_day >= _world.plots.rules.dusk_at
+	if (
+		not after_dusk
+		and not _world.perimeter.damaged.is_empty()
+		and target == null
+		and segment == null
+	):
+		_retry -= dt
+		if _retry <= 0.0:
+			_dirty = true
+			_retry = _world.plots.rules.repair_retry_seconds
+	if (
+		repair_job
+		and (
+			not _world.perimeter.damaged.has(segment)
+			or not _world.perimeter.safe_to_repair(segment)
+		)
+	):
+		_dirty = true
 	if builder.update_retreat() or _dirty or after_dusk != _after_dusk:
 		_after_dusk = after_dusk
 		_dirty = false
@@ -98,6 +128,8 @@ func tick(dt: float) -> void:
 	if builder.state == Resident.State.WORKING and remaining > 0.0:
 		if target != null:
 			target.add_build_work(remaining * builder.work_pace())
+		elif repair_job:
+			_world.perimeter.repair(segment, remaining * builder.work_pace())
 		elif segment != null:
 			_world.perimeter.add_work(segment, remaining * builder.work_pace())
 

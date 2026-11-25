@@ -7,3 +7,5 @@ extends BuildingDef
 @export var shot_interval := 0.6
 @export var damage := 30
 @export var ammo_per_shot := 1
+
+@export var noise_tiles := 12.0

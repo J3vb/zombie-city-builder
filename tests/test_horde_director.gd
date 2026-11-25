@@ -45,3 +45,32 @@ func test_spawns_in_batches() -> void:
 	world.horde._process(0.016)
 	assert_eq(world.zombies.count(), b.spawns_per_frame + 5, "rest")
 	fx.destroy()
+
+
+func test_major_forecast_matches_spawn_edge_and_expires_at_dawn() -> void:
+	var fx := WorldFixture.new()
+	var w := fx.create()
+	GameClock.day = 3
+	w.horde.rng.seed = 4
+	EventBus.dusk_started.emit(3)
+	var side := w.horde.approach
+	assert_true(not w.horde.warning().is_empty())
+	assert_eq(w.horde.queued, 0, "Dusk gives time to prepare")
+	EventBus.night_started.emit(3)
+	assert_eq(w.horde.approach, side)
+	assert_true(w.horde.horde_size(3) > w.horde.horde_size(4))
+	var b := w.map_def.border_width
+	for i in 64:
+		var cell := w.grid.world_to_cell(w.horde.random_spawn_point())
+		var edges := [
+			cell.y == b,
+			cell.x == w.grid.size.x - 1 - b,
+			cell.y == w.grid.size.y - 1 - b,
+			cell.x == b
+		]
+		assert_true(edges[side], "Spawned on the warned edge")
+	GameClock.day = 4
+	assert_true(w.horde.warning().is_empty())
+	EventBus.dusk_started.emit(4)
+	assert_eq(w.horde.approach, -1)
+	fx.destroy()

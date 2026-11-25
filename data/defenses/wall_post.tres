@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TowerDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/tower_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"wall_post"
+display_name = "Wall sentry"
+range_tiles = 1.8
+shot_interval = 1.2
+damage = 12
+ammo_per_shot = 0
+deck_height = 2.3
+view_height = 2.6
+noise_tiles = 0.0

@@ -77,3 +77,9 @@ The seed-4 opening replay uses ordinary paid construction, starting resources, r
 On 25 November 2026 the 1080p night scene averaged 469 FPS while repeatedly opening and closing a completed gate. Walker update p95 was 1.65 ms, rendered frame p95 was 2.31 ms, and the slowest measured frame was 9.72 ms. Across 22 observed worker results the 95th-percentile delay from scheduling to adoption was 23.31 ms. The standalone full-grid build averaged 17.34 ms, above its original 8 ms target. The worker keeps the last complete field available during rebuilding. The scene sustained the 60 FPS target during these edits.
 
 Run `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_playable_3d.gd -- night rebuild` after import. The script requests a gate change every quarter second, samples eight seconds after warm-up, and fails if the crowd or worker rebuilds are missing. Use `tests/bench_flow_field.gd` for the separate full-grid CPU timing.
+
+## Ten-night defense replay
+
+Seed 4 on the reference Windows desktop. The player uses starting stock, two watchtowers, a gated fence and a lumber yard. Morning lumber shifts fund a third home. The player pauses growth, orders a scrap workshop on day four and a third watchtower on day five, and rotates daytime workers back onto the towers for night duty. The town consumes its starting rations. The north, east and north major waves contained 50, 80 and 110 Walkers. Four people reached dawn 11 with Station 4 at 500 HP and six rounds left. The towers fired 342 shots and cleared the map. CI runs this opening with normal damage and stock costs.
+
+[Station 4 and a staffed rifle tower in the playable town](station-defense.webp).
