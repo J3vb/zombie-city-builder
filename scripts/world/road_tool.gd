@@ -17,10 +17,11 @@ var _apron := MeshInstance3D.new()
 var _entrance := MeshInstance3D.new()
 var _last_cursor := Vector2.INF
 var _preview_material := GroundShape.material(VALID)
-var _asphalt := GroundShape.material(Color("#55565a"))
+var _asphalt: Material
 
 
 func setup(owner_world: World) -> void:
+	_asphalt = load("res://assets/materials/basin_asphalt.tres")
 	world = owner_world
 	add_child(_ghost)
 	_ghost.position.y = 0.08

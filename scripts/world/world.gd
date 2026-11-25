@@ -49,6 +49,11 @@ func _ready() -> void:
 	grid.setup(map_def, StarterMap.generate(map_def), terrain_set)
 	terrain.build(grid, terrain_set, view_tile(), map_def.map_seed)
 	TerrainDressing.build($Scenery, grid, view_tile(), map_def.map_seed)
+	var woodland := Woodland.new()
+	$Scenery.add_child(woodland)
+	woodland.plant(grid, map_def, view_tile())
+	BasinRuins.build($Scenery, map_def.places, view_tile())
+	camera.overview_distance = map_def.overview_distance
 	camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * map_def.view_scale))
 	build_tool.world = self
 	command_post = spawn_building(load(COMMAND_POST_PATH) as BuildingDef, map_def.command_post_cell)
@@ -83,6 +88,10 @@ func _exit_tree() -> void:
 	if _task_id != -1:
 		WorkerThreadPool.wait_for_task_completion(_task_id)
 		_task_id = -1
+
+
+func resident_capacity() -> int:
+	return map_def.population_limit if map_def.population_limit > 0 else plots.rules.resident_limit
 
 
 func tile_size() -> Vector2:

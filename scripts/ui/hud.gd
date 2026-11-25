@@ -11,7 +11,7 @@ const CATALOG := preload("res://data/buildings/catalog.tres")
 var _services: Array[ServiceDef] = []
 var _land_buttons: Dictionary[int, Button] = {}
 var _displayed_dawn := 0
-var _defenses := MenuButton.new()
+
 var _growth := Button.new()
 var _road_button := Button.new()
 var _build_tool: BuildTool
@@ -22,10 +22,14 @@ var _build_buttons: Dictionary[BuildingDef, Button] = {}
 @onready var _resources_box: HBoxContainer = %Resources
 @onready var _clock_label: Label = %Clock
 @onready var _speed_box: HBoxContainer = %Speed
-@onready var _build_box: HBoxContainer = %Build
+@onready var _palette: BuildPalette = %Palette
 
 
 func _ready() -> void:
+	%ToggleBuild.pressed.connect(func() -> void: _palette.visible = not _palette.visible)
+	%Places.get_popup().id_pressed.connect(
+		func(index: int) -> void: _palette.visit_place(index, _build_tool.world)
+	)
 	%GuideButton.pressed.connect($OpeningGuide.toggle)
 	for id in ["clinic", "cold_room", "generator", "floodlight"]:
 		_services.append(load("res://data/buildings/%s.tres" % id) as ServiceDef)
@@ -57,7 +61,7 @@ func _ready() -> void:
 	_road_button.focus_mode = Control.FOCUS_NONE
 	_road_button.custom_minimum_size = Vector2(110, 64)
 	_road_button.pressed.connect(_on_street_pressed)
-	_build_box.add_child(_road_button)
+	_palette.add_order("Streets", _road_button)
 	for def in CATALOG.buildings:
 		var button := Button.new()
 		match def.placement:
@@ -74,7 +78,9 @@ func _ready() -> void:
 		button.focus_mode = Control.FOCUS_NONE
 		button.custom_minimum_size = Vector2(130, 64)
 		button.pressed.connect(_on_build_pressed.bind(def))
-		_build_box.add_child(button)
+		var models := {"house": "house_1", "farm": "farm_1", "storage": "storage_1"}
+		var category := "Housing" if def.id == &"house" else "Production"
+		_palette.add_order(category, button, models.get(String(def.id), String(def.id)))
 		_build_buttons[def] = button
 
 	for action: PlotTool.Mode in [
@@ -93,20 +99,23 @@ func _ready() -> void:
 		button.toggle_mode = true
 		button.focus_mode = Control.FOCUS_NONE
 		button.pressed.connect(_land_pressed.bind(action))
-		_build_box.add_child(button)
+		_palette.add_order("Land", button)
 		_land_buttons[action] = button
-	_defenses.text = "Defenses"
-	_defenses.focus_mode = Control.FOCUS_NONE
-	for barrier in BARRIERS:
-		_defenses.get_popup().add_item(barrier.title)
-	_defenses.get_popup().add_item(WATCHTOWER.display_name)
-	_defenses.get_popup().add_item(RIFLE_TOWER.display_name)
-	_defenses.get_popup().id_pressed.connect(_select_defense)
-	_build_box.add_child(_defenses)
+	for i in BARRIERS.size() + 2:
+		var button := Button.new()
+		var model := ""
+		if i < BARRIERS.size():
+			button.text = BARRIERS[i].title
+		else:
+			var tower := WATCHTOWER if i == BARRIERS.size() else RIFLE_TOWER
+			button.text = tower.display_name
+			model = String(tower.id)
+		button.pressed.connect(_select_defense.bind(i))
+		_palette.add_order("Defenses", button, model)
 	_growth.toggle_mode = true
 	_growth.focus_mode = Control.FOCUS_NONE
 	_growth.pressed.connect(_toggle_growth)
-	_build_box.add_child(_growth)
+	_palette.add_order("Land", _growth)
 
 
 func _service(index: int) -> void:
@@ -142,6 +151,8 @@ func bind(build_tool: BuildTool, guided: bool = false) -> void:
 		$OpeningGuide.bind(build_tool.world)
 	$ResearchPanel.hide()
 	_build_tool = build_tool
+	_palette.bind_region(%Places, build_tool.world)
+	_palette.select("Streets")
 	$ServicePanel.hide()
 	$BuildingInfo.reset()
 	$ExpeditionPanel.hide()
@@ -232,7 +243,9 @@ func _refresh_resources() -> void:
 
 func _set_resource(id: StringName, value: int) -> void:
 	if _resource_labels.has(id):
-		_resource_labels[id].text = "%s %d/%d" % [String(id).capitalize(), value, Economy.capacity]
+		_resource_labels[id].text = "%s  %d" % [String(id).capitalize(), value]
+		_resource_labels[id].tooltip_text = "%d / %d in storage" % [value, Economy.capacity]
+		_resource_labels[id].mouse_filter = Control.MOUSE_FILTER_PASS
 
 
 func _on_build_pressed(def: BuildingDef) -> void:

@@ -98,6 +98,7 @@ func order(def: BarrierDef, a: Vector2i, b: Vector2i) -> bool:
 		segment.health = def.health
 		segment.along_z = cells.front().y != cells.back().y
 		world.grid.barriers[cell] = segment
+		world.grid.cell_edited.emit(cell)
 		orders.append(segment)
 	_changed()
 	return true

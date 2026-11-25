@@ -96,6 +96,7 @@ func reserve(cursor: Vector2, frontage: float) -> FrontagePlot:
 	plots[plot.id] = plot
 	for cell in plot.cells:
 		grid.parcel_cells[cell] = plot.id
+		grid.cell_edited.emit(cell)
 	changed.emit()
 	return plot
 
@@ -114,6 +115,7 @@ func remove_plot(id: int) -> bool:
 	for cell in plot.cells:
 		if grid.parcel_cells.get(cell, 0) == id:
 			grid.parcel_cells.erase(cell)
+			grid.cell_edited.emit(cell)
 	plots.erase(id)
 	changed.emit()
 	return true

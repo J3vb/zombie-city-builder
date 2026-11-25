@@ -14,11 +14,16 @@ func setup(town_grid: Grid) -> void:
 	_astar.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	_astar.default_estimate_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	_astar.update()
-	grid.changed.connect(invalidate)
+	grid.cell_edited.connect(_update_cell)
 
 
-func invalidate() -> void:
-	_dirty = true
+func _update_cell(cell: Vector2i) -> void:
+	if _dirty:
+		return
+	var cost := grid.get_cost(cell)
+	_astar.set_point_solid(cell, cost <= 0)
+	if cost > 0:
+		_astar.set_point_weight_scale(cell, cost)
 
 
 func to_building(start: Vector2i, building: Building) -> Array[Vector2i]:

@@ -4,7 +4,8 @@ extends RefCounted
 
 const MAPS := {
 	"ford": preload("res://data/maps/starter_map.tres"),
-	"mill": preload("res://data/maps/mill_crossing.tres")
+	"mill": preload("res://data/maps/mill_crossing.tres"),
+	"basin": preload("res://data/maps/veydam_basin.tres")
 }
 const BUILDINGS := [
 	"command_post",

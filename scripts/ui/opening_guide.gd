@@ -71,11 +71,11 @@ var _timer := 0.0
 
 
 func _ready() -> void:
-	anchor_top = 0.5
-	anchor_bottom = 0.5
+	anchor_top = 0.0
+	anchor_bottom = 0.0
 	offset_left = 16
 	offset_right = 407
-	offset_top = -110
+	offset_top = 156
 	grow_vertical = GROW_DIRECTION_END
 	var box := VBoxContainer.new()
 	add_child(box)

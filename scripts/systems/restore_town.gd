@@ -42,7 +42,7 @@ func restore(w: World, data: Dictionary) -> bool:
 
 
 func _people(w: World, records: Array) -> bool:
-	if records.is_empty() or records.size() > w.plots.rules.resident_limit:
+	if records.is_empty() or records.size() > w.resident_capacity():
 		return false
 	for raw: Variant in records:
 		if not raw is Dictionary:

@@ -94,7 +94,7 @@ func _entry(gate: BarrierSegment) -> Vector2i:
 
 
 func _blocker(choice: StringName, gate: BarrierSegment) -> String:
-	if world.safety.people.size() >= world.plots.rules.resident_limit:
+	if world.safety.people.size() >= world.resident_capacity():
 		return "The settlement is full."
 	var entry := _entry(gate)
 	if entry.x < 0:

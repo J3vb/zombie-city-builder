@@ -11,4 +11,9 @@ extends Resource
 @export var border_width: int = 1
 @export var water_rects: Array[Rect2i] = []
 @export var rubble_rects: Array[Rect2i] = []
+@export var lakes: Array[Rect2i] = []
+@export var highways: Array[PackedVector2Array] = []
+@export var places: Array[BasinPlace] = []
+@export var overview_distance := 0.0
+@export var population_limit := 0
 @export var command_post_cell: Vector2i = Vector2i(63, 63)

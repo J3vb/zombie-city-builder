@@ -15,10 +15,12 @@ func test_preferences_restore_keys_volume_font_and_scale() -> void:
 	Settings.gate_close = false
 	Settings.edge_scroll = false
 	Settings.dyslexic_font = true
+	Settings.resolution = Vector2i(1280, 720)
 	Settings.ui_scale = 1.15
 	assert_eq(Settings.save_preferences(TEMP), OK)
 	Settings.reset_keys()
 	Settings.load_preferences(TEMP)
+	assert_eq(Settings.resolution, Vector2i(1280, 720))
 	assert_eq(Settings.key_for(&"camera_up"), KEY_J)
 	assert_true(is_equal_approx(Settings.volume("Music"), 0.35))
 	assert_true(not Settings.gate_close and not Settings.edge_scroll)

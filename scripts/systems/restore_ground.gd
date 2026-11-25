@@ -49,6 +49,7 @@ func _plots(w: World, records: Array) -> bool:
 			if not w.grid.in_bounds(cell) or w.grid.parcel_cells.has(cell):
 				return false
 			w.grid.parcel_cells[cell] = p.id
+			w.grid.cell_edited.emit(cell)
 		for cell in p.house_cells:
 			if not p.cells.has(cell):
 				return false
