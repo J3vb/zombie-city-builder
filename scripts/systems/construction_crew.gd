@@ -16,10 +16,11 @@ var _after_dusk := false
 
 func setup(world: World) -> void:
 	_world = world
-	builder = JobBoard.RESIDENT.instantiate() as Resident
-	builder.setup(world, world.command_post, 0, world.plots.rules.builder_name)
-	builder.at_station = true
-	add_child(builder)
+	if not world.restoring:
+		builder = JobBoard.RESIDENT.instantiate() as Resident
+		builder.setup(world, world.command_post, 0, world.plots.rules.builder_name)
+		builder.at_station = true
+		add_child(builder)
 	world.grid.changed.connect(_replan)
 	EventBus.building_destroyed.connect(_removed)
 	GameClock.sim_tick.connect(tick)

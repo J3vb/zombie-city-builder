@@ -36,6 +36,46 @@ func new_game() -> void:
 	_hud.show()
 
 
+func restore_game(data: Dictionary) -> bool:
+	if not SaveLayout.MAPS.has(data.get("map")) or not data.get("guide") is Dictionary:
+		return false
+	var candidate := WORLD_SCENE.instantiate() as World
+	var previous_camera := get_viewport().get_camera_3d()
+	var previous_capacity := Economy.capacity
+	candidate.map_def = SaveLayout.MAPS[data.map]
+	candidate.restoring = true
+	add_child(candidate)
+	var loader := RestoreTown.new()
+	if not loader.restore(candidate, data):
+		remove_child(candidate)
+		candidate.free()
+		Economy.set_capacity(previous_capacity)
+		if is_instance_valid(previous_camera):
+			previous_camera.make_current()
+		return false
+	remove_child(world)
+	world.free()
+	world = candidate
+	move_child(world, 0)
+	selected_map = world.map_def
+	for key: String in loader.clock_values:
+		GameClock.set(key, loader.clock_values[key])
+	Economy.reset(loader.stocks)
+	_hud._refresh_resources()
+	world._refresh_storage()
+	world.camera.lens.make_current()
+	_game_over.hide()
+	_hud.bind(world.build_tool, guided)
+	var guide := _hud.get_node("OpeningGuide") as OpeningGuide
+	guide.step = clampi(int(data.guide.get("step", 0)), 0, OpeningGuide.STEPS.size() - 1)
+	guide.dismissed = bool(data.guide.get("hidden", false))
+	guide.visible = guided and not guide.dismissed
+	guide._refresh()
+	_hud.show()
+	AudioManager.bind(world)
+	return true
+
+
 func _on_game_over(day: int) -> void:
 	if GameClock.ended:
 		return

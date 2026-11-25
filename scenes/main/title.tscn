@@ -118,6 +118,10 @@ text = "Leave settlement"
 unique_name_in_owner = true
 text = "Keep playing"
 
+[node name="Saves" type="Button" parent="Overlay/Panel/Box"]
+unique_name_in_owner = true
+text = "Saved settlements"
+
 [node name="Options" type="Button" parent="Overlay/Panel/Box"]
 unique_name_in_owner = true
 text = "Settings"
