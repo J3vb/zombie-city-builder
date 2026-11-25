@@ -319,3 +319,9 @@ Later waves mix fast Runners, wall-breaking Brutes, noise-making Screamers and l
 - **What:** speed up testing.
 - **How:** debug overlay (F3): fps, zombie count, flow-field arrows, grid costs. Cheat keys: spawn horde, add resources, skip to night. Only in debug builds.
 - **Milestone:** M1.
+
+## Starting and pausing a settlement
+
+The title offers Halder Ford and Mill Crossing. Both use the same town simulation and expedition region. Mill Crossing has a different Station 4 site and a canal with two crossings. Menu freezes simulation and camera movement. Resume preserves the previous speed. Escape cancels an active construction tool before opening the pause menu. Returning to the title asks for confirmation. Game over offers a restart on the current map or a return to map selection.
+
+Display and control settings are available from the title and pause menu. The optional OpenDyslexic font ships with its SIL Open Font License. Set volume for Master, Music, SFX and UI independently. Movement, camera rotation, tilt and speed keys can be rebound. Reserved and duplicate keys stay unavailable. New gates inherit the dusk setting, and individual gates can still be changed at their inspector.

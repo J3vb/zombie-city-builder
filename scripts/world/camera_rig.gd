@@ -24,7 +24,7 @@ func set_bounds(rect: Rect2) -> void:
 
 func _process(delta: float) -> void:
 	var dir := Input.get_vector("camera_left", "camera_right", "camera_up", "camera_down")
-	if dir == Vector2.ZERO:
+	if dir == Vector2.ZERO and Settings.edge_scroll:
 		dir = _edge_direction()
 	var move := Vector3(dir.x, 0, dir.y).rotated(Vector3.UP, rotation.y)
 	position += (

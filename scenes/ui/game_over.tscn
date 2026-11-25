@@ -35,3 +35,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "New game"
+
+[node name="Title" type="Button" parent="Center/Panel/Box"]
+visible = false
+text = "Main menu"

@@ -56,7 +56,7 @@ To reproduce the package on Windows with Python 3.12, run `python tools/windows_
 
 1. Install [Godot 4.5](https://godotengine.org/download) (standard build, not .NET).
 2. Open Godot, click **Import**, pick `project.godot` in this folder.
-3. Press **F5**.
+3. Press **F5**, choose **Halder Ford** or **Mill Crossing**, then **Start settlement**. Open **Menu** to pause. **Settings** includes interface size, OpenDyslexic, audio and key bindings.
 
 Controls:
 

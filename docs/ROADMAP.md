@@ -108,8 +108,8 @@ Goal: a game you can keep playing.
 - The director sets wave pressure at dusk from population, recent casualties and gunfire. The announced approach remains fixed through nightfall.
 - Trade expedition blueprints and scrap for Fortify, Rebuild and Reclaim. Research improves wall repairs and fuel efficiency and unlocks the radio tower.
 - Save and load, autosave
-- Settings screen (audio, UI scale, dyslexia font, keys)
-- Main menu, pause, game over screens
+- Settings persist per-bus volume, UI size, OpenDyslexic, fullscreen, camera edge scrolling, gate defaults and keyboard bindings.
+- Start a map from the title, pause the whole settlement, resume at the previous speed or return to the title after defeat.
 - Build the researched radio tower using Relay Station parts, then call Haven Point. Continue the same settlement in endless mode.
 - Balance pass
 
@@ -121,7 +121,7 @@ Goal: something you can share.
 
 - Real art (replace the low-poly kit with final models)
 - Music and sound effects
-- Second map, or a map generator
+- Choose Halder Ford or Mill Crossing. The latter has a 144 × 112-tile canal with two land crossings and a different start.
 - Tutorial (first 3 days guided)
 - CI exports a commit-versioned Windows x64 build and launches both the packaged entry point and settlement. The README gives the download and local build instructions.
 - The 1080p Windows benchmark exercises 1,000 Drawn of all five types by day and night, including repeated gate changes. It fails if the 95th-percentile frame exceeds 16.67 ms.

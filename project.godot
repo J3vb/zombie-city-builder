@@ -6,11 +6,13 @@ config_version=5
 
 config/name="Hold the Gates"
 config/description="City builder in a zombie outbreak."
-run/main_scene="res://scenes/main/main.tscn"
+run/main_scene="res://scenes/main/title.tscn"
 run/main_scene.bench3d="res://scenes/tests/bench_3d.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 
 [autoload]
+
+Settings="*res://scripts/autoload/settings.gd"
 
 EventBus="*res://scripts/autoload/event_bus.gd"
 GameClock="*res://scripts/autoload/game_clock.gd"
@@ -25,6 +27,7 @@ window/stretch/mode="canvas_items"
 [gui]
 
 theme/default_font_size=22
+theme/custom="res://data/settlement_theme.tres"
 
 [input]
 
