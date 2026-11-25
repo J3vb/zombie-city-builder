@@ -4,6 +4,7 @@ extends Node
 
 const WORLD_SCENE := preload("res://scenes/world/world.tscn")
 
+var selected_map: MapDef
 var world: World
 
 var _balance: BalanceDef = preload("res://data/balance.tres")
@@ -26,6 +27,7 @@ func new_game() -> void:
 	GameClock.reset()
 	Economy.reset(_balance.start_resources)
 	world = WORLD_SCENE.instantiate() as World
+	world.map_def = selected_map
 	add_child(world)
 	move_child(world, 0)
 	_hud.bind(world.build_tool)

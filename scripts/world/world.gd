@@ -42,7 +42,8 @@ var _task_started_usec := 0
 
 
 func _ready() -> void:
-	map_def = load(MAP_PATH) as MapDef
+	if map_def == null:
+		map_def = load(MAP_PATH) as MapDef
 	var terrain_set := load(TERRAIN_SET_PATH) as TerrainSet
 	grid.setup(map_def, StarterMap.generate(map_def), terrain_set)
 	terrain.build(grid, terrain_set, view_tile(), map_def.map_seed)

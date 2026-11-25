@@ -20,36 +20,46 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 48.0
 
-[node name="Row" type="HBoxContainer" parent="TopBar"]
+[node name="Scroll" type="ScrollContainer" parent="TopBar"]
+vertical_scroll_mode = 0
+follow_focus = true
+
+[node name="Row" type="HBoxContainer" parent="TopBar/Scroll"]
+size_flags_horizontal = 3
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="Resources" type="HBoxContainer" parent="TopBar/Row"]
+[node name="Resources" type="HBoxContainer" parent="TopBar/Scroll/Row"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Trips" type="Button" parent="TopBar/Row"]
+[node name="Trips" type="Button" parent="TopBar/Scroll/Row"]
 unique_name_in_owner = true
 text = "Expeditions"
 
-[node name="Services" type="MenuButton" parent="TopBar/Row"]
+[node name="Services" type="MenuButton" parent="TopBar/Scroll/Row"]
 unique_name_in_owner = true
 text = "Services"
 
-[node name="Spacer" type="Control" parent="TopBar/Row"]
+[node name="Menu" type="Button" parent="TopBar/Scroll/Row"]
+unique_name_in_owner = true
+visible = false
+text = "Menu"
+
+[node name="Spacer" type="Control" parent="TopBar/Scroll/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Residents" type="Label" parent="TopBar/Row"]
+[node name="Residents" type="Label" parent="TopBar/Scroll/Row"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Clock" type="Label" parent="TopBar/Row"]
+[node name="Clock" type="Label" parent="TopBar/Scroll/Row"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Speed" type="HBoxContainer" parent="TopBar/Row"]
+[node name="Speed" type="HBoxContainer" parent="TopBar/Scroll/Row"]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -61,7 +71,12 @@ anchor_bottom = 1.0
 offset_top = -80.0
 grow_vertical = 0
 
-[node name="Build" type="HBoxContainer" parent="BottomBar"]
+[node name="Scroll" type="ScrollContainer" parent="BottomBar"]
+vertical_scroll_mode = 0
+follow_focus = true
+
+[node name="Build" type="HBoxContainer" parent="BottomBar/Scroll"]
+size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 alignment = 1

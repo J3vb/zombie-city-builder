@@ -92,6 +92,7 @@ func order(def: BarrierDef, a: Vector2i, b: Vector2i) -> bool:
 		return false
 	for cell in cells:
 		var segment := BarrierSegment.new()
+		segment.auto_close = Settings.gate_close
 		segment.cell = cell
 		segment.def = def
 		segment.health = def.health
