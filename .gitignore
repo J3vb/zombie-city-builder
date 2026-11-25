@@ -30,3 +30,6 @@ build/
 .vscode/
 .idea/
 __pycache__/
+
+# Generated native pathfinding library and descriptor
+native_bin/

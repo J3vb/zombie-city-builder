@@ -11,6 +11,8 @@ $editor = Join-Path $cache '4.5.1-stable/Godot_v4.5.1-stable_win64_console.exe'
 $out = Join-Path $project "build/windows/$Version"
 $null = New-Item -ItemType Directory -Force -Path $out
 $game = Join-Path $out 'HoldTheGates.exe'
+& python (Join-Path $project 'tools/build_flow.py')
+if ($LASTEXITCODE -ne 0) { throw "Native pathfinding build failed" }
 $oldAppData = $env:APPDATA
 $oldLocalData = $env:LOCALAPPDATA
 
@@ -35,6 +37,16 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Windows export failed" }
     Test-EngineLog $exportLog
     if (!(Test-Path -LiteralPath $game)) { throw "Missing packaged executable" }
+
+    Copy-Item -LiteralPath (Join-Path $project 'native_bin/godot-cpp-LICENSE.txt') -Destination $out
+    $bench = Join-Path $project 'tests/bench_flow_field.gd'
+    $flowLog = Join-Path $out 'smoke-flow.log'
+    $argsFlow = @('--headless','--log-file',('"' + $flowLog + '"'),'--script',('"' + $bench + '"'),'--','require-native')
+    $flow = Start-Process -FilePath $game -WorkingDirectory $out -ArgumentList $argsFlow -WindowStyle Hidden -PassThru
+    if (!$flow.WaitForExit(30000)) { $flow.Kill(); throw "Packaged flow test timed out" }
+    if ($flow.ExitCode -ne 0) { throw "Packaged flow test failed" }
+    Test-EngineLog $flowLog
+    if (!(Select-String -LiteralPath $flowLog -Pattern 'ms per build' -Quiet)) { throw "No flow timing from package" }
 
     # Launch away from the checkout so all assets must come from the embedded game.
     foreach ($scene in @('default','settlement')) {

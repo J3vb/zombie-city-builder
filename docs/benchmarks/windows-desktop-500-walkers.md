@@ -108,3 +108,14 @@ Tested 25 November 2026 in the Godot 4.7.2 compatibility renderer. Use `godot --
 ### Authored silhouettes and terrain
 
 With the five animated forms, forest edges, rubble and the ground shader enabled, the same 1,000-Drawn benchmark averaged 187.2 FPS by day and 201.0 FPS at night. Frame p95 was 5.77 ms and 5.26 ms respectively, with 33 completed gate-field rebuilds in each run. The slowest frames were 13.08 ms and 12.62 ms. The rendered captures show the independent [farm and storage tiers](farm-storage-tiers.webp) and the [five Drawn](five-drawn.webp).
+
+## Release pathfinding and final 1,000-Drawn check
+
+On 25 November 2026 the packaged Godot 4.5.1 Windows x64 game rebuilt the weighted 128 × 128 path field in **0.95 ms per build**, down from 15.14 ms in the same release benchmark with GDScript. Each measurement uses ten full builds after warm-up. The 8 ms CPU budget is met on the reference PC. Ten seeded map comparisons check every cost and direction against the original solver, including ties, unreachable cells, blocked corners and breachable gates. Editor checkouts can still use the GDScript version.
+
+| Packaged game at 1920 × 1080 | Average FPS | Frame p95 | Slowest frame | Crowd update p95 | Gate rebuilds |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Day, 1,000 Drawn | 217.7 | 5.07 ms | 10.38 ms | 3.47 ms | 33 |
+| Night, 1,000 Drawn | 217.7 | 5.11 ms | 10.65 ms | 3.52 ms | 33 |
+
+The time between submitting a gate edit and adopting the new field includes worker scheduling and the next game frame. Its p95 was 10.21 ms by day and 9.49 ms by night. The dedicated CPU benchmark times the calculation itself. To repeat that check, build the extension with `python tools/build_flow.py`, import the project, then run `godot --headless --script res://tests/bench_flow_field.gd -- require-native enforce-budget`.

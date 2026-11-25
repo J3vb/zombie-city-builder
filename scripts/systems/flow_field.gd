@@ -39,6 +39,15 @@ func build(
 	physical: PackedInt32Array = PackedInt32Array()
 ) -> void:
 	size = grid_size
+	var terrain := cost if physical.is_empty() else physical
+	if ClassDB.class_exists(&"TownFlowNative"):
+		var field: Array = ClassDB.class_call_static(
+			&"TownFlowNative", &"build_field", cost, size, goals, terrain
+		)
+		if field.size() == 2:
+			integration = field[0]
+			direction = field[1]
+			return
 	var count := size.x * size.y
 	integration.resize(count)
 	integration.fill(UNREACHED)
@@ -46,7 +55,7 @@ func build(
 	direction.fill(NONE)
 	if goals.is_empty():
 		return
-	_integrate(cost, goals, cost if physical.is_empty() else physical)
+	_integrate(cost, goals, terrain)
 
 
 func direction_at(cell: Vector2i) -> Vector2:
