@@ -54,7 +54,11 @@ Run `godot --headless --path . --script res://tests/play_opening.gd` to replay t
 
 ## Windows download
 
-Open a completed CI run under **Actions** on GitHub. Download the **HoldTheGates-Windows-x64** artifact for that commit, extract the archive and run **HoldTheGates.exe**. GitHub requires a signed-in account to download workflow artifacts. Each build starts the packaged application and settlement on Windows before it is offered for download.
+[Download the Windows launcher](https://github.com/J3vb/zombie-city-builder/releases/latest/download/HoldTheGatesLauncher.exe) for **Windows 10 or 11, x64**. Open the launcher once to install the game, then select **Play**. You can open **Hold the Gates** from the Start menu afterwards.
+
+The launcher checks GitHub at startup, every 15 minutes while open, and when the game exits. It downloads updates to itself and the game, verifies their SHA-256 checksums, and switches versions after installation succeeds. An existing installation can be played offline. Game files live under `%LOCALAPPDATA%\HoldTheGates`. Godot keeps your saves separately under `%APPDATA%\Godot\app_userdata\Hold the Gates`. The [latest release](https://github.com/J3vb/zombie-city-builder/releases/latest) also includes a ZIP for manual installs.
+
+Every pull request runs game tests and Windows packaging, including launcher install and update tests. After CI passes on `main`, GitHub Actions publishes the exact tested bundle as `v0.1.<CI run number>`. The permanent launcher link above follows the newest published release.
 
 To reproduce the package on Windows with Python 3.12, Git, CMake and a C++17 compiler, run `python tools/windows_toolchain.py ../htg-tools`, then `./tools/package_windows.ps1 -ToolCache ../htg-tools -Render` from PowerShell. The script builds the pinned Godot C++ bindings, exports with Godot 4.5.1 and writes the executable, pathfinding DLL and license under `build/windows/local/`. Keep the extracted files together. For editor play, `python tools/build_flow.py` enables the same solver after reimport. A source checkout also runs with the GDScript solver.
 

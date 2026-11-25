@@ -32,4 +32,3 @@ def main(version, game, launcher, output):
 
 if __name__ == "__main__":
     main(*sys.argv[1:])
-

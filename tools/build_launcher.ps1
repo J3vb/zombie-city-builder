@@ -18,13 +18,20 @@ using System.Reflection;
 "@ | Set-Content -LiteralPath $stamp -Encoding UTF8
 $sources = @(Get-ChildItem -LiteralPath (Join-Path $project 'launcher') -Filter '*.cs' | ForEach-Object FullName)
 $flags = @('/nologo','/optimize+','/warnaserror+','/platform:x64','/reference:System.Runtime.Serialization.dll','/reference:System.IO.Compression.dll','/reference:System.Windows.Forms.dll','/reference:System.Drawing.dll','/reference:Microsoft.CSharp.dll')
+$icon = Join-Path $project 'launcher/station.ico'
+$art = Join-Path $project 'launcher/station.jpg'
+$flags += @("/win32icon:$icon", "/resource:$art,station.jpg")
 & $csc @flags /target:winexe "/out:$out/HoldTheGatesLauncher.exe" $stamp @sources
 if ($LASTEXITCODE -ne 0) { throw 'Launcher compilation failed.' }
 if ($Tests) {
+    $old = (New-Item -ItemType Directory -Force -Path (Join-Path $out 'test-old')).FullName
+    $oldStamp = Join-Path $old 'LauncherVersion.cs'
+    (Get-Content -LiteralPath $stamp -Raw).Replace('"' + $Version + '"','"0.0.0"') | Set-Content -LiteralPath $oldStamp -Encoding UTF8
+    & $csc @flags /target:winexe "/out:$old/HoldTheGatesLauncher.exe" $oldStamp @sources
+    if ($LASTEXITCODE -ne 0) { throw 'Could not build the previous-version launcher fixture.' }
     $test = Join-Path $project 'launcher/tests/LauncherTests.cs'
     & $csc @flags /target:exe /main:HoldTheGates.LauncherTests "/out:$out/LauncherTests.exe" $stamp @sources $test
     if ($LASTEXITCODE -ne 0) { throw 'Launcher test compilation failed.' }
     & "$out/LauncherTests.exe"
     if ($LASTEXITCODE -ne 0) { throw 'Launcher update tests failed.' }
 }
-
