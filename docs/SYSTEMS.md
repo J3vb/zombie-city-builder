@@ -275,6 +275,10 @@ A connected fuel generator supplies four units for six running hours per fuel. E
 - **How:** blueprints found on expeditions plus scrap. UI is a simple tree screen.
 - **Milestone:** M5.
 
+In Services, open Research and radio. Fortify doubles safe wall repair speed. Rebuild makes a fresh can of generator fuel last 50% longer. Reclaim unlocks the radio tower. Each step consumes a blueprint and scrap and requires the previous step. Complete a tower with radio parts from the Relay Station and transmit to Haven Point. The call pauses the clock and records the win. Endless resumes the existing town, or can be selected before making the call.
+
+Later waves mix fast Runners, wall-breaking Brutes, noise-making Screamers and low Crawlers that fit under barricades and take less ranged damage. From day six, the director forecasts strength at dusk using settled population, recent losses and accumulated noise. The shared path field stays in use across all five types.
+
 ## 16. UI and HUD
 
 - **Top bar:** resources, day, time, speed buttons.

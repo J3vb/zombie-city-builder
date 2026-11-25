@@ -286,6 +286,6 @@ func _expand_basin() -> void:
 	if well != null and world.jobs.residents.size() >= 4:
 		world.jobs.assign(world.jobs.residents[3], well)
 	if posts.size() == 3 and clock.day >= 10 and stock.get_amount(&"scrap") >= 10:
-		var site := _order("watchtower", Vector2i(62, 61))
+		var site := _order("watchtower", Vector2i(58, 72))
 		if site != null:
 			posts.append(site)

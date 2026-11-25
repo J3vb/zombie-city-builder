@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ZombieDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/zombie_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"brute"
+speed = 24.0
+health = 105
+building_damage = 7
+attack_cooldown = 1.0
+radius = 14.0
+color = Color(0.46,0.42,0.38, 1)
+first_night = 12
+wall_multiplier = 3.0
+height_scale = 1.5

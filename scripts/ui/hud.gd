@@ -29,6 +29,7 @@ func _ready() -> void:
 	for id in ["clinic", "cold_room", "generator", "floodlight"]:
 		_services.append(load("res://data/buildings/%s.tres" % id) as ServiceDef)
 	%Services.get_popup().add_item("Town health and power", 0)
+	%Services.get_popup().add_item("Research and radio", 100)
 	for i in _services.size():
 		%Services.get_popup().add_item("Build " + _services[i].display_name, i + 1)
 	%Services.get_popup().add_item("Build checkpoint gate", _services.size() + 1)
@@ -110,6 +111,12 @@ func _ready() -> void:
 func _service(index: int) -> void:
 	if _build_tool == null:
 		return
+	if index == 100:
+		$ServicePanel.hide()
+		$ExpeditionPanel.hide()
+		$ResearchPanel.open(_build_tool.world)
+		return
+	$ResearchPanel.hide()
 	if index == 0:
 		$ExpeditionPanel.hide()
 		$ServicePanel.open(_build_tool.world)
@@ -122,12 +129,14 @@ func _service(index: int) -> void:
 
 
 func _open_trips() -> void:
+	$ResearchPanel.hide()
 	if _build_tool != null:
 		$ServicePanel.hide()
 		$ExpeditionPanel.open(_build_tool.world.expeditions)
 
 
 func bind(build_tool: BuildTool) -> void:
+	$ResearchPanel.hide()
 	_build_tool = build_tool
 	$ServicePanel.hide()
 	$BuildingInfo.reset()
@@ -145,6 +154,7 @@ func _process(_delta: float) -> void:
 		return
 	var world := _build_tool.world
 	var tool := world.plot_tool
+	$ResearchPanel.refresh()
 	$ServicePanel.refresh()
 	$ExpeditionPanel.refresh()
 	%Trips.text = (

@@ -10,6 +10,13 @@ extends Resource
 @export var max_catch_up_ticks: int = 10
 
 @export_group("Zombies")
+@export var adaptive_after_day := 5
+@export var pressure_population_threshold := 8
+@export var pressure_per_resident := 0.025
+@export var noise_pressure_per_shot := 0.001
+@export var noise_daily_decay := 0.5
+@export var max_horde_pressure := 0.5
+@export var loss_relief := 0.10
 @export var max_zombies: int = 2000
 @export_range(1, 30) var major_horde_interval := 3
 @export_range(0.0, 1.0) var minor_wave_share := 0.2
@@ -68,6 +75,10 @@ extends Resource
 	&"medicine": 5,
 	&"ammo": 36,
 }
+
+@export_group("Research")
+@export var fortify_repair_multiplier := 2.0
+@export var rebuild_fuel_multiplier := 1.5
 
 @export_group("Town services")
 @export var ember_stage_hours := 36.0

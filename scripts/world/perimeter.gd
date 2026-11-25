@@ -158,7 +158,10 @@ func hit(segment: BarrierSegment, damage: int) -> void:
 func repair(segment: BarrierSegment, seconds: float) -> void:
 	if not damaged.has(segment) or not safe_to_repair(segment):
 		return
-	segment.repair_fraction += seconds * world.plots.rules.repair_health_per_second
+	var rate := world.plots.rules.repair_health_per_second
+	if world.campaign.has_tech(&"fortify"):
+		rate *= world.plots.rules.fortify_repair_multiplier
+	segment.repair_fraction += seconds * rate
 	var hp := floori(segment.repair_fraction)
 	segment.repair_fraction -= hp
 	segment.health = mini(segment.health + hp, segment.def.health)

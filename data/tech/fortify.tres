@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TechDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/tech_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"fortify"
+title = "Fortify"
+benefit = "Double the rate of safe wall repairs."
+requires = &""
+cost = Dictionary[StringName, int]({&"blueprints": 1, &"scrap": 6})

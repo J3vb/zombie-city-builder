@@ -49,7 +49,9 @@ func fire_tick(world: World, dt: float) -> void:
 		return
 	var end := world.to_view(world.zombies.position_of(nearest)) + Vector3.UP
 	Economy.add(&"ammo", -rules.ammo_per_shot)
-	world.zombies.damage(nearest, rules.damage)
+	world.zombies.weapon_hit(nearest, rules.damage, rules.ammo_per_shot > 0)
+	if rules.noise_tiles > 0.0:
+		world.horde.gunshot()
 	world.zombies.alert(origin, rules.noise_tiles * world.grid.tile_size)
 	shots += 1
 	_cooldown = rules.shot_interval
