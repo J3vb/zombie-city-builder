@@ -65,3 +65,32 @@ jobs:
           set -o pipefail
           ~/godot/godot --headless --script res://tests/play_opening.gd -- basin 2>&1 | tee basin.log
           if grep -E "SCRIPT ERROR|Parse Error|ERROR:" basin.log; then exit 1; fi
+
+  windows:
+    name: Package and launch Windows x64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Cache Windows editor and x64 templates
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/htg-tools/4.5.1-stable
+            ~/htg-tools/Godot/export_templates
+          key: windows-x64-${{ hashFiles('tools/windows_toolchain.py') }}
+      - name: Install matching official Godot binaries
+        run: python tools/windows_toolchain.py "$env:USERPROFILE/htg-tools"
+      - name: Export and launch the packaged settlement
+        run: ./tools/package_windows.ps1 -ToolCache "$env:USERPROFILE/htg-tools" -Version "$env:GITHUB_SHA"
+      - name: Upload Windows game
+        uses: actions/upload-artifact@v4
+        with:
+          name: HoldTheGates-Windows-x64-${{ github.sha }}
+          path: |
+            build/windows/${{ github.sha }}/*.exe
+            build/windows/${{ github.sha }}/*.dll
+            build/windows/${{ github.sha }}/*.pck
+          if-no-files-found: error

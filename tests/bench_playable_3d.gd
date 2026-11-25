@@ -1,7 +1,9 @@
 extends SceneTree
-## Render the playable town with 500 simulated Walkers. Pass -- night for the night run.
+## Render the playable town at 1080p. Pass -- night rebuild stress for the release crowd target.
 
-const WALKERS := 500
+const BASE_CROWD := 500
+const STRESS_CROWD := 1000
+const FRAME_BUDGET_MS := 1000.0 / 60.0
 const WARMUP_US := 2000000
 const SAMPLE_US := 8000000
 
@@ -27,12 +29,17 @@ func _run() -> void:
 	world.horde.set_process(false)
 	world.camera.set_process(false)
 	var center: Vector2 = world.command_post.sim_center()
-	var walker := load("res://data/zombies/walker.tres")
-	for i in WALKERS:
+	var stress := OS.get_cmdline_user_args().has("stress")
+	var crowd_size := STRESS_CROWD if stress else BASE_CROWD
+	var lineup: Array[Resource] = [load("res://data/zombies/walker.tres")]
+	if stress:
+		for kind: String in ["runner", "brute", "screamer", "crawler"]:
+			lineup.append(load("res://data/zombies/%s.tres" % kind))
+	for i in crowd_size:
 		var angle := TAU * (i % 100) / 100.0
 		var radius := (14 + i / 100) * float(world.grid.tile_size)
 		var point := center + Vector2.RIGHT.rotated(angle) * radius
-		if not world.zombies.spawn(point, walker):
+		if not world.zombies.spawn(point, lineup[i % lineup.size()]):
 			push_error("Could not spawn benchmark Walker %d" % i)
 			quit(1)
 			return
@@ -70,7 +77,7 @@ func _run() -> void:
 				world.perimeter.set_gate(gate, not gate.opened)
 				last_edit = now
 		last = now
-	if samples.is_empty() or world.zombies.count() != WALKERS or clock.get("speed") == 0:
+	if samples.is_empty() or world.zombies.count() != crowd_size or clock.get("speed") == 0:
 		push_error("Benchmark ended without a full active crowd")
 		quit(1)
 		return
@@ -81,12 +88,12 @@ func _run() -> void:
 	var p95 := samples[ceili(samples.size() * 0.95) - 1]
 	print(
 		(
-			"RESULT %s: %d Walkers, %.1f FPS, frame p95 %.2f ms"
-			% ["night" if night else "day", WALKERS, samples.size() * 1000.0 / elapsed, p95]
+			"RESULT %s: %d Drawn, %.1f FPS, frame p95 %.2f ms"
+			% ["night" if night else "day", crowd_size, samples.size() * 1000.0 / elapsed, p95]
 		)
 	)
 	updates.sort()
-	print("RESULT Walker update p95 %.2f ms" % updates[ceili(updates.size() * 0.95) - 1])
+	print("RESULT Crowd update p95 %.2f ms" % updates[ceili(updates.size() * 0.95) - 1])
 	if rebuild:
 		if builds.size() < 2:
 			push_error("No repeated gate rebuilds completed in the sample")
@@ -99,4 +106,8 @@ func _run() -> void:
 				% [builds.size(), builds[ceili(builds.size() * 0.95) - 1], samples[-1]]
 			)
 		)
+	if stress and p95 > FRAME_BUDGET_MS:
+		push_error("The 1,000-Drawn frame p95 exceeded the 60 FPS target")
+		quit(1)
+		return
 	quit()

@@ -123,8 +123,8 @@ Goal: something you can share.
 - Music and sound effects
 - Second map, or a map generator
 - Tutorial (first 3 days guided)
-- Package the Windows x64 game in CI ([#48](https://github.com/J3vb/zombie-city-builder/issues/48)).
-- Performance pass (target 1000 zombies)
+- CI exports a commit-versioned Windows x64 build and launches both the packaged entry point and settlement. The README gives the download and local build instructions.
+- The 1080p Windows benchmark exercises 1,000 Drawn of all five types by day and night, including repeated gate changes. It fails if the 95th-percentile frame exceeds 16.67 ms.
 
 **Done when:** a stranger can download, learn and play it.
 

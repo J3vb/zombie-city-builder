@@ -93,3 +93,14 @@ Run the normal opening replay with the additional argument `-- basin`. A seed-4 
 ## Mixed late hordes
 
 The fifteen-day Basin replay uses a southern fourth tower to cover housing. With adaptive pressure and the five Drawn types enabled, the final major wave approached from the south with 179 hostiles. Five people survived, one fewer than in the Walker-only replay. The town emptied its food stock, kept 47 water and four rounds, and held Station 4 at 500 HP.
+
+## Release crowd target
+
+At 1920 × 1080 on the Ryzen 9 7950X3D and RTX 4080 SUPER, the playable town sustained 60 FPS with a fixed crowd of 1,000. Each run spawned 200 of each Drawn type, disabled natural waves, warmed up for two seconds and sampled eight seconds. A completed gate changed state every quarter second. The camera covered Station 4. This fixture measures the active crowd and rebuilds with a small settlement.
+
+| Lighting | Average FPS | Frame p95 | Slowest frame | Crowd update p95 | Completed rebuilds |
+|---|---:|---:|---:|---:|---:|
+| Day | 221.9 | 4.88 ms | 11.82 ms | 3.71 ms | 33 |
+| Night | 220.5 | 4.81 ms | 11.58 ms | 3.71 ms | 33 |
+
+Tested 25 November 2026 in the Godot 4.7.2 compatibility renderer. Use `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_playable_3d.gd -- night rebuild stress`. Remove `night` for daylight. The benchmark checks the full crowd, simulation clock, worker rebuilds and the 16.67 ms frame p95 budget.
