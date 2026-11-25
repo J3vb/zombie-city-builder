@@ -3,7 +3,7 @@ extends TestCase
 
 
 func test_every_authored_building_tier_has_a_loadable_model() -> void:
-	for id: String in ["house", "farm", "storage"]:
+	for id: String in ["house", "farm", "storage", "scrap_workshop"]:
 		var def := load("res://data/buildings/%s.tres" % id) as BuildingDef
 		var seen: Array[String] = []
 		for level in def.levels:

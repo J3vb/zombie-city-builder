@@ -23,7 +23,10 @@ extends Resource
 @export var investigate_seconds := 6.0
 @export var horde_base: int = 20
 @export var horde_growth: int = 10
+@export var late_growth_day := 12
+@export var late_horde_growth := 4
 @export var spawns_per_frame: int = 50
+@export var attackers_per_approach_tile := 2
 @export var separation_radius: float = 12.0
 @export var separation_strength: float = 60.0
 @export var chase_radius_tiles: int = 4

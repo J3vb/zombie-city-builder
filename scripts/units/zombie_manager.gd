@@ -33,6 +33,7 @@ var _hash := SpatialHash.new()
 var _near := PackedInt32Array()
 var _civilians: Dictionary[int, Resident] = {}
 var _motion := CrowdMotion.new()
+var _front: Dictionary[Vector2i,int] = {}
 var _voice := PackedFloat32Array()
 var _frame: int = 0
 var _tile: float = 32.0
@@ -177,6 +178,7 @@ func _find_civilians() -> void:
 
 
 func _step_all(dt: float) -> void:
+	_front.clear()
 	_find_civilians()
 	var field := world.flow_field
 	var grid := world.grid
@@ -233,13 +235,13 @@ func _step_all(dt: float) -> void:
 			and not (def.crawl_under and segment.def == Perimeter.BARRICADE)
 		):
 			_state[i] = State.ATTACK
-			if _can_strike(i, dt, def):
+			if _at_front(cell) and _can_strike(i, dt, def):
 				world.perimeter.hit(segment, roundi(def.building_damage * def.wall_multiplier))
 			continue
 		var building := grid.building_at(ahead_cell)
 		if building:
 			_state[i] = State.ATTACK
-			if _can_strike(i, dt, def):
+			if _at_front(cell) and _can_strike(i, dt, def):
 				building.take_damage(def.building_damage)
 			continue
 		_state[i] = (
@@ -251,6 +253,14 @@ func _step_all(dt: float) -> void:
 			velocity += _motion.separation(i, p, sep_r, _hash, _pos) * sep_k
 		_pos[i] = _motion.move(p, velocity * dt, grid, def)
 	_civilians.clear()
+
+
+func _at_front(cell: Vector2i) -> bool:
+	var occupied: int = _front.get(cell, 0)
+	if occupied >= _balance.attackers_per_approach_tile:
+		return false
+	_front[cell] = occupied + 1
+	return true
 
 
 func _can_strike(i: int, dt: float, def: ZombieDef) -> bool:

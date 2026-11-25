@@ -8,9 +8,15 @@ var _feedback := ""
 
 func _ready() -> void:
 	%Ammo.pressed.connect(_pack_ammo)
+	%Upgrade.pressed.connect(_order_upgrade)
 	%CancelProject.pressed.connect(_cancel_project)
 	%Assignment.about_to_popup.connect(_populate_workers)
 	%Assignment.get_popup().id_pressed.connect(_choose_worker)
+
+
+func _order_upgrade() -> void:
+	if is_instance_valid(_site) and _site.upgrade():
+		_feedback = "Upgrade ordered."
 
 
 func reset() -> void:
@@ -30,6 +36,10 @@ func refresh(building: Building, grower: TownGrower) -> void:
 	visible = is_instance_valid(building) and not building.is_queued_for_deletion()
 	if not visible:
 		return
+	%Upgrade.visible = building.target_level == 0 and building.next_level() != null
+	var blocker := building.upgrade_blocker()
+	%Upgrade.disabled = not blocker.is_empty()
+	%Upgrade.tooltip_text = blocker
 	%Ammo.visible = building == grower.world.command_post
 	if %Ammo.visible:
 		var rules := grower.rules

@@ -1,15 +1,34 @@
-[gd_resource type="Resource" script_class="BuildingDef" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="BuildingDef" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/building_def.gd" id="1_def"]
 [ext_resource type="PackedScene" path="res://scenes/buildings/building.tscn" id="2_building"]
 [ext_resource type="PackedScene" path="res://scenes/models/scrap_workshop.tscn" id="3_model"]
+
+[ext_resource type="Script" path="res://scripts/data/building_level_def.gd" id="4_tier"]
+
+[sub_resource type="Resource" id="Bench"]
+script = ExtResource("4_tier")
+title = "Scrap workshop"
+max_health = 150
+height = 3.3
+model_path = "res://scenes/models/scrap_workshop.tscn"
+
+[sub_resource type="Resource" id="Press"]
+script = ExtResource("4_tier")
+title = "Salvage press"
+min_day = 7
+cost = Dictionary[StringName, int]({&"wood": 10, &"scrap": 2})
+max_health = 210
+height = 4.1
+model_path = "res://scenes/models/salvage_press.tscn"
 
 [resource]
 script = ExtResource("1_def")
 id = &"scrap_workshop"
 build_seconds = 24.0
 output_resource = &"scrap"
-shift_yields = PackedInt32Array(4)
+shift_yields = PackedInt32Array(4, 9)
+levels = Array[ExtResource("4_tier")]([SubResource("Bench"), SubResource("Press")])
 display_name = "Scrap workshop"
 size = Vector2i(2, 2)
 cost = Dictionary[StringName, int]({&"wood": 20, &"scrap": 10})

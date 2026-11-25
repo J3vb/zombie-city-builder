@@ -47,7 +47,9 @@ func setup(owner_world: World, seed_value: int) -> void:
 
 
 func horde_size(day: int) -> int:
-	var major := _balance.horde_base + day * _balance.horde_growth
+	var early := mini(day, _balance.late_growth_day)
+	var major := _balance.horde_base + early * _balance.horde_growth
+	major += (day - early) * _balance.late_horde_growth
 	major = maxi(1, roundi(major * (1.0 + pressure)))
 	return (
 		major

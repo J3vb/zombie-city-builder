@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/models/scrap_workshop.tscn" id="Workshop"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="Teal"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="Steel"]
+
+[sub_resource type="BoxMesh" id="Frame"]
+size = Vector3(1,1,1)
+
+[node name="SalvagePress" type="Node3D"]
+
+[node name="Workshop" parent="." instance=ExtResource("Workshop")]
+
+[node name="LeftColumn" type="MeshInstance3D" parent="."]
+position = Vector3(1.25,1.45,2.55)
+scale = Vector3(0.25,2.9,0.65)
+mesh = SubResource("Frame")
+material_override = ExtResource("Teal")
+
+[node name="RightColumn" type="MeshInstance3D" parent="."]
+position = Vector3(2.85,1.45,2.55)
+scale = Vector3(0.25,2.9,0.65)
+mesh = SubResource("Frame")
+material_override = ExtResource("Teal")
+
+[node name="Crosshead" type="MeshInstance3D" parent="."]
+position = Vector3(2.05,2.8,2.55)
+scale = Vector3(2.0,0.45,0.75)
+mesh = SubResource("Frame")
+material_override = ExtResource("Teal")
+
+[node name="Ram" type="MeshInstance3D" parent="."]
+position = Vector3(2.05,2.05,2.55)
+scale = Vector3(0.37,1.25,0.4)
+mesh = SubResource("Frame")
+material_override = ExtResource("Steel")
+
+[node name="Bed" type="MeshInstance3D" parent="."]
+position = Vector3(2.05,0.81,2.55)
+scale = Vector3(1.9,0.25,1.0)
+mesh = SubResource("Frame")
+material_override = ExtResource("Steel")

@@ -158,3 +158,30 @@ func test_roof_selection_with_a_building_behind_and_all_clear_actions() -> void:
 	main.new_game()
 	assert_true(not panel.visible, "restart closes inspection")
 	main.free()
+
+
+func test_player_can_order_a_paid_workshop_upgrade_while_growth_is_paused() -> void:
+	var main := MAIN.instantiate() as Main
+	(Engine.get_main_loop() as SceneTree).root.add_child(main)
+	var world := main.world
+	var workshop := world.spawn_building(
+		load("res://data/buildings/scrap_workshop.tres"), Vector2i(39, 47)
+	)
+	var panel := main.get_node("Hud/BuildingInfo")
+	var order := panel.get_node("%Upgrade") as Button
+	world.grower.paused = true
+	panel.refresh(workshop, world.grower)
+	assert_true(order.visible and order.disabled, "The press unlocks on day seven")
+	GameClock.day = 7
+	panel.refresh(workshop, world.grower)
+	assert_true(not order.disabled)
+	var wood := Economy.get_amount(&"wood")
+	var scrap := Economy.get_amount(&"scrap")
+	order.pressed.emit()
+	assert_eq(Economy.get_amount(&"wood"), wood - 10)
+	assert_eq(Economy.get_amount(&"scrap"), scrap - 2)
+	assert_eq(workshop.target_level, 2)
+	finish_construction(world)
+	assert_eq(workshop.level, 2)
+	assert_eq(workshop.def.shift_yields[workshop.level - 1], 9)
+	main.free()
