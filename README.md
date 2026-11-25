@@ -46,6 +46,12 @@ Run `godot --headless --path . --script res://tests/play_opening.gd` to replay t
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Milestones M0 to M6 |
 | [docs/reviews/](docs/reviews/) | Design review reports |
 
+## Windows download
+
+Open a completed CI run under **Actions** on GitHub. Download the **HoldTheGates-Windows-x64** artifact for that commit, extract the archive and run **HoldTheGates.exe**. GitHub requires a signed-in account to download workflow artifacts. Each build starts the packaged application and settlement on Windows before it is offered for download.
+
+To reproduce the package on Windows with Python 3.12, run `python tools/windows_toolchain.py ../htg-tools`, then `./tools/package_windows.ps1 -ToolCache ../htg-tools -Render` from PowerShell. The script uses Godot 4.5.1 and writes the game under `build/windows/local/`.
+
 ## Run it
 
 1. Install [Godot 4.5](https://godotengine.org/download) (standard build, not .NET).
