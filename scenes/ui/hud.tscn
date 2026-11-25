@@ -1,10 +1,12 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/building_info.tscn" id="2_info"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/perimeter_info.tscn" id="3_perimeter"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/expedition_panel.tscn" id="4_trips"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -22,6 +24,10 @@ theme_override_constants/separation = 32
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 24
+
+[node name="Trips" type="Button" parent="TopBar/Row"]
+unique_name_in_owner = true
+text = "Expeditions"
 
 [node name="Spacer" type="Control" parent="TopBar/Row"]
 layout_mode = 2
@@ -84,3 +90,5 @@ theme_override_colors/font_color = Color(1, 0.82, 0.56, 1)
 [node name="BuildingInfo" parent="." instance=ExtResource("2_info")]
 
 [node name="PerimeterInfo" parent="." instance=ExtResource("3_perimeter")]
+
+[node name="ExpeditionPanel" parent="." instance=ExtResource("4_trips")]

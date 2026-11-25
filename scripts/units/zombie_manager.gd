@@ -142,8 +142,10 @@ func _find_civilians() -> void:
 	var radius := _tile * _balance.chase_radius_tiles
 	world.safety.threatened = 0
 	for person in world.safety.people:
-		var point := person.sim_position()
 		person.threat_near = false
+		if person.off_map:
+			continue
+		var point := person.sim_position()
 		var n := _hash.query(point, radius, _near) if _count > 0 else 0
 		for k in n:
 			var i := _near[k]

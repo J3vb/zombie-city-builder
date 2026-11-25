@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ExpeditionSite" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/expedition_site.gd" id="1_site"]
+[ext_resource type="Script" path="res://scripts/data/expedition_event_def.gd" id="2_event"]
+
+[sub_resource type="Resource" id="Encounter"]
+script = ExtResource("2_event")
+story = "The hand pump is dry. Starting the old motor will fill the second drum. The noise will carry across the valley."
+investigate = "Run the pump"
+leave = "Take the sealed cans"
+extra = Dictionary[StringName, int]({&"fuel": 9})
+survivor = false
+followers = 5
+injury = 0
+
+[resource]
+script = ExtResource("1_site")
+title = "Ringway Fuel Stop"
+district = "Ringway"
+hours = 4.0
+risk = 0.2
+map_position = Vector2(0.63, 0.77)
+supplies = Dictionary[StringName, int]({&"fuel": 5})
+encounter = SubResource("Encounter")

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ExpeditionSite" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/expedition_site.gd" id="1_site"]
+[ext_resource type="Script" path="res://scripts/data/expedition_event_def.gd" id="2_event"]
+
+[sub_resource type="Resource" id="Encounter"]
+script = ExtResource("2_event")
+story = "Someone behind a cell door knows the armory code. The lock is loud enough to wake the street."
+investigate = "Open the cell"
+leave = "Keep the patrol car ammunition"
+extra = Dictionary[StringName, int]({&"ammo": 8, &"blueprints": 1})
+survivor = true
+followers = 6
+injury = 2
+
+[resource]
+script = ExtResource("1_site")
+title = "Police Post"
+district = "Veydam City"
+hours = 5.0
+risk = 0.25
+map_position = Vector2(0.72, 0.41)
+supplies = Dictionary[StringName, int]({&"ammo": 8})
+encounter = SubResource("Encounter")

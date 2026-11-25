@@ -11,6 +11,7 @@ var map_def: MapDef
 var flow_field := FlowField.new()
 var safety := TownSafety.new()
 var perimeter := Perimeter.new()
+var expeditions := Expeditions.new()
 var command_post: Building
 var last_build_ms: float = 0.0
 
@@ -61,6 +62,8 @@ func _ready() -> void:
 	_build_now()
 	zombies.setup(self)
 	horde.setup(self, Time.get_ticks_usec())
+	add_child(expeditions)
+	expeditions.setup(self)
 	debug_overlay.world = self
 
 

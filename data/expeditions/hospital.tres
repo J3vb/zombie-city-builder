@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ExpeditionSite" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/expedition_site.gd" id="1_site"]
+[ext_resource type="Script" path="res://scripts/data/expedition_event_def.gd" id="2_event"]
+
+[sub_resource type="Resource" id="Encounter"]
+script = ExtResource("2_event")
+story = "A medic waves from the shuttered ward. The team can free her if someone crosses the flooded stairwell."
+investigate = "Reach the ward"
+leave = "Return with the pharmacy crate"
+extra = Dictionary[StringName, int]({&"medicine": 3})
+survivor = true
+followers = 2
+injury = 7
+
+[resource]
+script = ExtResource("1_site")
+title = "St. Agna Hospital"
+district = "Veydam City"
+hours = 6.0
+risk = 0.35
+map_position = Vector2(0.82, 0.23)
+supplies = Dictionary[StringName, int]({&"medicine": 4})
+encounter = SubResource("Encounter")

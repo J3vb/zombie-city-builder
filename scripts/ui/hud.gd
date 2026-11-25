@@ -25,6 +25,7 @@ var _build_buttons: Dictionary[BuildingDef, Button] = {}
 
 
 func _ready() -> void:
+	%Trips.pressed.connect(_open_trips)
 	for id in SHOWN_RESOURCES:
 		var label := Label.new()
 		_resources_box.add_child(label)
@@ -98,9 +99,15 @@ func _ready() -> void:
 	_build_box.add_child(_growth)
 
 
+func _open_trips() -> void:
+	if _build_tool != null:
+		$ExpeditionPanel.open(_build_tool.world.expeditions)
+
+
 func bind(build_tool: BuildTool) -> void:
 	_build_tool = build_tool
 	$BuildingInfo.reset()
+	$ExpeditionPanel.hide()
 	%DawnReport.hide()
 	_displayed_dawn = 0
 
@@ -114,6 +121,12 @@ func _process(_delta: float) -> void:
 		return
 	var world := _build_tool.world
 	var tool := world.plot_tool
+	$ExpeditionPanel.refresh()
+	%Trips.text = (
+		"Expedition decision"
+		if world.expeditions.phase == Expeditions.Phase.CHOICE
+		else "Expeditions"
+	)
 	%Residents.text = "Residents %d" % world.safety.people.size()
 	var alarm := PackedStringArray()
 	if not world.horde.warning().is_empty():

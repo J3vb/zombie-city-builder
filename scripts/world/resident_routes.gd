@@ -36,6 +36,13 @@ func to_building(start: Vector2i, building: Building) -> Array[Vector2i]:
 	return to_edges(start, building.cells)
 
 
+func between(start: Vector2i, end: Vector2i) -> Array[Vector2i]:
+	if grid.get_cost(start) <= 0 or grid.get_cost(end) <= 0:
+		return []
+	_sync()
+	return _astar.get_id_path(start, end)
+
+
 func _sync() -> void:
 	if _dirty:
 		for y in grid.size.y:
