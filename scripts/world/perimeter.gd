@@ -6,6 +6,7 @@ const BARRICADE := preload("res://data/defenses/barricade.tres")
 const WALL := preload("res://data/defenses/wall.tres")
 const GATE := preload("res://data/defenses/gate.tres")
 
+const CHECKPOINT := preload("res://data/defenses/checkpoint.tres")
 const WALL_POST := preload("res://data/defenses/wall_post.tres")
 
 var damaged: Array[BarrierSegment] = []
@@ -176,7 +177,7 @@ func staff_wall(segment: BarrierSegment, person: Resident) -> bool:
 	if (
 		world.grid.barriers.get(segment.cell) != segment
 		or not segment.complete
-		or segment.def != WALL
+		or segment.def not in [WALL, CHECKPOINT]
 		or person == null
 	):
 		return false

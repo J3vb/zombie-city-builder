@@ -87,6 +87,7 @@ func launch(destination: ExpeditionSite, ids: Array[int], take_kit: bool) -> Str
 			ids.has(person.resident_id)
 			and person != world.construction.builder
 			and person.health > 0
+			and not person.unavailable()
 		):
 			crew.append(person)
 	if crew.size() != ids.size():
@@ -225,6 +226,7 @@ func _injure(amount: int) -> void:
 		return
 	var person := team[rng.randi_range(0, team.size() - 1)]
 	person.health = maxi(1, person.health - amount)
+	world.services.exposure(person, site.risk)
 
 
 func choose(investigate: bool) -> void:
@@ -249,6 +251,8 @@ func _finish() -> void:
 	report = "%s team returned. Stored %s." % [site.title, BuildingDef.format_cost(delivered)]
 	if _found:
 		var recruit := world.jobs.arrive()
+		if recruit != null:
+			recruit.arrive_at(_gate.cell)
 		report += (
 			" %s joined the town." % recruit.display_name
 			if recruit != null
@@ -267,7 +271,10 @@ func _finish() -> void:
 	phase = Phase.IDLE
 	world.jobs._replan()
 	if world.construction.builder == null and not world.jobs.residents.is_empty():
-		world.construction.replace_builder(world.jobs.residents[0])
+		for candidate in world.jobs.residents:
+			if not candidate.unavailable():
+				world.construction.replace_builder(candidate)
+				break
 
 
 func status() -> String:

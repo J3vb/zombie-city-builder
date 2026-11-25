@@ -94,12 +94,11 @@ Goal: the risky choices.
 - The Veydam Basin map has six destinations, including two Veydam City sites. Send two to four residents with provisions and optional medicine. Watch them meet at an open gate, leave the map, and return through an open gate.
 - Each location has its own search rolls and radio decision. Waiting for a player decision pauses the team. Choosing to stay can bring injuries, extra loot or pursuers.
 - Returned teams deliver supplies once and can bring a named survivor to Station 4. Vacant home plots can house people displaced or recruited earlier.
-- Infection stages, clinic, medicine, quarantine
-- Checkpoint gate with refugee inspection
-- Power: generators, fuel, floodlights
-- Night lighting (light draws zombies)
+- The Ember progresses through hidden Warm, visible Fever and Burn. A staffed clinic can detect a case and spend medicine to delay it. The Cold Room contains a resident who reaches a bed.
+- Staff a checkpoint gate, wait for an inspection and choose admission, isolation or refusal. A medic can detect a Warm visitor that a guard alone would miss.
+- Fuel from expedition sites powers generators. Night floodlights illuminate the town and attract nearby Walkers while supply meets demand. Switch individual sites in Services.
 
-**Done when:** a full 15-day run has at least 3 real "hard choice" moments.
+**15-day replay passed.** Two workers left for Halbo on day 7, Verbeek Farm on day 10 and the Police Post on day 13. Opening the stockroom and cell brought recruits and followers. At the farm the team chose grain and left the family. Six people reached dawn 16, with 46 water, three rounds, no stored food and Station 4 at full health. A separate fixture covers rare Ember turns and checkpoint decisions.
 
 ## M5: Depth and polish
 

@@ -12,6 +12,8 @@ var flow_field := FlowField.new()
 var safety := TownSafety.new()
 var perimeter := Perimeter.new()
 var expeditions := Expeditions.new()
+var services := TownServices.new()
+var admissions := Admissions.new()
 var command_post: Building
 var last_build_ms: float = 0.0
 
@@ -64,6 +66,10 @@ func _ready() -> void:
 	horde.setup(self, Time.get_ticks_usec())
 	add_child(expeditions)
 	expeditions.setup(self)
+	add_child(services)
+	services.setup(self)
+	add_child(admissions)
+	admissions.setup(self)
 	debug_overlay.world = self
 
 

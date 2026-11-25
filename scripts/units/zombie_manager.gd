@@ -198,7 +198,7 @@ func _step_all(dt: float) -> void:
 			):
 				_state[i] = State.ATTACK
 				if _can_strike(i, dt, def):
-					victim.take_hit(def.civilian_damage)
+					victim.take_hit(def.civilian_damage, def.ember_chance)
 				continue
 			dir = towards.normalized()
 		elif investigating:

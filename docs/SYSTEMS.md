@@ -229,6 +229,10 @@ The director announces the approach edge at dusk before nights 3, 6 and 9, then 
 - **Depends on:** Citizens, Zombie AI, Buildings.
 - **Milestone:** M4.
 
+Bites and expedition injuries may start the Ember. Every 36 simulation hours it advances one stage. Fever costs 25 percentage points of work pace. A staffed clinic reveals hidden cases in town. Giving a diagnosed resident one medicine delays progression by 18 hours. A Cold Room provides two quarantine beds. A resident must reach the ward before it contains a turn. Losing the ward releases its occupants.
+
+Every third dawn a checkpoint with a free pen can receive a refugee. A posted guard needs an hour of on-site time to inspect them. Fever is visible under the lamp. Diagnosing Warm requires a staffed clinic. The player can admit the visitor, reserve a reachable Cold Room bed, or send them away.
+
 ## 12. Expeditions
 
 - **What:** send teams to locations on a world map to bring back loot and survivors.
@@ -261,6 +265,8 @@ Each search hour rolls local loot and injury risk, doubled at night. Every desti
   - Light sources register with the night system. At night, roaming zombies drift towards lit areas inside a range.
   - The clock drives the 3D sun, ambient lighting and fog. Torches and floodlights are later visual and gameplay work.
 - **Milestone:** M3 (noise), M4 (light).
+
+A connected fuel generator supplies four units for six running hours per fuel. Each switched-on floodlight requests two units at night. Insufficient supply darkens all lamps. The Services panel lists each generator and light and displays current supply, demand and fuel. A powered light illuminates the 3D town and attracts Walkers within ten tiles.
 
 ## 15. Tech tree
 

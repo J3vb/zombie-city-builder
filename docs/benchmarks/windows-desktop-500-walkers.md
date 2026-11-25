@@ -83,3 +83,9 @@ Run `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/
 Seed 4 on the reference Windows desktop. The player uses starting stock, two watchtowers, a gated fence and a lumber yard. Morning lumber shifts fund a third home. The player pauses growth, orders a scrap workshop on day four and a third watchtower on day five, and rotates daytime workers back onto the towers for night duty. The town consumes its starting rations. The north, east and north major waves contained 50, 80 and 110 Walkers. Four people reached dawn 11 with Station 4 at 500 HP and six rounds left. The towers fired 342 shots and cleared the map. CI runs this opening with normal damage and stock costs.
 
 [Station 4 and a staffed rifle tower in the playable town](station-defense.webp).
+
+## The Veydam Basin over fifteen nights
+
+Run the normal opening replay with the additional argument `-- basin`. A seed-4 town uses real starting stock, builds two workshops and a well, and rotates residents between daytime work, expedition duty and staffed towers. The team takes the risk at the city police post and Halbo Supermarket and leaves early with grain at Verbeek Farm. The settlement reaches dawn 16 with six people, 46 water and three rounds after five major hordes. Food is exhausted at dawn 15. Separate tests exercise the clinic, Cold Room, staffed holding pen and fuel limits.
+
+[Radio decision at Halbo Supermarket](basin-expedition.webp).

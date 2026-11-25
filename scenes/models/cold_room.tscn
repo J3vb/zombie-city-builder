@@ -1,0 +1,45 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/amber_glass.tres" id="amber_glass"]
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="blackened_iron"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="faded_teal"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="galvanized_steel"]
+
+[sub_resource type="BoxMesh" id="box_amber_glass"]
+material = ExtResource("amber_glass")
+
+[sub_resource type="BoxMesh" id="box_blackened_iron"]
+material = ExtResource("blackened_iron")
+
+[sub_resource type="BoxMesh" id="box_faded_teal"]
+material = ExtResource("faded_teal")
+
+[sub_resource type="BoxMesh" id="box_galvanized_steel"]
+material = ExtResource("galvanized_steel")
+
+[node name="ColdRoom" type="Node3D"]
+
+[node name="Chamber" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.55, 0)
+scale = Vector3(5.5, 3.1, 4.6)
+mesh = SubResource("box_galvanized_steel")
+
+[node name="SealedDoor" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.17, 2.35)
+scale = Vector3(1.6, 2.34, 0.24)
+mesh = SubResource("box_faded_teal")
+
+[node name="Observation" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.6, 2.52)
+scale = Vector3(0.8, 0.45, 0.12)
+mesh = SubResource("box_amber_glass")
+
+[node name="Lintel" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.66, 2.4)
+scale = Vector3(2.65, 0.45, 0.35)
+mesh = SubResource("box_blackened_iron")
+
+[node name="Plant" type="MeshInstance3D" parent="."]
+position = Vector3(1.4, 3.38, -0.55)
+scale = Vector3(1.85, 0.76, 1.8)
+mesh = SubResource("box_blackened_iron")

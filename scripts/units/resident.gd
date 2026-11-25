@@ -19,6 +19,10 @@ var worked_day := 0
 var at_station := false
 var missed_rations := 0
 var hungry := false
+var ember := 0
+var ember_hours := 0.0
+var diagnosed := false
+var ward: Building
 var on_trip := false
 var off_map := false
 var thirsty := false
@@ -45,6 +49,15 @@ func setup(world: World, house: Building, id: int, given_name: String) -> void:
 	hide()
 
 
+func arrive_at(entry: Vector2i) -> void:
+	cell = entry
+	_sim_position = _world.grid.cell_to_world(entry)
+	position = _world.to_view(_sim_position)
+	shelter = null
+	state = State.BLOCKED
+	show()
+
+
 func sim_position() -> Vector2:
 	return _sim_position
 
@@ -60,6 +73,10 @@ func on_watch() -> bool:
 	return job is DefenseTower and shelter == job and state == State.WORKING
 
 
+func unavailable() -> bool:
+	return on_trip or ward != null
+
+
 func exposed() -> bool:
 	return (
 		not off_map
@@ -70,12 +87,14 @@ func exposed() -> bool:
 	)
 
 
-func take_hit(amount: int) -> void:
+func take_hit(amount: int, ember_chance: float = 0.0) -> void:
 	if not exposed() or amount <= 0:
 		return
 	health = maxi(0, health - amount)
 	if health == 0:
 		_world.safety.lose(self, _world)
+	elif ember_chance > 0.0:
+		_world.services.exposure(self, ember_chance)
 
 
 func update_retreat() -> bool:
@@ -182,10 +201,14 @@ func wake_up() -> void:
 func work_pace() -> float:
 	var rules := _world.plots.rules
 	var fatigue := rules.fatigue_pace_loss if tired else 0.0
+	if ember == 2:
+		fatigue += rules.fever_pace_loss
 	return maxf(rules.minimum_work_pace, 1.0 - missed_rations * rules.shortage_pace_loss - fatigue)
 
 
 func activity() -> String:
+	if ward != null:
+		return "In quarantine" if state == State.SHELTERED else "Going to the Cold Room"
 	if on_trip:
 		return "On expedition" if off_map else "Walking with expedition team"
 	return _town_activity()
@@ -213,3 +236,26 @@ func _shelter_activity() -> String:
 	if retreating:
 		return "Sheltering from Walkers"
 	return "At Station 4" if at_station else "At home"
+
+
+func settle_needs(
+	rules: BalanceDef,
+	last_consumed: Dictionary[StringName, int],
+	last_shortage: Dictionary[StringName, int]
+) -> void:
+	var hungry := false
+	var thirsty := false
+	for item in rules.daily_ration:
+		var need := rules.daily_ration[item]
+		var amount := mini(Economy.get_amount(item), need)
+		if amount > 0:
+			Economy.add(item, -amount)
+		last_consumed[item] = last_consumed.get(item, 0) + amount
+		if amount < need:
+			last_shortage[item] = last_shortage.get(item, 0) + need - amount
+		if item == &"food":
+			hungry = amount < need
+		elif item == &"water":
+			thirsty = amount < need
+	update_ration(hungry, thirsty)
+	wake_up()

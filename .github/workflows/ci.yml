@@ -59,3 +59,9 @@ jobs:
           set -o pipefail
           ~/godot/godot --headless --script res://tests/play_opening.gd 2>&1 | tee opening.log
           if grep -E "SCRIPT ERROR|Parse Error|ERROR:" opening.log; then exit 1; fi
+
+      - name: Keep the expedition settlement running for fifteen nights
+        run: |
+          set -o pipefail
+          ~/godot/godot --headless --script res://tests/play_opening.gd -- basin 2>&1 | tee basin.log
+          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" basin.log; then exit 1; fi

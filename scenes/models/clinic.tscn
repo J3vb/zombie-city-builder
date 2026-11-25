@@ -1,0 +1,59 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/amber_glass.tres" id="amber_glass"]
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="blackened_iron"]
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="faded_teal"]
+[ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="formwork_concrete"]
+[ext_resource type="Material" path="res://assets/materials/old_ivory_paint.tres" id="old_ivory_paint"]
+
+[sub_resource type="BoxMesh" id="box_amber_glass"]
+material = ExtResource("amber_glass")
+
+[sub_resource type="BoxMesh" id="box_blackened_iron"]
+material = ExtResource("blackened_iron")
+
+[sub_resource type="BoxMesh" id="box_faded_teal"]
+material = ExtResource("faded_teal")
+
+[sub_resource type="BoxMesh" id="box_formwork_concrete"]
+material = ExtResource("formwork_concrete")
+
+[sub_resource type="BoxMesh" id="box_old_ivory_paint"]
+material = ExtResource("old_ivory_paint")
+
+[node name="Clinic" type="Node3D"]
+
+[node name="Ward" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.32, 0)
+scale = Vector3(6.3, 2.6, 5.2)
+mesh = SubResource("box_formwork_concrete")
+
+[node name="Roof" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.8, 0)
+scale = Vector3(6.8, 0.36, 5.7)
+mesh = SubResource("box_faded_teal")
+
+[node name="ClinicDoor" type="MeshInstance3D" parent="."]
+position = Vector3(-1.75, 1, 2.65)
+scale = Vector3(1.25, 2.0, 0.14)
+mesh = SubResource("box_blackened_iron")
+
+[node name="Window" type="MeshInstance3D" parent="."]
+position = Vector3(1.0, 1.55, 2.68)
+scale = Vector3(2.3, 1, 0.14)
+mesh = SubResource("box_amber_glass")
+
+[node name="SignBoard" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.61, 2.91)
+scale = Vector3(1.8, 0.8, 0.16)
+mesh = SubResource("box_old_ivory_paint")
+
+[node name="SignVertical" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.61, 3.02)
+scale = Vector3(0.21, 0.66, 0.08)
+mesh = SubResource("box_faded_teal")
+
+[node name="SignHorizontal" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.61, 3.03)
+scale = Vector3(0.75, 0.22, 0.08)
+mesh = SubResource("box_faded_teal")
