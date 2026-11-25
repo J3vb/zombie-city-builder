@@ -74,6 +74,8 @@ extends Resource
 @export var resident_radius: float = 6.0
 @export_range(0.0, 1.0) var shortage_pace_loss: float = 0.1
 @export_range(0.01, 1.0) var minimum_work_pace: float = 0.5
+@export var sleep_seconds: float = 60.0
+@export_range(0.0, 1.0) var fatigue_pace_loss: float = 0.2
 @export var shift_seconds: float = 60.0
 @export var resident_names := PackedStringArray(
 	["Mara", "Elias", "Noor", "Bram", "Lena", "Raf", "Fien", "Ivo", "Nina", "Otis"]

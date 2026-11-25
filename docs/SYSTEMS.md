@@ -120,6 +120,8 @@ A home on confirmed frontage houses one named resident. A displaced resident can
 
 A shift needs 60 seconds of on-site work at full pace. Reassignment, demolition or dawn discards unfinished work. A completed shift survives demolition and pays once the next dawn, before each resident uses one food and one water. A garden produces 4 food, a farm produces 6, 9 or 12 food, a well produces 12 water, a lumber yard produces 16 wood and a scrap workshop produces 4 scrap. The HUD shows stored output, overflow, rations and shortages. Inspect an affected resident or Station 4 to see the reduced work pace.
 
+Residents need 60 seconds of sleep between dusk and dawn. Time spent walking, blocked or on watch earns no sleep. A short night reduces the next day’s work pace by 20 percentage points, down to the shared 50% minimum. A full night clears fatigue. The home and Station 4 inspectors show sleep and fatigue.
+
 ### Civilian danger and shelter
 
 Each Walker pursues the closest exposed person within four tiles. A building in its path still takes hits. At contact, a Walker deals 8 civilian damage once per attack cooldown. Civilians start with 40 health. A hit does not pass through a blocked corner. Reaching shelter protects the occupant until they leave or the building falls.

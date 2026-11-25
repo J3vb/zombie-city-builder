@@ -180,3 +180,29 @@ func test_five_consecutive_dawns_and_restart_isolate_the_workforce() -> void:
 		Economy.get_amount(&"food"), food - 1, "only the new Station 4 builder eats after restart"
 	)
 	main.free()
+
+
+func test_sleep_counts_sheltered_night_time_and_recovers_next_dawn() -> void:
+	var fx := WorldFixture.new()
+	var w := fx.create()
+	var person := _town(w)[0]
+	var needed := w.jobs.rules.sleep_seconds
+	person.travel(needed, w.jobs.rules.resident_speed)
+	assert_eq(person.sleep_seconds, 0.0, "Daytime at home does not count")
+	GameClock.time_of_day = w.jobs.rules.night_at
+	person.send([], false)
+	person.travel(needed, w.jobs.rules.resident_speed)
+	assert_eq(person.sleep_seconds, 0.0, "A blocked route offers no shelter")
+	var route: Array[Vector2i] = [person.cell]
+	person.send(route, false)
+	person.travel(needed / 2.0, w.jobs.rules.resident_speed)
+	assert_true(person.is_sleeping())
+	assert_eq(person.sleep_seconds, needed / 2.0)
+	w.jobs._dawn(2)
+	assert_true(person.tired)
+	assert_true(is_equal_approx(person.work_pace(), 1.0 - w.jobs.rules.fatigue_pace_loss))
+	person.travel(needed, w.jobs.rules.resident_speed)
+	w.jobs._dawn(3)
+	assert_true(not person.tired)
+	assert_eq(person.work_pace(), 1.0)
+	fx.destroy()

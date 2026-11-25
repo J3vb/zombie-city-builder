@@ -270,6 +270,7 @@ func _dawn(day: int) -> void:
 			elif item == &"water":
 				thirsty = amount < need
 		resident.update_ration(hungry, thirsty)
+		resident.wake_up()
 	_dirty = true
 
 
