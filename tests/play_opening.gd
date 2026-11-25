@@ -38,10 +38,7 @@ func _street() -> bool:
 
 func _order(id: String, cell: Vector2i) -> Node:
 	var def := load("res://data/buildings/%s.tres" % id)
-	var site: Node = world.try_place_building(def, cell)
-	if site == null:
-		push_error("Could not order %s at %s" % [id, cell])
-	return site
+	return world.try_place_building(def, cell)
 
 
 func _defenses() -> bool:
@@ -233,16 +230,10 @@ func _basin() -> void:
 				world.perimeter.set_gate(gate, true)
 	if trips.phase == trips.Phase.CHOICE:
 		var rescue := decisions != 1
-		print(
-			(
-				"Decision %d at %s: %s"
-				% [
-					decisions + 1,
-					trips.site.title,
-					trips.site.encounter.investigate if rescue else trips.site.encounter.leave
-				]
-			)
+		var choice: String = (
+			trips.site.encounter.investigate if rescue else trips.site.encounter.leave
 		)
+		print("Decision %d at %s: %s" % [decisions + 1, trips.site.title, choice])
 		trips.choose(rescue)
 		decisions += 1
 	elif (
