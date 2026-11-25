@@ -75,7 +75,11 @@ func refresh() -> void:
 func _sync_manifest() -> void:
 	var active := PackedInt32Array()
 	for person in system.world.jobs.residents:
-		if person == system.world.construction.builder or person.health <= 0:
+		if (
+			person == system.world.construction.builder
+			or person.health <= 0
+			or person.unavailable()
+		):
 			continue
 		active.append(person.resident_id)
 		var check: CheckBox = _crew.get(person.resident_id)

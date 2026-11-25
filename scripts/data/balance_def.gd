@@ -69,6 +69,15 @@ extends Resource
 	&"ammo": 36,
 }
 
+@export_group("Town services")
+@export var ember_stage_hours := 36.0
+@export var medicine_delay_hours := 18.0
+@export var fever_pace_loss := 0.25
+@export var refugee_interval_days := 3
+@export var refugee_ember_chance := 0.25
+@export var inspection_hours := 1.0
+@export var lamp_pulse_seconds := 1.0
+
 @export_group("Expeditions")
 @export var team_min := 2
 @export var team_max := 4

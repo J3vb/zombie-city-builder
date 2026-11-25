@@ -16,7 +16,7 @@ func lose(person: Resident, world: World) -> void:
 	if person == world.construction.builder:
 		var successor: Resident
 		for survivor in people:
-			if survivor.on_trip:
+			if survivor.unavailable():
 				continue
 			successor = survivor
 			if survivor.job == null:

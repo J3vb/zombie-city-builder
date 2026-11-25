@@ -1,0 +1,55 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="blackened_iron"]
+[ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="formwork_concrete"]
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="galvanized_steel"]
+[ext_resource type="Material" path="res://assets/materials/old_ivory_paint.tres" id="old_ivory_paint"]
+
+[sub_resource type="BoxMesh" id="box_blackened_iron"]
+material = ExtResource("blackened_iron")
+
+[sub_resource type="BoxMesh" id="box_formwork_concrete"]
+material = ExtResource("formwork_concrete")
+
+[sub_resource type="BoxMesh" id="box_galvanized_steel"]
+material = ExtResource("galvanized_steel")
+
+[sub_resource type="BoxMesh" id="box_old_ivory_paint"]
+material = ExtResource("old_ivory_paint")
+
+[node name="Floodlight" type="Node3D"]
+
+[node name="Foot" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.22, 0)
+scale = Vector3(2, 0.44, 2)
+mesh = SubResource("box_formwork_concrete")
+
+[node name="Mast" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.32, 0)
+scale = Vector3(0.28, 4.3, 0.28)
+mesh = SubResource("box_galvanized_steel")
+
+[node name="Crossarm" type="MeshInstance3D" parent="."]
+position = Vector3(0, 4.38, 0)
+scale = Vector3(2.8, 0.26, 0.32)
+mesh = SubResource("box_blackened_iron")
+
+[node name="LeftHousing" type="MeshInstance3D" parent="."]
+position = Vector3(-0.88, 4.55, 0)
+scale = Vector3(1.13, 0.88, 0.68)
+mesh = SubResource("box_blackened_iron")
+
+[node name="RightHousing" type="MeshInstance3D" parent="."]
+position = Vector3(0.88, 4.55, 0)
+scale = Vector3(1.13, 0.88, 0.68)
+mesh = SubResource("box_blackened_iron")
+
+[node name="LeftLens" type="MeshInstance3D" parent="."]
+position = Vector3(-0.88, 4.52, 0.36)
+scale = Vector3(0.92, 0.64, 0.08)
+mesh = SubResource("box_old_ivory_paint")
+
+[node name="RightLens" type="MeshInstance3D" parent="."]
+position = Vector3(0.88, 4.52, 0.36)
+scale = Vector3(0.92, 0.64, 0.08)
+mesh = SubResource("box_old_ivory_paint")

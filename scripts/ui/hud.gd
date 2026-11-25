@@ -8,6 +8,7 @@ const RIFLE_TOWER := preload("res://data/buildings/rifle_tower.tres")
 const BARRIERS: Array[BarrierDef] = [Perimeter.BARRICADE, Perimeter.WALL, Perimeter.GATE]
 const CATALOG := preload("res://data/buildings/catalog.tres")
 
+var _services: Array[ServiceDef] = []
 var _land_buttons: Dictionary[int, Button] = {}
 var _displayed_dawn := 0
 var _defenses := MenuButton.new()
@@ -25,6 +26,13 @@ var _build_buttons: Dictionary[BuildingDef, Button] = {}
 
 
 func _ready() -> void:
+	for id in ["clinic", "cold_room", "generator", "floodlight"]:
+		_services.append(load("res://data/buildings/%s.tres" % id) as ServiceDef)
+	%Services.get_popup().add_item("Town health and power", 0)
+	for i in _services.size():
+		%Services.get_popup().add_item("Build " + _services[i].display_name, i + 1)
+	%Services.get_popup().add_item("Build checkpoint gate", _services.size() + 1)
+	%Services.get_popup().id_pressed.connect(_service)
 	%Trips.pressed.connect(_open_trips)
 	for id in SHOWN_RESOURCES:
 		var label := Label.new()
@@ -99,13 +107,29 @@ func _ready() -> void:
 	_build_box.add_child(_growth)
 
 
+func _service(index: int) -> void:
+	if _build_tool == null:
+		return
+	if index == 0:
+		$ExpeditionPanel.hide()
+		$ServicePanel.open(_build_tool.world)
+	elif index <= _services.size():
+		$ServicePanel.hide()
+		_build_tool.select(_services[index - 1])
+	else:
+		$ServicePanel.hide()
+		_build_tool.world.plot_tool.select_barrier(Perimeter.CHECKPOINT)
+
+
 func _open_trips() -> void:
 	if _build_tool != null:
+		$ServicePanel.hide()
 		$ExpeditionPanel.open(_build_tool.world.expeditions)
 
 
 func bind(build_tool: BuildTool) -> void:
 	_build_tool = build_tool
+	$ServicePanel.hide()
 	$BuildingInfo.reset()
 	$ExpeditionPanel.hide()
 	%DawnReport.hide()
@@ -121,6 +145,7 @@ func _process(_delta: float) -> void:
 		return
 	var world := _build_tool.world
 	var tool := world.plot_tool
+	$ServicePanel.refresh()
 	$ExpeditionPanel.refresh()
 	%Trips.text = (
 		"Expedition decision"
@@ -131,6 +156,8 @@ func _process(_delta: float) -> void:
 	var alarm := PackedStringArray()
 	if not world.horde.warning().is_empty():
 		alarm.append(world.horde.warning())
+	if not world.admissions.report.is_empty():
+		alarm.append(world.admissions.report)
 	if world.safety.threatened > 0:
 		alarm.append("Shelter alert · Walkers near %d" % world.safety.threatened)
 	if not world.safety.last_loss.is_empty():

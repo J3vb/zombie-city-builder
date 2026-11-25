@@ -119,7 +119,7 @@ func _cancel_project() -> void:
 
 
 func _refresh_staff(building: Building) -> void:
-	var productive := building is DefenseTower or building.shift_output() > 0
+	var productive := building.is_workplace()
 	%Assignment.visible = productive
 	%Staff.visible = productive or building.plot != null
 	if not %Staff.visible:
@@ -133,6 +133,10 @@ func _refresh_staff(building: Building) -> void:
 		)
 		if resident != null and building.duty_status(resident) != "On watch":
 			lines.append(building.duty_status(resident))
+	elif building.def is ServiceDef:
+		lines.append(
+			"Medic on duty" if _jobs.world.services.medic_on_duty() else "Medic needed on site"
+		)
 	elif productive:
 		lines.append("Per shift   %d %s" % [building.shift_output(), building.def.output_resource])
 	if resident == null:
@@ -153,7 +157,11 @@ func _refresh_staff(building: Building) -> void:
 			lines.append("Station 4 builder")
 		elif resident.worked_day == GameClock.day:
 			lines.append("Shift complete · pays at dawn")
-		elif resident.state == Resident.State.WORKING and not resident.on_watch():
+		elif (
+			resident.state == Resident.State.WORKING
+			and not resident.on_watch()
+			and not building.def is ServiceDef
+		):
 			lines.append(
 				"Shift   %d%%" % int(100.0 * resident.shift_seconds / _jobs.rules.shift_seconds)
 			)

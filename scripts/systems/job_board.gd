@@ -51,7 +51,7 @@ func _placed(building: Building) -> void:
 	if building.get_parent() != world.buildings or building.is_queued_for_deletion():
 		return
 	_dirty = true
-	if building is DefenseTower or building.def.shift_yields.size() > 0:
+	if building.is_workplace():
 		sites.append(building)
 	if building.plot == null:
 		return
@@ -151,7 +151,7 @@ func toggle_hiring(site: Building) -> void:
 func assign(resident: Resident, site: Building) -> bool:
 	if (
 		resident == world.construction.builder
-		or resident.on_trip
+		or resident.unavailable()
 		or not residents.has(resident)
 		or resident.home == null
 		or not sites.has(site)
@@ -226,7 +226,7 @@ func _tick(dt: float) -> void:
 	_off_duty = off_duty
 	_dirty = false
 	for resident in residents:
-		if resident == world.construction.builder or resident.on_trip:
+		if resident == world.construction.builder or resident.unavailable():
 			continue
 		if resident.update_retreat() or replan:
 			_plan(resident)
@@ -235,6 +235,8 @@ func _tick(dt: float) -> void:
 			resident.stand_watch()
 			continue
 		if resident.state != Resident.State.WORKING or on_site <= 0.0:
+			continue
+		if resident.job.def is ServiceDef:
 			continue
 		resident.shift_seconds += on_site * resident.work_pace()
 		if resident.shift_seconds < rules.shift_seconds:
@@ -267,22 +269,7 @@ func _dawn(day: int) -> void:
 		resident.shift_seconds = 0.0
 		if resident.off_map:
 			continue
-		var hungry := false
-		var thirsty := false
-		for item in rules.daily_ration:
-			var need := rules.daily_ration[item]
-			var amount := mini(Economy.get_amount(item), need)
-			if amount > 0:
-				Economy.add(item, -amount)
-			last_consumed[item] = last_consumed.get(item, 0) + amount
-			if amount < need:
-				last_shortage[item] = last_shortage.get(item, 0) + need - amount
-			if item == &"food":
-				hungry = amount < need
-			elif item == &"water":
-				thirsty = amount < need
-		resident.update_ration(hungry, thirsty)
-		resident.wake_up()
+		resident.settle_needs(rules, last_consumed, last_shortage)
 	_dirty = true
 
 

@@ -10,3 +10,5 @@ extends Resource
 @export var attack_cooldown: float = 1.0
 @export var radius: float = 10.0
 @export var color: Color = Color(0.55, 0.7, 0.45)
+
+@export_range(0.0, 1.0) var ember_chance := 0.12

@@ -6,6 +6,9 @@ var _world: World
 
 
 func _ready() -> void:
+	for item: String in ["Accept", "Isolate", "Decline"]:
+		%Decision.get_popup().add_item(item)
+	%Decision.get_popup().id_pressed.connect(_decide)
 	%Guard.about_to_popup.connect(_list_guards)
 	%Guard.get_popup().id_pressed.connect(_staff)
 	%Switch.pressed.connect(_toggle_gate)
@@ -33,7 +36,7 @@ func refresh(world: World, segment: BarrierSegment) -> void:
 				else "Builder repair pending"
 			)
 		)
-	%Guard.visible = segment.complete and segment.def == Perimeter.WALL
+	%Guard.visible = segment.complete and segment.def in [Perimeter.WALL, Perimeter.CHECKPOINT]
 	if %Guard.visible:
 		var person := world.jobs.worker_at(segment.post) if segment.post != null else null
 		%Guard.text = (
@@ -41,6 +44,11 @@ func refresh(world: World, segment: BarrierSegment) -> void:
 			if person == null
 			else "%s · %s" % [person.display_name, person.activity()]
 		)
+	%Decision.visible = (
+		segment.def == Perimeter.CHECKPOINT and world.admissions.waiting.has(segment)
+	)
+	if segment.def == Perimeter.CHECKPOINT and segment.complete:
+		%Details.text += "\n" + world.admissions.status(segment)
 	var gate := segment.complete and segment.def.gate
 	%Switch.visible = gate
 	%AutoClose.visible = gate
@@ -55,6 +63,11 @@ func refresh(world: World, segment: BarrierSegment) -> void:
 			else ("Close gate" if segment.opened else "Open gate")
 		)
 		%AutoClose.set_pressed_no_signal(segment.auto_close)
+
+
+func _decide(index: int) -> void:
+	var choices: Array[StringName] = [&"accept", &"isolate", &"decline"]
+	_world.admissions.report = _world.admissions.decide(_segment, choices[index])
 
 
 func _list_guards() -> void:

@@ -33,6 +33,14 @@ func setup(
 	_grid = grid
 
 
+func is_workplace() -> bool:
+	return (
+		self is DefenseTower
+		or not def.shift_yields.is_empty()
+		or (def is ServiceDef and (def as ServiceDef).needs_staff)
+	)
+
+
 func sim_bounds() -> Rect2:
 	if plot != null:
 		var rect := Rect2(plot.house[0], Vector2.ZERO)
