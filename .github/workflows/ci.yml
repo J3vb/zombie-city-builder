@@ -146,3 +146,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 tools/publish_windows_release.py
+
+  public-install:
+    name: Install from the public Windows channel
+    needs: [windows, publish]
+    if: >-
+      always() && needs.windows.result == 'success' &&
+      (github.event_name == 'pull_request' || needs.publish.result == 'success')
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build a previous-version launcher
+        run: ./tools/build_launcher.ps1 -Version 0.0.0 -OutputDirectory build/old-launcher
+      - name: Download from GitHub, follow the launcher update and start the installed game
+        run: ./tools/test_public_launcher.ps1 -PreviousLauncher build/old-launcher/HoldTheGatesLauncher.exe

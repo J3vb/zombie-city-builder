@@ -89,6 +89,12 @@ namespace HoldTheGates
 
         private static void Run(string root)
         {
+            var github = new Uri("https://github.com/");
+            var windows = new System.Net.WebProxy("http://windows.invalid:8000");
+            FixtureTransport.Check(ProxySettings.Resolve(github, null, null, windows) == windows, "Lost Windows proxy settings");
+            const string configured = "http://proxy.invalid:8080";
+            FixtureTransport.Check(ProxySettings.Resolve(github, configured, "localhost", windows).GetProxy(github).Host == "proxy.invalid", "Ignored configured HTTPS proxy");
+            FixtureTransport.Check(ProxySettings.Resolve(github, configured, ".github.com:443", windows) == null, "Ignored proxy bypass list");
             var store = new InstallStore(Path.Combine(root, "install"));
             using (store.Lock()) MustFail(() => { using (store.Lock()) { } });
             var transport = new FixtureTransport();
