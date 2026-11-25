@@ -1,0 +1,124 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="salvaged_timber"]
+
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="galvanized_steel"]
+
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="faded_teal"]
+
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="blackened_iron"]
+
+[ext_resource type="Material" path="res://assets/materials/formwork_concrete.tres" id="formwork_concrete"]
+
+[sub_resource type="BoxMesh" id="Shape0"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.92, 0.19, 4.8)
+
+[sub_resource type="BoxMesh" id="Shape1"]
+material = ExtResource("salvaged_timber")
+size = Vector3(6.65, 2.4, 5.45)
+
+[sub_resource type="BoxMesh" id="Shape2"]
+material = ExtResource("galvanized_steel")
+size = Vector3(3.84, 0.16, 6.35)
+
+[sub_resource type="BoxMesh" id="Shape3"]
+material = ExtResource("faded_teal")
+size = Vector3(3.35, 1.92, 0.14)
+
+[sub_resource type="BoxMesh" id="Shape4"]
+material = ExtResource("blackened_iron")
+size = Vector3(3.23, 0.045, 0.08)
+
+[sub_resource type="BoxMesh" id="Shape5"]
+material = ExtResource("formwork_concrete")
+size = Vector3(4.4, 0.22, 0.75)
+
+[sub_resource type="BoxMesh" id="Shape6"]
+material = ExtResource("blackened_iron")
+size = Vector3(0.16, 2.4, 0.16)
+
+[sub_resource type="CylinderMesh" id="Shape7"]
+material = ExtResource("faded_teal")
+top_radius = 0.44
+bottom_radius = 0.44
+height = 0.97
+radial_segments = 10
+rings = 1
+
+[node name="storage_2" type="Node3D"]
+
+[node name="Pallet0" type="MeshInstance3D" parent="."]
+position = Vector3(-2.35, 0.1, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape0")
+
+[node name="Pallet1" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.1, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape0")
+
+[node name="Pallet2" type="MeshInstance3D" parent="."]
+position = Vector3(2.35, 0.1, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape0")
+
+[node name="Shell3" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.4, -0.25)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape1")
+
+[node name="Roof4" type="MeshInstance3D" parent="."]
+position = Vector3(-1.72, 3.01, -0.2)
+rotation_degrees = Vector3(0, 0, 12)
+mesh = SubResource("Shape2")
+
+[node name="Roof5" type="MeshInstance3D" parent="."]
+position = Vector3(1.72, 3.01, -0.2)
+rotation_degrees = Vector3(0, 0, -12)
+mesh = SubResource("Shape2")
+
+[node name="Shutter6" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.19, 2.53)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape3")
+
+[node name="ShutterRib7" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.43, 2.62)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape4")
+
+[node name="ShutterRib8" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.85, 2.62)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape4")
+
+[node name="ShutterRib9" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.27, 2.62)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape4")
+
+[node name="ShutterRib10" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.69, 2.62)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape4")
+
+[node name="LoadingStep11" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.11, 2.98)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape5")
+
+[node name="CornerPost12" type="MeshInstance3D" parent="."]
+position = Vector3(-3.29, 1.4, 2.43)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape6")
+
+[node name="CornerPost13" type="MeshInstance3D" parent="."]
+position = Vector3(3.29, 1.4, 2.43)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape6")
+
+[node name="SalvageDrum14" type="MeshInstance3D" parent="."]
+position = Vector3(2.82, 0.5, 3.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape7")

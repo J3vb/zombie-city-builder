@@ -1,0 +1,152 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="salvaged_timber"]
+
+[ext_resource type="Material" path="res://assets/materials/blackened_iron.tres" id="blackened_iron"]
+
+[ext_resource type="Material" path="res://assets/materials/olive_canvas.tres" id="olive_canvas"]
+
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="faded_teal"]
+
+[sub_resource type="BoxMesh" id="Shape0"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.92, 0.19, 4.8)
+
+[sub_resource type="BoxMesh" id="Shape1"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.56, 1.4, 1.69)
+
+[sub_resource type="BoxMesh" id="Shape2"]
+material = ExtResource("blackened_iron")
+size = Vector3(0.12, 1.43, 1.72)
+
+[sub_resource type="BoxMesh" id="Shape3"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.56, 1.8, 1.69)
+
+[sub_resource type="BoxMesh" id="Shape4"]
+material = ExtResource("blackened_iron")
+size = Vector3(0.12, 1.83, 1.72)
+
+[sub_resource type="BoxMesh" id="Shape5"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.56, 1.2, 1.69)
+
+[sub_resource type="BoxMesh" id="Shape6"]
+material = ExtResource("blackened_iron")
+size = Vector3(0.12, 1.23, 1.72)
+
+[sub_resource type="BoxMesh" id="Shape7"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.56, 0.94, 1.69)
+
+[sub_resource type="BoxMesh" id="Shape8"]
+material = ExtResource("blackened_iron")
+size = Vector3(0.12, 0.97, 1.72)
+
+[sub_resource type="BoxMesh" id="Shape9"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.56, 0.82, 1.69)
+
+[sub_resource type="BoxMesh" id="Shape10"]
+material = ExtResource("blackened_iron")
+size = Vector3(0.12, 0.85, 1.72)
+
+[sub_resource type="BoxMesh" id="Shape11"]
+material = ExtResource("olive_canvas")
+size = Vector3(4.45, 0.16, 2.4)
+
+[sub_resource type="CylinderMesh" id="Shape12"]
+material = ExtResource("faded_teal")
+top_radius = 0.49
+bottom_radius = 0.49
+height = 1.17
+radial_segments = 10
+rings = 1
+
+[node name="storage_1" type="Node3D"]
+
+[node name="Pallet0" type="MeshInstance3D" parent="."]
+position = Vector3(-2.35, 0.1, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape0")
+
+[node name="Pallet1" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.1, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape0")
+
+[node name="Pallet2" type="MeshInstance3D" parent="."]
+position = Vector3(2.35, 0.1, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape0")
+
+[node name="Crate3" type="MeshInstance3D" parent="."]
+position = Vector3(-2, 0.8999999999999999, -0.9)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape1")
+
+[node name="Strap4" type="MeshInstance3D" parent="."]
+position = Vector3(-2, 0.8999999999999999, -0.9)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape2")
+
+[node name="Crate5" type="MeshInstance3D" parent="."]
+position = Vector3(-0.2, 1.1, -1.1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape3")
+
+[node name="Strap6" type="MeshInstance3D" parent="."]
+position = Vector3(-0.2, 1.1, -1.1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape4")
+
+[node name="Crate7" type="MeshInstance3D" parent="."]
+position = Vector3(1.7, 0.8, -1.2)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape5")
+
+[node name="Strap8" type="MeshInstance3D" parent="."]
+position = Vector3(1.7, 0.8, -1.2)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape6")
+
+[node name="Crate9" type="MeshInstance3D" parent="."]
+position = Vector3(-1.6, 0.6699999999999999, 1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape7")
+
+[node name="Strap10" type="MeshInstance3D" parent="."]
+position = Vector3(-1.6, 0.6699999999999999, 1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Crate11" type="MeshInstance3D" parent="."]
+position = Vector3(0.1, 0.8, 1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape5")
+
+[node name="Strap12" type="MeshInstance3D" parent="."]
+position = Vector3(0.1, 0.8, 1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape6")
+
+[node name="Crate13" type="MeshInstance3D" parent="."]
+position = Vector3(2, 0.61, 1.1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape9")
+
+[node name="Strap14" type="MeshInstance3D" parent="."]
+position = Vector3(2, 0.61, 1.1)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape10")
+
+[node name="Tarpaulin15" type="MeshInstance3D" parent="."]
+position = Vector3(-0.58, 1.91, -1.1)
+rotation_degrees = Vector3(0, 0, 4)
+mesh = SubResource("Shape11")
+
+[node name="Drum16" type="MeshInstance3D" parent="."]
+position = Vector3(2.7, 0.59, 2.45)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape12")

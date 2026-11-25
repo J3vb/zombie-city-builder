@@ -47,6 +47,7 @@ func _ready() -> void:
 	var terrain_set := load(TERRAIN_SET_PATH) as TerrainSet
 	grid.setup(map_def, StarterMap.generate(map_def), terrain_set)
 	terrain.build(grid, terrain_set, view_tile(), map_def.map_seed)
+	TerrainDressing.build($Scenery, grid, view_tile(), map_def.map_seed)
 	camera.set_bounds(Rect2(Vector2.ZERO, grid.world_size() * map_def.view_scale))
 	build_tool.world = self
 	command_post = spawn_building(load(COMMAND_POST_PATH) as BuildingDef, map_def.command_post_cell)

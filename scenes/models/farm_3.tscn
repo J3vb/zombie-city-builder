@@ -1,0 +1,454 @@
+[gd_scene load_steps=22 format=3]
+
+[ext_resource type="Material" path="res://assets/materials/salvaged_timber.tres" id="salvaged_timber"]
+
+[ext_resource type="Material" path="res://assets/materials/faded_teal.tres" id="faded_teal"]
+
+[ext_resource type="Material" path="res://assets/materials/galvanized_steel.tres" id="galvanized_steel"]
+
+[sub_resource type="StandardMaterial3D" id="Soil"]
+albedo_color = Color(0.17, 0.11, 0.065, 1)
+
+[sub_resource type="StandardMaterial3D" id="Sprout"]
+albedo_color = Color(0.26, 0.43, 0.21, 1)
+
+[sub_resource type="StandardMaterial3D" id="Leaf"]
+albedo_color = Color(0.41, 0.54, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="Glass"]
+albedo_color = Color(0.56, 0.77, 0.71, 0.48)
+transparency = 1
+cull_mode = 2
+
+[sub_resource type="BoxMesh" id="Shape0"]
+material = SubResource("Soil")
+size = Vector3(10.9, 0.2, 10.6)
+
+[sub_resource type="BoxMesh" id="Shape1"]
+material = ExtResource("salvaged_timber")
+size = Vector3(1.42, 0.21, 8.9)
+
+[sub_resource type="BoxMesh" id="Shape2"]
+material = SubResource("Soil")
+size = Vector3(1.29, 0.22, 8.72)
+
+[sub_resource type="BoxMesh" id="Shape3"]
+material = SubResource("Sprout")
+size = Vector3(0.64, 0.55, 0.75)
+
+[sub_resource type="BoxMesh" id="Shape4"]
+material = SubResource("Leaf")
+size = Vector3(0.64, 0.6200000000000001, 0.75)
+
+[sub_resource type="BoxMesh" id="Shape5"]
+material = SubResource("Leaf")
+size = Vector3(0.64, 0.6900000000000001, 0.75)
+
+[sub_resource type="BoxMesh" id="Shape6"]
+material = SubResource("Glass")
+size = Vector3(0.08, 2.5, 9.9)
+
+[sub_resource type="BoxMesh" id="Shape7"]
+material = ExtResource("faded_teal")
+size = Vector3(0.18, 0.3, 10.15)
+
+[sub_resource type="BoxMesh" id="Shape8"]
+material = ExtResource("galvanized_steel")
+size = Vector3(0.13, 2.6, 0.14)
+
+[sub_resource type="BoxMesh" id="Shape9"]
+material = ExtResource("galvanized_steel")
+size = Vector3(5.34, 0.14, 0.16)
+
+[sub_resource type="BoxMesh" id="Shape10"]
+material = SubResource("Glass")
+size = Vector3(5.16, 0.08, 9.88)
+
+[sub_resource type="BoxMesh" id="Shape11"]
+material = ExtResource("galvanized_steel")
+size = Vector3(0.18, 0.16, 10.16)
+
+[sub_resource type="BoxMesh" id="Shape12"]
+material = ExtResource("faded_teal")
+size = Vector3(1.65, 2.25, 0.12)
+
+[sub_resource type="BoxMesh" id="Shape13"]
+material = SubResource("Glass")
+size = Vector3(1.31, 1.52, 0.14)
+
+[node name="farm_3" type="Node3D"]
+
+[node name="Bed0" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.1, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape0")
+
+[node name="RaisedBed1" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.23, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape1")
+
+[node name="Furrow2" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.28, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape2")
+
+[node name="Crop3" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.645, -3.75)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape3")
+
+[node name="Crop4" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.68, -2.5700000000000003)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape4")
+
+[node name="Crop5" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.7150000000000001, -1.3900000000000001)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape5")
+
+[node name="Crop6" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.645, -0.20999999999999996)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape3")
+
+[node name="Crop7" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.68, 0.9699999999999998)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape4")
+
+[node name="Crop8" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.7150000000000001, 2.1499999999999995)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape5")
+
+[node name="Crop9" type="MeshInstance3D" parent="."]
+position = Vector3(-3.8, 0.645, 3.33)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape3")
+
+[node name="RaisedBed10" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.23, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape1")
+
+[node name="Furrow11" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.28, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape2")
+
+[node name="Crop12" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.68, -3.75)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape4")
+
+[node name="Crop13" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.7150000000000001, -2.5700000000000003)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape5")
+
+[node name="Crop14" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.645, -1.3900000000000001)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape3")
+
+[node name="Crop15" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.68, -0.20999999999999996)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape4")
+
+[node name="Crop16" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.7150000000000001, 0.9699999999999998)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape5")
+
+[node name="Crop17" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.645, 2.1499999999999995)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape3")
+
+[node name="Crop18" type="MeshInstance3D" parent="."]
+position = Vector3(-1.9, 0.68, 3.33)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape4")
+
+[node name="RaisedBed19" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.23, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape1")
+
+[node name="Furrow20" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.28, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape2")
+
+[node name="Crop21" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.7150000000000001, -3.75)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape5")
+
+[node name="Crop22" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.645, -2.5700000000000003)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape3")
+
+[node name="Crop23" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.68, -1.3900000000000001)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape4")
+
+[node name="Crop24" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.7150000000000001, -0.20999999999999996)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape5")
+
+[node name="Crop25" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.645, 0.9699999999999998)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape3")
+
+[node name="Crop26" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.68, 2.1499999999999995)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape4")
+
+[node name="Crop27" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.7150000000000001, 3.33)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape5")
+
+[node name="RaisedBed28" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.23, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape1")
+
+[node name="Furrow29" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.28, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape2")
+
+[node name="Crop30" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.645, -3.75)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape3")
+
+[node name="Crop31" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.68, -2.5700000000000003)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape4")
+
+[node name="Crop32" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.7150000000000001, -1.3900000000000001)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape5")
+
+[node name="Crop33" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.645, -0.20999999999999996)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape3")
+
+[node name="Crop34" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.68, 0.9699999999999998)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape4")
+
+[node name="Crop35" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.7150000000000001, 2.1499999999999995)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape5")
+
+[node name="Crop36" type="MeshInstance3D" parent="."]
+position = Vector3(1.9, 0.645, 3.33)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape3")
+
+[node name="RaisedBed37" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.23, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape1")
+
+[node name="Furrow38" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.28, -0.15)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape2")
+
+[node name="Crop39" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.68, -3.75)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape4")
+
+[node name="Crop40" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.7150000000000001, -2.5700000000000003)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape5")
+
+[node name="Crop41" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.645, -1.3900000000000001)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape3")
+
+[node name="Crop42" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.68, -0.20999999999999996)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape4")
+
+[node name="Crop43" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.7150000000000001, 0.9699999999999998)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape5")
+
+[node name="Crop44" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.645, 2.1499999999999995)
+rotation_degrees = Vector3(0, 0, -7)
+mesh = SubResource("Shape3")
+
+[node name="Crop45" type="MeshInstance3D" parent="."]
+position = Vector3(3.8, 0.68, 3.33)
+rotation_degrees = Vector3(0, 0, 7)
+mesh = SubResource("Shape4")
+
+[node name="Glazing46" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 1.45, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape6")
+
+[node name="Sill47" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 0.3, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape7")
+
+[node name="Glazing48" type="MeshInstance3D" parent="."]
+position = Vector3(5, 1.45, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape6")
+
+[node name="Sill49" type="MeshInstance3D" parent="."]
+position = Vector3(5, 0.3, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape7")
+
+[node name="Stanchion50" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 1.42, -4.95)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter51" type="MeshInstance3D" parent="."]
+position = Vector3(-2.5, 3.38, -4.95)
+rotation_degrees = Vector3(0, 0, 15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion52" type="MeshInstance3D" parent="."]
+position = Vector3(5, 1.42, -4.95)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter53" type="MeshInstance3D" parent="."]
+position = Vector3(2.5, 3.38, -4.95)
+rotation_degrees = Vector3(0, 0, -15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion54" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 1.42, -2.5)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter55" type="MeshInstance3D" parent="."]
+position = Vector3(-2.5, 3.38, -2.5)
+rotation_degrees = Vector3(0, 0, 15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion56" type="MeshInstance3D" parent="."]
+position = Vector3(5, 1.42, -2.5)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter57" type="MeshInstance3D" parent="."]
+position = Vector3(2.5, 3.38, -2.5)
+rotation_degrees = Vector3(0, 0, -15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion58" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 1.42, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter59" type="MeshInstance3D" parent="."]
+position = Vector3(-2.5, 3.38, 0)
+rotation_degrees = Vector3(0, 0, 15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion60" type="MeshInstance3D" parent="."]
+position = Vector3(5, 1.42, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter61" type="MeshInstance3D" parent="."]
+position = Vector3(2.5, 3.38, 0)
+rotation_degrees = Vector3(0, 0, -15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion62" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 1.42, 2.5)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter63" type="MeshInstance3D" parent="."]
+position = Vector3(-2.5, 3.38, 2.5)
+rotation_degrees = Vector3(0, 0, 15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion64" type="MeshInstance3D" parent="."]
+position = Vector3(5, 1.42, 2.5)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter65" type="MeshInstance3D" parent="."]
+position = Vector3(2.5, 3.38, 2.5)
+rotation_degrees = Vector3(0, 0, -15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion66" type="MeshInstance3D" parent="."]
+position = Vector3(-5, 1.42, 4.95)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter67" type="MeshInstance3D" parent="."]
+position = Vector3(-2.5, 3.38, 4.95)
+rotation_degrees = Vector3(0, 0, 15)
+mesh = SubResource("Shape9")
+
+[node name="Stanchion68" type="MeshInstance3D" parent="."]
+position = Vector3(5, 1.42, 4.95)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape8")
+
+[node name="Rafter69" type="MeshInstance3D" parent="."]
+position = Vector3(2.5, 3.38, 4.95)
+rotation_degrees = Vector3(0, 0, -15)
+mesh = SubResource("Shape9")
+
+[node name="Roof70" type="MeshInstance3D" parent="."]
+position = Vector3(-2.5, 3.38, 0)
+rotation_degrees = Vector3(0, 0, 15)
+mesh = SubResource("Shape10")
+
+[node name="Roof71" type="MeshInstance3D" parent="."]
+position = Vector3(2.5, 3.38, 0)
+rotation_degrees = Vector3(0, 0, -15)
+mesh = SubResource("Shape10")
+
+[node name="Ridge72" type="MeshInstance3D" parent="."]
+position = Vector3(0, 4.09, 0)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape11")
+
+[node name="DoorFrame73" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.15, 5)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape12")
+
+[node name="DoorPane74" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.42, 5.08)
+rotation_degrees = Vector3(0, 0, 0)
+mesh = SubResource("Shape13")
