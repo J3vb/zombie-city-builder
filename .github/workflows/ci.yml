@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 env:
   GODOT_VERSION: 4.5.1-stable
 
@@ -106,3 +109,40 @@ jobs:
             build/windows/${{ github.sha }}/*.pck
             build/windows/${{ github.sha }}/*-LICENSE.txt
           if-no-files-found: error
+
+      - name: Build and test the self-updating launcher
+        run: ./tools/build_launcher.ps1 -Version "0.1.$env:GITHUB_RUN_NUMBER" -OutputDirectory build/launcher -Tests
+      - name: Package and verify the public download
+        run: |
+          python tools/make_windows_release.py "0.1.$env:GITHUB_RUN_NUMBER" "build/windows/$env:GITHUB_SHA" build/launcher/HoldTheGatesLauncher.exe build/release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./build/launcher/LauncherTests.exe --bundle build/release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-release-${{ github.sha }}
+          path: build/release/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish Windows release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint, godot, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: windows-public-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-release-${{ github.sha }}
+          path: build/release
+      - name: Publish all three assets together
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/publish_windows_release.py
