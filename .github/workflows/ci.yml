@@ -66,6 +66,13 @@ jobs:
           ~/godot/godot --headless --script res://tests/play_opening.gd -- basin 2>&1 | tee basin.log
           if grep -E "SCRIPT ERROR|Parse Error|ERROR:" basin.log; then exit 1; fi
 
+      - name: Save and resume a settlement through thirty nights
+        run: |
+          set -o pipefail
+          ~/godot/godot --headless --script res://tests/play_opening.gd -- month 2>&1 | tee month.log
+          if grep -E "SCRIPT ERROR|Parse Error|ERROR:" month.log; then exit 1; fi
+          grep -q "Day 31: 30 waves" month.log
+
   windows:
     name: Package and launch Windows x64
     runs-on: windows-latest

@@ -10,13 +10,13 @@ id = &"rifle_tower"
 display_name = "Rifle tower"
 size = Vector2i(1, 1)
 cost = Dictionary[StringName, int]({&"wood": 18, &"scrap": 9})
-max_health = 180
+max_health = 300
 view_height = 5.1
 build_seconds = 22.0
 scene = ExtResource("2")
 model = ExtResource("3")
 
 range_tiles = 23.0
-shot_interval = 0.8
+shot_interval = 0.5
 damage = 60
 noise_tiles = 20.0

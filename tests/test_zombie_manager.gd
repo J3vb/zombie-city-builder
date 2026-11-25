@@ -112,3 +112,17 @@ func test_walker_fallback_heads_to_the_footprint_center() -> void:
 	assert_true(moved.x > start.x, "walks toward the Command Post")
 	assert_true(is_equal_approx(moved.y, target.y), "aims at the center of the footprint")
 	fx.destroy()
+
+
+func test_attackers_need_space_at_each_structure_approach() -> void:
+	var fx := WorldFixture.new()
+	var crowd := fx.create().zombies
+	var west := Vector2i(62, 65)
+	var east := Vector2i(66, 65)
+	assert_true(crowd._at_front(west))
+	assert_true(crowd._at_front(west))
+	assert_true(not crowd._at_front(west), "Rear ranks must wait for contact")
+	assert_true(crowd._at_front(east), "Another face remains open")
+	crowd._step_all(0.1)
+	assert_true(crowd._at_front(west), "Contact is reconsidered on the next tick")
+	fx.destroy()

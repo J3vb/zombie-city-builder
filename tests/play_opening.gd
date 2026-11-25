@@ -9,6 +9,8 @@ var last_watch := 0
 var yard: Node
 var shop: Node
 var extended := false
+var month := false
+var month_plan: RefCounted
 var decisions := 0
 var next_trip := 7
 var second_shop: Node
@@ -87,6 +89,8 @@ func _prepare_watch() -> void:
 	for i in mini(posts.size(), world.jobs.residents.size()):
 		if is_instance_valid(posts[i]) and not posts[i].is_queued_for_deletion():
 			world.jobs.assign(world.jobs.residents[i], posts[i])
+	if month and clock.day >= 10:
+		month_plan.watch(world)
 	var wave: int = world.horde.horde_size(clock.day)
 	while stock.get_amount(&"ammo") < wave:
 		if not stock.pack_ammo(world.plots.rules):
@@ -102,7 +106,10 @@ func _run() -> void:
 	stock = root.get_node("Economy")
 	world.horde.rng.seed = 4
 	var defended := not OS.get_cmdline_user_args().has("undefended")
-	extended = OS.get_cmdline_user_args().has("basin")
+	month = OS.get_cmdline_user_args().has("month")
+	if month:
+		month_plan = load("res://tests/month_settlement.gd").new()
+	extended = month or OS.get_cmdline_user_args().has("basin")
 	if not _build(defended):
 		push_error("Opening street or paid orders failed")
 		quit(1)
@@ -111,7 +118,7 @@ func _run() -> void:
 	var post: Node = world.command_post
 	var waves := 0
 	var major_hordes := 0
-	var end_day := 16 if extended else 11
+	var end_day := 31 if month else (16 if extended else 11)
 	while clock.day < end_day and not clock.ended:
 		var previous_day: int = clock.day
 		clock._advance(step)
@@ -141,20 +148,11 @@ func _run() -> void:
 					posts.append(third)
 				if shop != null and world.jobs.residents.size() > 1:
 					world.jobs.assign(world.jobs.residents[1], shop)
+			if month and clock.day != previous_day:
+				month_plan.morning(world, posts, yard, well, [shop, second_shop])
 			_prepare_watch()
 			if clock.is_night() and world.zombies.count() > 0 and stock.get_amount(&"ammo") == 0:
 				stock.pack_ammo(world.plots.rules)
-		if clock.day != previous_day:
-			print(
-				(
-					"Reserves: %d wood, %d scrap; output %s"
-					% [
-						stock.get_amount(&"wood"),
-						stock.get_amount(&"scrap"),
-						world.jobs.last_output
-					]
-				)
-			)
 		if world.horde.queued > 0 and waves < clock.day:
 			if not world.horde.warning().is_empty():
 				major_hordes += 1
@@ -162,7 +160,7 @@ func _run() -> void:
 			waves = clock.day
 			print(
 				(
-					"Night %d: %d Walkers, %d people, %d ammo"
+					"Night %d: %d Drawn, %d people, %d ammo"
 					% [
 						clock.day,
 						world.horde.queued,
@@ -175,6 +173,12 @@ func _run() -> void:
 		if world._dirty:
 			world._build_now()
 		world.zombies._process(step)
+		if month and month_plan.due(world):
+			if not month_plan.resume(main, self):
+				push_error("Month replay could not resume the saved settlement")
+				quit(1)
+				return
+			post = world.command_post
 		if clock.day != previous_day:
 			print(
 				(
@@ -195,7 +199,7 @@ func _run() -> void:
 			shots += tower.shots
 	print(
 		(
-			"Day %d: %d waves, %d shots, %d remaining Walkers. %s"
+			"Day %d: %d waves, %d shots, %d remaining Drawn. %s"
 			% [
 				clock.day,
 				waves,
@@ -206,11 +210,16 @@ func _run() -> void:
 		)
 	)
 	var survived: bool = clock.day == end_day and waves == end_day - 1 and not clock.ended
-	print("Major hordes: %d · Expedition decisions: %d" % [major_hordes, decisions])
+	print("Major hordes: %d Â· Expedition decisions: %d" % [major_hordes, decisions])
 	quit(
 		(
 			0
-			if survived and major_hordes == (end_day - 1) / 3 and (not extended or decisions >= 3)
+			if (
+				survived
+				and major_hordes == (end_day - 1) / 3
+				and (not extended or decisions >= 3)
+				and (not month or month_plan.passed(world))
+			)
 			else 1
 		)
 	)
@@ -236,7 +245,12 @@ func _basin() -> void:
 		)
 		trips.choose(rescue)
 		decisions += 1
-	elif clock.day == next_trip and clock.time_of_day < 0.1 and trips.phase == trips.Phase.IDLE:
+	elif (
+		(not month or decisions < 3)
+		and clock.day == next_trip
+		and clock.time_of_day < 0.1
+		and trips.phase == trips.Phase.IDLE
+	):
 		var ids: Array[int] = []
 		for person in world.jobs.residents:
 			if (
@@ -285,7 +299,11 @@ func _expand_basin() -> void:
 		well = _order("well", Vector2i(61, 59))
 	if well != null and world.jobs.residents.size() >= 4:
 		world.jobs.assign(world.jobs.residents[3], well)
-	if posts.size() == 3 and clock.day >= 10 and stock.get_amount(&"scrap") >= 10:
+	if (
+		posts.size() == 3
+		and clock.day >= 10
+		and stock.can_afford(load("res://data/buildings/watchtower.tres").cost)
+	):
 		var site := _order("watchtower", Vector2i(58, 72))
 		if site != null:
 			posts.append(site)

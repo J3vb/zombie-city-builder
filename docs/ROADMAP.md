@@ -1,7 +1,7 @@
 # Roadmap
 
 Small steps. Each milestone ends with something you can play.
-Every milestone becomes a GitHub milestone, every bullet becomes an issue.
+GitHub tracks the work for each milestone. The implemented slice covers M0 through M6. A first-time player still needs to try the opening unaided and judge the month-long pacing.
 
 System details: [SYSTEMS.md](SYSTEMS.md). Game rules: [GDD.md](GDD.md).
 
@@ -43,16 +43,16 @@ Goal: the M1 game in 3D, with buildings that upgrade and a dark, gritty look. Th
 - Desktop render benchmark complete ([#64](https://github.com/J3vb/zombie-city-builder/pull/64)). The sole hardware target is Windows x64 on the owner's Ryzen 9 7950X3D and RTX 4080 Super.
 - Playable now: 3D terrain, building placeholders and 2D simulation grid.
 - Playable now: camera pan, orbit, tilt, zoom and ground picking for placement.
-- Walkers use one 3D MultiMesh. Add directional movement animation with the Walker art pass.
+- All five Drawn types use animated geometry in one 3D MultiMesh.
 - Day/night sun, fog and night lighting
 - Playable now: draw a curved street from Station 4 ([#67](https://github.com/J3vb/zombie-city-builder/issues/67)). Preview, cancel and commit the curve, join two ends or make a T-junction. Validate the full road width against terrain and occupied cells.
 - Playable now: mark a residential plot on either side of a bend ([#68](https://github.com/J3vb/zombie-city-builder/issues/68)). Face the entrance toward the street, reserve the house and its entrance, and reject overlapping plots. Allow an empty plot to be removed and explain why an occupied plot prevents road removal.
-- Playable now: a tent grows into a shack and brick house on the same confirmed plot. Farms and storage grow in painted zones and advance through all three stages using placeholder models ([#75](https://github.com/J3vb/zombie-city-builder/issues/75)). Staffed farm output is playable in M2. Each completed storage tier increases town capacity in M2.
+- Playable now: a tent grows into a shack and brick house on the same confirmed plot. Farms and storage grow in painted zones and advance through three modeled stages ([#75](https://github.com/J3vb/zombie-city-builder/issues/75)). Staffed farm output is playable in M2. Each completed storage tier increases town capacity in M2.
 - Playable now: click a roof to inspect the building's health, level, upgrade cost, unlock day and current blocker ([#74](https://github.com/J3vb/zombie-city-builder/issues/74)).
 - Playable now: place a one-tile garden or a two-by-two scrap workshop on its own site, anywhere the building footprint is clear. Each can be inspected and demolished independently ([#77](https://github.com/J3vb/zombie-city-builder/issues/77)).
 - Playable now: construction and upgrades draw on starting stock and staffed production.
-- Art: the tent, shack and brick house models and their shared materials are on main ([#65](https://github.com/J3vb/zombie-city-builder/pull/65)). Station 4 now uses its fire-station model in the playable town. Farm and storage models, the Walker and props remain.
-- Verify the Windows x64 game after the art pass.
+- Art: the tent, shack and brick house models and their shared materials are on main ([#65](https://github.com/J3vb/zombie-city-builder/pull/65)). Station 4 now uses its fire-station model in the playable town. Farm and storage tiers, residents, all five Drawn and terrain props are also in the game.
+- The Windows x64 export boots the title and a settlement in CI. A separate packaged-game rehearsal saved a street on Mill Crossing, exited the game and loaded it after relaunch.
 
 **Done when:** you can draw a bend, mark two road-facing plots on it, watch a home reach level 3, and watch a horde attack the town at night in 3D, at 60 fps with 500 active Walkers on the reference desktop at 1080p.
 
@@ -111,7 +111,9 @@ Goal: a game you can keep playing.
 - Settings persist per-bus volume, UI size, OpenDyslexic, fullscreen, camera edge scrolling, gate defaults and keyboard bindings.
 - Start a map from the title, pause the whole settlement, resume at the previous speed or return to the title after defeat.
 - Build the researched radio tower using Relay Station parts, then call Haven Point. Continue the same settlement in endless mode.
-- Balance pass
+- Order paid upgrades from the building inspector. A staffed salvage press supplies nine scrap per shift. Rifle towers cover more ground, and only two Drawn can reach a structure from the same approach tile at once. Major waves continue growing after day twelve.
+
+**Thirty-night replay passed.** On Halder Ford, a fresh town survived ten major hordes and took three expedition decisions. The game saved and resumed at dawn 16, and again on night 24 with 50 Drawn already on the map. Ten residents reached dawn 31 with 10 food, 62 water, 16 rounds and all 500 Station 4 HP. Food ran out during the middle of the month. [Replay, player orders and results](benchmarks/thirty-nights.md).
 
 **Done when:** a 30-day run is fun and saves/loads without bugs.
 
