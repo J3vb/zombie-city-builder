@@ -100,10 +100,10 @@ func refresh(building: Building, grower: TownGrower) -> void:
 			"Builder   %s\n%s · %s" % [crew.builder.display_name, crew.builder.activity(), task]
 		)
 		%Staff.text += "\nHealth   %d / %d" % [crew.builder.health, _jobs.rules.resident_health]
+		if crew.builder.tired:
+			%Staff.text += "\nMissed sleep last night"
 		if crew.builder.work_pace() < 1.0:
-			%Staff.text += (
-				"\nRation shortage · work pace %d%%" % roundi(crew.builder.work_pace() * 100)
-			)
+			%Staff.text += "\nWork pace   %d%%" % roundi(crew.builder.work_pace() * 100)
 	else:
 		_refresh_staff(building)
 
@@ -159,6 +159,8 @@ func _refresh_staff(building: Building) -> void:
 			)
 		if resident.work_pace() < 1.0:
 			lines.append("Work pace   %d%%" % roundi(resident.work_pace() * 100))
+		if resident.tired:
+			lines.append("Missed sleep last night")
 		if resident.hungry:
 			lines.append("Missed food at dawn")
 		if resident.thirsty:

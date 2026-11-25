@@ -5,6 +5,10 @@ const WALKERS := 500
 const WARMUP_US := 2000000
 const SAMPLE_US := 8000000
 
+var gate: RefCounted
+var builds := PackedFloat64Array()
+var previous_field: RefCounted
+
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -37,7 +41,20 @@ func _run() -> void:
 	wheel.pressed = true
 	for i in 6:
 		world.camera._unhandled_input(wheel)
+	var rebuild := OS.get_cmdline_user_args().has("rebuild")
+	if rebuild:
+		var gate_def := load("res://data/defenses/gate.tres")
+		var cell := Vector2i(60, 70)
+		if not world.perimeter.order(gate_def, cell, cell):
+			push_error("Could not place the benchmark gate")
+			quit(1)
+			return
+		gate = world.grid.barriers[cell]
+		world.perimeter.add_work(gate, gate_def.build_seconds)
+		previous_field = world.flow_field
 	var samples := PackedFloat64Array()
+	var updates := PackedFloat64Array()
+	var last_edit := 0
 	var start := Time.get_ticks_usec()
 	var last := start
 	while last - start < WARMUP_US + SAMPLE_US:
@@ -45,6 +62,13 @@ func _run() -> void:
 		var now := Time.get_ticks_usec()
 		if last - start >= WARMUP_US:
 			samples.append((now - last) / 1000.0)
+			updates.append(world.zombies.last_update_ms)
+			if rebuild and world.flow_field != previous_field:
+				builds.append(world.last_build_ms)
+				previous_field = world.flow_field
+			if rebuild and now - last_edit >= 250000:
+				world.perimeter.set_gate(gate, not gate.opened)
+				last_edit = now
 		last = now
 	if samples.is_empty() or world.zombies.count() != WALKERS or clock.get("speed") == 0:
 		push_error("Benchmark ended without a full active crowd")
@@ -61,4 +85,18 @@ func _run() -> void:
 			% ["night" if night else "day", WALKERS, samples.size() * 1000.0 / elapsed, p95]
 		)
 	)
+	updates.sort()
+	print("RESULT Walker update p95 %.2f ms" % updates[ceili(updates.size() * 0.95) - 1])
+	if rebuild:
+		if builds.size() < 2:
+			push_error("No repeated gate rebuilds completed in the sample")
+			quit(1)
+			return
+		builds.sort()
+		print(
+			(
+				"RESULT %d worker rebuilds, completion p95 %.2f ms, slowest frame %.2f ms"
+				% [builds.size(), builds[ceili(builds.size() * 0.95) - 1], samples[-1]]
+			)
+		)
 	quit()

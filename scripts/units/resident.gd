@@ -20,6 +20,8 @@ var at_station := false
 var missed_rations := 0
 var hungry := false
 var thirsty := false
+var sleep_seconds := 0.0
+var tired := false
 
 var _world: World
 var _sim_position: Vector2
@@ -141,6 +143,8 @@ func travel(dt: float, speed: float) -> float:
 		elif state == State.TO_HOME:
 			state = State.SHELTERED
 			hide()
+	if is_sleeping():
+		sleep_seconds = minf(_world.plots.rules.sleep_seconds, sleep_seconds + dt)
 	return dt
 
 
@@ -153,9 +157,24 @@ func update_ration(condition_hungry: bool, condition_thirsty: bool) -> void:
 		missed_rations = 0
 
 
+func is_sleeping() -> bool:
+	return (
+		GameClock.time_of_day >= _world.plots.rules.dusk_at
+		and state in [State.HOME, State.SHELTERED]
+		and is_instance_valid(shelter)
+		and not shelter.is_queued_for_deletion()
+	)
+
+
+func wake_up() -> void:
+	tired = not is_equal_approx(sleep_seconds, _world.plots.rules.sleep_seconds)
+	sleep_seconds = 0.0
+
+
 func work_pace() -> float:
 	var rules := _world.plots.rules
-	return maxf(rules.minimum_work_pace, 1.0 - missed_rations * rules.shortage_pace_loss)
+	var fatigue := rules.fatigue_pace_loss if tired else 0.0
+	return maxf(rules.minimum_work_pace, 1.0 - missed_rations * rules.shortage_pace_loss - fatigue)
 
 
 func activity() -> String:
@@ -171,5 +190,12 @@ func activity() -> String:
 		State.BLOCKED:
 			return "Escape route blocked" if retreating else "Route blocked"
 		_:
-			var place := "At Station 4" if at_station else "At home"
-			return "Sheltering from Walkers" if retreating else place
+			return _shelter_activity()
+
+
+func _shelter_activity() -> String:
+	if is_sleeping():
+		return "Sleeping at Station 4" if at_station else "Sleeping at home"
+	if retreating:
+		return "Sheltering from Walkers"
+	return "At Station 4" if at_station else "At home"
