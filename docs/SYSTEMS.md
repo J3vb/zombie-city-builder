@@ -242,6 +242,10 @@ The director announces the approach edge at dusk before nights 3, 6 and 9, then 
 - **Depends on:** Citizens, Economy, Clock.
 - **Milestone:** M4.
 
+Select Expeditions on the HUD to open the Veydam Basin map. One team of two to four residents can travel at a time. The Station 4 builder remains available in town. Departure costs one food and one water per traveller. A medical kit uses one medicine and prevents one injury. Before the team leaves the map, Recall returns its provisions. Travellers give up their job assignments and walk through a completed open gate to the map edge. Off-map travellers use their packed rations.
+
+Each search hour rolls local loot and injury risk, doubled at night. Every destination has a distinct decision. Finishing the trip brings the team back at the original map edge. A blocked return waits for a reachable open gate. Only when the team reaches it does the town receive loot and any recruited survivor. The town stock limit still applies.
+
 ## 13. Combat and damage
 
 - **What:** one shared way to deal damage.

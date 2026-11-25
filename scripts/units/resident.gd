@@ -19,6 +19,8 @@ var worked_day := 0
 var at_station := false
 var missed_rations := 0
 var hungry := false
+var on_trip := false
+var off_map := false
 var thirsty := false
 var sleep_seconds := 0.0
 var tired := false
@@ -59,7 +61,13 @@ func on_watch() -> bool:
 
 
 func exposed() -> bool:
-	return health > 0 and state != State.HOME and state != State.SHELTERED and not on_watch()
+	return (
+		not off_map
+		and health > 0
+		and state != State.HOME
+		and state != State.SHELTERED
+		and not on_watch()
+	)
 
 
 func take_hit(amount: int) -> void:
@@ -102,7 +110,7 @@ func route_origin() -> Vector2i:
 
 
 func occupies(tiles: Array[Vector2i]) -> bool:
-	return tiles.has(cell) or tiles.has(route_origin())
+	return not off_map and (tiles.has(cell) or tiles.has(route_origin()))
 
 
 func send(path: Array[Vector2i], to_work: bool) -> void:
@@ -178,6 +186,12 @@ func work_pace() -> float:
 
 
 func activity() -> String:
+	if on_trip:
+		return "On expedition" if off_map else "Walking with expedition team"
+	return _town_activity()
+
+
+func _town_activity() -> String:
 	match state:
 		State.TO_WORK:
 			return "Walking to work"

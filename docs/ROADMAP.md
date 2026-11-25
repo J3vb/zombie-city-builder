@@ -91,9 +91,9 @@ Goal: the core fantasy. Build walls, hold the line.
 
 Goal: the risky choices.
 
-- Expedition screen: locations, team pick, timers
-- Loot and text events with choices
-- Survivors found and brought home
+- The Veydam Basin map has six destinations, including two Veydam City sites. Send two to four residents with provisions and optional medicine. Watch them meet at an open gate, leave the map, and return through an open gate.
+- Each location has its own search rolls and radio decision. Waiting for a player decision pauses the team. Choosing to stay can bring injuries, extra loot or pursuers.
+- Returned teams deliver supplies once and can bring a named survivor to Station 4. Vacant home plots can house people displaced or recruited earlier.
 - Infection stages, clinic, medicine, quarantine
 - Checkpoint gate with refugee inspection
 - Power: generators, fuel, floodlights

@@ -69,6 +69,13 @@ extends Resource
 	&"ammo": 36,
 }
 
+@export_group("Expeditions")
+@export var team_min := 2
+@export var team_max := 4
+@export var expedition_injury := 5
+@export var night_risk_multiplier := 2.0
+@export var medical_kit_cost: Dictionary[StringName, int] = {&"medicine": 1}
+
 @export_group("Residents")
 @export var repair_health_per_second := 6.0
 @export var repair_retry_seconds := 1.0

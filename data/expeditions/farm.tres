@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ExpeditionSite" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/expedition_site.gd" id="1_site"]
+[ext_resource type="Script" path="res://scripts/data/expedition_event_def.gd" id="2_event"]
+
+[sub_resource type="Resource" id="Encounter"]
+script = ExtResource("2_event")
+story = "A family is hiding in the hayloft. They will share their stores if someone helps them out."
+investigate = "Help the family across the yard"
+leave = "Load the grain by the road"
+extra = Dictionary[StringName, int]({&"food": 4})
+survivor = true
+followers = 2
+injury = 4
+
+[resource]
+script = ExtResource("1_site")
+title = "Verbeek Farm"
+district = "Verbeek"
+hours = 3.0
+risk = 0.15
+map_position = Vector2(0.16, 0.42)
+supplies = Dictionary[StringName, int]({&"food": 6})
+encounter = SubResource("Encounter")

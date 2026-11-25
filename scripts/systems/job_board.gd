@@ -59,17 +59,26 @@ func _placed(building: Building) -> void:
 		if resident.home == null:
 			resident.home = building
 			return
+	arrive(building)
+
+
+func arrive(building: Building = null) -> Resident:
 	if world.safety.people.size() >= rules.resident_limit:
-		return
+		return null
 	var id := _next_id
 	_next_id += 1
 	var given := "Resident %d" % id
 	if id <= rules.resident_names.size():
 		given = rules.resident_names[id - 1]
 	var resident := RESIDENT.instantiate() as Resident
-	resident.setup(world, building, id, given)
+	resident.setup(world, building if building != null else world.command_post, id, given)
+	if building == null:
+		resident.home = null
+		resident.at_station = true
 	add_child(resident)
 	residents.append(resident)
+	_dirty = true
+	return resident
 
 
 func _removed(building: Building) -> void:
@@ -142,6 +151,7 @@ func toggle_hiring(site: Building) -> void:
 func assign(resident: Resident, site: Building) -> bool:
 	if (
 		resident == world.construction.builder
+		or resident.on_trip
 		or not residents.has(resident)
 		or resident.home == null
 		or not sites.has(site)
@@ -216,7 +226,7 @@ func _tick(dt: float) -> void:
 	_off_duty = off_duty
 	_dirty = false
 	for resident in residents:
-		if resident == world.construction.builder:
+		if resident == world.construction.builder or resident.on_trip:
 			continue
 		if resident.update_retreat() or replan:
 			_plan(resident)
@@ -255,6 +265,8 @@ func _dawn(day: int) -> void:
 			last_overflow[item] = harvested[item] - received
 	for resident in world.safety.people:
 		resident.shift_seconds = 0.0
+		if resident.off_map:
+			continue
 		var hungry := false
 		var thirsty := false
 		for item in rules.daily_ration:

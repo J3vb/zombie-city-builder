@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ExpeditionSite" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/expedition_site.gd" id="1_site"]
+[ext_resource type="Script" path="res://scripts/data/expedition_event_def.gd" id="2_event"]
+
+[sub_resource type="Resource" id="Encounter"]
+script = ExtResource("2_event")
+story = "The relay cabinet still has a radio coil. Its stuck alarm rings whenever the door opens."
+investigate = "Retrieve the coil and plans"
+leave = "Leave the cabinet closed"
+extra = Dictionary[StringName, int]({&"radio_parts": 1, &"blueprints": 1})
+survivor = false
+followers = 6
+injury = 3
+
+[resource]
+script = ExtResource("1_site")
+title = "Relay Station"
+district = "North Ridge"
+hours = 7.0
+risk = 0.25
+map_position = Vector2(0.39, 0.13)
+supplies = Dictionary[StringName, int]({&"scrap": 5})
+encounter = SubResource("Encounter")
