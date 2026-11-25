@@ -102,7 +102,7 @@ godot --headless --export-release "Windows Desktop" build/windows/HoldTheGates.e
 
 The reference PC is a Windows x64 desktop with a Ryzen 9 7950X3D and RTX 4080 Super. The playable target is 60 FPS with 500 Walkers at 1080p.
 
-The game files are packed inside the .exe, so you only share that one file.
+The executable contains the game assets. Distribute it with the pathfinding DLL and license from the same Windows package.
 
 ## Tests and lint
 

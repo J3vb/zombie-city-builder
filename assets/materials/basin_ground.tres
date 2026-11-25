@@ -4,4 +4,3 @@
 [resource]
 shader = ExtResource("S")
 shader_parameter/meadow = ExtResource("M")
-

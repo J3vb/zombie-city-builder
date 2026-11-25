@@ -9,4 +9,3 @@ void fragment() {
 	ALBEDO=mix(vec3(0.092,0.103,0.103),vec3(0.25,0.22,0.176),smoothstep(0.16,0.48,wear))*(0.65+0.9*grit);
 	ROUGHNESS=0.96;
 }
-
