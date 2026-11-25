@@ -117,3 +117,33 @@ func test_recall_before_departure_restores_unused_provisions_once() -> void:
 	for person in w.jobs.residents:
 		assert_true(not person.on_trip)
 	fx.destroy()
+
+
+func test_restoring_a_radio_choice_keeps_the_people_rolls_and_loot() -> void:
+	var game := (load("res://scenes/main/main.tscn") as PackedScene).instantiate() as Main
+	var tree := Engine.get_main_loop() as SceneTree
+	tree.root.add_child(game)
+	var w := game.world
+	var ids := _town(w)
+	_gate(w)
+	assert_eq(w.expeditions.launch(Expeditions.SITES[0], ids, true), "")
+	_until(w.expeditions, Expeditions.Phase.CHOICE)
+	var snapshot := SaveLayout.capture(w, {"step": 4, "hidden": true})
+	var state := w.expeditions.rng.state
+	var loot := w.expeditions.loot.duplicate()
+	var amount := Economy.get_amount(&"food")
+	assert_true(game.restore_game(snapshot))
+	var expedition := game.world.expeditions
+	assert_eq(expedition.phase, Expeditions.Phase.CHOICE)
+	assert_eq(expedition.rng.state, state)
+	assert_eq(expedition.loot, loot)
+	assert_true(expedition.team[0].off_map and expedition.team[1].on_trip)
+	assert_eq(expedition.team[0].resident_id, ids[0])
+	expedition.choose(true)
+	var shipment: int = expedition.loot[&"food"]
+	_until(expedition, Expeditions.Phase.IDLE)
+	assert_eq(Economy.get_amount(&"food"), amount + shipment)
+	assert_eq(game.world.safety.people.size(), 4)
+	tree.root.remove_child(game)
+	game.free()
+	GameClock.reset()

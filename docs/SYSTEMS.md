@@ -331,3 +331,9 @@ Display and control settings are available from the title and pause menu. The op
 A new game shows a three-day guide. Build a connected curved street, two road-facing plots and a staffed defense before the first night. The next objectives cover a separate garden or farm, a staffed well, and a finished gate. The third day highlights the direction warning and the result at dawn four. Hide the guide at any time and reopen it with Guide.
 
 The original score changes from the day watch to dusk, then to a pulse on major horde nights. The sound mixer reserves alert and button players and caps ordinary effects at ten voices. Nearby crowds share a groan cue. Gate movement, breaches, gunfire, construction and expedition radio calls have their own cues. All four bus volumes use the saved settings.
+
+## Save slots
+
+Saved settlements in the pause menu writes any of three manual slots. The title and pause menus can load those slots or the independent dawn autosave. The game rebuilds a candidate town before replacing the live one. A checksum detects a damaged write, and the previous file is retained as a backup. Unknown versions are reported in the menu.
+
+The snapshot records the selected map, street geometry and frontage, construction, guards and gates, residents and their commutes, stocks and dawn accounts, power and clinic state, expeditions and radio decisions, research and the outstanding crowd. The director, expedition, clinic and checkpoint random generators resume from their saved states. Paths for the horde and spatial lookup tables are rebuilt from the restored map. Audio preferences remain in the separate settings file.

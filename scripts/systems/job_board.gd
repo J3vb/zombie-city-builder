@@ -53,7 +53,7 @@ func _placed(building: Building) -> void:
 	_dirty = true
 	if building.is_workplace():
 		sites.append(building)
-	if building.plot == null:
+	if building.plot == null or world.restoring:
 		return
 	for resident in residents:
 		if resident.home == null:

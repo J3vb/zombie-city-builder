@@ -107,7 +107,7 @@ Goal: a game you can keep playing.
 - Walkers, Runners, Brutes, Screamers and Crawlers share the crowd simulation. Faster Runners appear from day 6, Crawlers from day 9 and the other two types from day 12.
 - The director sets wave pressure at dusk from population, recent casualties and gunfire. The announced approach remains fixed through nightfall.
 - Trade expedition blueprints and scrap for Fortify, Rebuild and Reclaim. Research improves wall repairs and fuel efficiency and unlocks the radio tower.
-- Save and load, autosave
+- Save or load three manual slots from the title and pause menus. Dawn uses a separate autosave. Each slot retains the previous copy for recovery.
 - Settings persist per-bus volume, UI size, OpenDyslexic, fullscreen, camera edge scrolling, gate defaults and keyboard bindings.
 - Start a map from the title, pause the whole settlement, resume at the previous speed or return to the title after defeat.
 - Build the researched radio tower using Relay Station parts, then call Haven Point. Continue the same settlement in endless mode.

@@ -9,6 +9,7 @@ const MAPS: Array[MapDef] = [
 
 var game: Main
 var _settings := SettingsPanel.new()
+var _slots := SaveSlots.new()
 var _confirming := false
 @onready var _panel: PanelContainer = %Panel
 @onready var _set: Node3D = $TitleSet
@@ -19,6 +20,11 @@ func _ready() -> void:
 	for map in MAPS:
 		_choice.add_item(map.display_name)
 	_choice.item_selected.connect(_describe)
+	%SettingsCenter.add_child(_slots)
+	_slots.add_theme_stylebox_override("panel", _panel.get_theme_stylebox("panel"))
+	%Saves.pressed.connect(_open_slots)
+	_slots.closed.connect(_close_slots)
+	_slots.load_requested.connect(_load_slot)
 	%SettingsCenter.add_child(_settings)
 	_settings.add_theme_stylebox_override("panel", _panel.get_theme_stylebox("panel"))
 	%Options.pressed.connect(_open_settings)
@@ -53,6 +59,7 @@ func start_game() -> void:
 	game.guided = true
 	game.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(game)
+	SaveManager.bind(game)
 	game.world.camera.lens.make_current()
 	var menu: Button = game.get_node("Hud").get_node("%Menu")
 	menu.show()
@@ -102,10 +109,40 @@ func _display(title: bool) -> void:
 	%Confirm.hide()
 	%Back.hide()
 	%Options.show()
+	%Saves.show()
 
 
 func _describe(index: int) -> void:
 	%Description.text = MAPS[index].description
+
+
+func _open_slots() -> void:
+	_panel.hide()
+	_slots.open(game)
+
+
+func _close_slots() -> void:
+	_panel.show()
+	%Saves.grab_focus()
+
+
+func _load_slot(slot: int) -> void:
+	var data := SaveManager.read_slot(slot)
+	if data.is_empty():
+		_slots.report(SaveManager.message)
+		return
+	var from_title := game == null
+	if from_title:
+		start_game()
+	if not game.restore_game(data):
+		if from_title:
+			return_to_title()
+		_panel.hide()
+		_slots.show()
+		_slots.report("This settlement contains invalid data.")
+		return
+	_slots.hide()
+	resume_game()
 
 
 func _open_settings() -> void:
@@ -128,6 +165,7 @@ func _ask_return() -> void:
 	%Confirm.show()
 	%Back.show()
 	%Options.hide()
+	%Saves.hide()
 	%Back.grab_focus()
 
 
@@ -137,6 +175,10 @@ func _exit_tree() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _slots.visible and event.is_action_pressed("ui_cancel"):
+		_slots.close()
+		get_viewport().set_input_as_handled()
+		return
 	if (
 		_settings.visible
 		or not event.is_action_pressed("ui_cancel")

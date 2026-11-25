@@ -7,6 +7,7 @@ const MAP_PATH := "res://data/maps/starter_map.tres"
 const TERRAIN_SET_PATH := "res://data/terrain/terrain_set.tres"
 const COMMAND_POST_PATH := "res://data/buildings/command_post.tres"
 
+var restoring := false
 var map_def: MapDef
 var flow_field := FlowField.new()
 var safety := TownSafety.new()
