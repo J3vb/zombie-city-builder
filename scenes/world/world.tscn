@@ -31,6 +31,8 @@ fog_density = 0.0012
 [node name="World" type="Node3D"]
 script = ExtResource("1_world")
 
+[node name="Scenery" type="Node3D" parent="."]
+
 [node name="Terrain" type="Node3D" parent="."]
 script = ExtResource("2_terrain")
 

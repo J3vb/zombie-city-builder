@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/units/resident.gd" id="Resident"]
 
@@ -29,6 +29,25 @@ height = 0.49
 radial_segments = 8
 rings = 3
 
+[sub_resource type="StandardMaterial3D" id="Face"]
+albedo_color = Color(0.63, 0.47, 0.34, 1)
+
+[sub_resource type="BoxMesh" id="FaceMesh"]
+material = SubResource("Face")
+size = Vector3(0.36, 0.34, 0.31)
+
+[sub_resource type="BoxMesh" id="Sleeve"]
+material = SubResource("Coat")
+size = Vector3(0.17, 0.55, 0.2)
+
+[sub_resource type="BoxMesh" id="Pack"]
+material = SubResource("Boots")
+size = Vector3(0.46, 0.56, 0.23)
+
+[sub_resource type="BoxMesh" id="HatBrim"]
+material = SubResource("Hat")
+size = Vector3(0.5, 0.07, 0.46)
+
 [node name="Resident" type="Node3D"]
 script = ExtResource("Resident")
 
@@ -53,5 +72,26 @@ modulate = Color(1, 0.72, 0.22, 1)
 pixel_size = 0.025
 
 [node name="Cap" type="MeshInstance3D" parent="."]
-position = Vector3(0, 1.65, 0)
+position = Vector3(0, 1.74, 0)
+scale = Vector3(0.88, 0.5, 0.88)
 mesh = SubResource("Head")
+
+[node name="Face" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.54, 0.02)
+mesh = SubResource("FaceMesh")
+
+[node name="Brim" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.69, 0.055)
+mesh = SubResource("HatBrim")
+
+[node name="LeftSleeve" type="MeshInstance3D" parent="."]
+position = Vector3(-0.32, 1.02, 0.03)
+mesh = SubResource("Sleeve")
+
+[node name="RightSleeve" type="MeshInstance3D" parent="."]
+position = Vector3(0.32, 1.02, 0.03)
+mesh = SubResource("Sleeve")
+
+[node name="Rucksack" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.02, -0.23)
+mesh = SubResource("Pack")

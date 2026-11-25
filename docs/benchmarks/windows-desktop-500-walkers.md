@@ -104,3 +104,7 @@ At 1920 × 1080 on the Ryzen 9 7950X3D and RTX 4080 SUPER, the playable town sus
 | Night | 220.5 | 4.81 ms | 11.58 ms | 3.71 ms | 33 |
 
 Tested 25 November 2026 in the Godot 4.7.2 compatibility renderer. Use `godot --path . --resolution 1920x1080 --disable-vsync --script res://tests/bench_playable_3d.gd -- night rebuild stress`. Remove `night` for daylight. The benchmark checks the full crowd, simulation clock, worker rebuilds and the 16.67 ms frame p95 budget.
+
+### Authored silhouettes and terrain
+
+With the five animated forms, forest edges, rubble and the ground shader enabled, the same 1,000-Drawn benchmark averaged 187.2 FPS by day and 201.0 FPS at night. Frame p95 was 5.77 ms and 5.26 ms respectively, with 33 completed gate-field rebuilds in each run. The slowest frames were 13.08 ms and 12.62 ms. The rendered captures show the independent [farm and storage tiers](farm-storage-tiers.webp) and the [five Drawn](five-drawn.webp).

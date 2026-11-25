@@ -6,9 +6,8 @@ const CHUNK_SIZE := 16
 
 
 func build(grid: Grid, terrain: TerrainSet, tile: float, seed_value: int) -> void:
-	var material := StandardMaterial3D.new()
-	material.vertex_color_use_as_albedo = true
-	material.roughness = 1.0
+	var material := ShaderMaterial.new()
+	material.shader = load("res://assets/materials/ground.gdshader")
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	for y in range(0, grid.size.y, CHUNK_SIZE):

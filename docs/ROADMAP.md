@@ -119,7 +119,7 @@ Goal: a game you can keep playing.
 
 Goal: something you can share.
 
-- Real art (replace the low-poly kit with final models)
+- All authored building levels have models. Farms progress from planted beds to a fenced field and glazed greenhouse. Storage progresses from tarped pallets to a shed and warehouse. The five Drawn have distinct animated poses, and settlements have dressed terrain and equipped residents.
 - Original day, dusk and horde music, pooled crowd and combat sounds, a separate UI bus and reserved alert audio.
 - Choose Halder Ford or Mill Crossing. The latter has a 144 × 112-tile canal with two land crossings and a different start.
 - A skippable first-three-day guide follows a connected street, two home plots, posted defenses, separate food and water jobs, a gate, the direction warning and survival through dawn four.
