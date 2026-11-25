@@ -85,7 +85,7 @@ Goal: the core fantasy. Build walls, hold the line.
 
 **Earlier five-night opening.** Two posted defenders, a gated barricade and three residents reached dawn six against waves of 30, 40, 50, 60 and 70. Station 4 retained all 500 HP and the town had 2 ammo left. The matching undefended replay lost on night one.
 
-**Ten-night opening passed.** A lumber yard, scrap workshop and three staffed watchtowers held the north, east and north major waves on nights 3, 6 and 9. Four people reached dawn 11 with 12 food, 12 water and six rounds. Separate regression tests exercise wall damage, repair safety, breaches and sentry loss.
+**Ten-night opening passed.** A lumber yard, scrap workshop and three staffed watchtowers held the north, east and north major waves on nights 3, 6 and 9. In the final balance replay four people reached dawn 11 with 12 food, 12 water and 22 rounds. Separate regression tests exercise wall damage, repair safety, breaches and sentry loss.
 
 ## M4: The outside and infection
 
@@ -98,7 +98,7 @@ Goal: the risky choices.
 - Staff a checkpoint gate, wait for an inspection and choose admission, isolation or refusal. A medic can detect a Warm visitor that a guard alone would miss.
 - Fuel from expedition sites powers generators. Night floodlights illuminate the town and attract nearby Walkers while supply meets demand. Switch individual sites in Services.
 
-**15-day replay passed.** Two workers left for Halbo on day 7, Verbeek Farm on day 10 and the Police Post on day 13. Opening the stockroom and cell brought recruits and followers. At the farm the team chose grain and left the family. Six people reached dawn 16, with 46 water, three rounds, no stored food and Station 4 at full health. A separate fixture covers rare Ember turns and checkpoint decisions.
+**15-day replay passed.** Two workers left for Halbo on day 7, Verbeek Farm on day 10 and the Police Post on day 13. Opening the stockroom and cell brought recruits and followers. At the farm the team chose grain and left the family. In the final balance replay six people reached dawn 16 with 46 water, one round, no stored food and Station 4 at full health. A separate fixture covers rare Ember turns and checkpoint decisions.
 
 ## M5: Depth and polish
 
@@ -126,7 +126,7 @@ Goal: something you can share.
 - Choose Halder Ford or Mill Crossing. The latter has a 144 × 112-tile canal with two land crossings and a different start.
 - A skippable first-three-day guide follows a connected street, two home plots, posted defenses, separate food and water jobs, a gate, the direction warning and survival through dawn four.
 - CI exports a commit-versioned Windows x64 build and launches both the packaged entry point and settlement. The README gives the download and local build instructions.
-- The 1080p Windows benchmark exercises 1,000 Drawn of all five types by day and night, including repeated gate changes. It fails if the 95th-percentile frame exceeds 16.67 ms.
+- The 1080p Windows benchmark exercises 1,000 Drawn of all five types by day and night, including repeated gate changes. The packaged game averaged 217.7 FPS in both conditions. A separate full-grid test measured 0.95 ms against the 8 ms CPU budget. [Release performance measurements](benchmarks/windows-desktop-500-walkers.md#release-pathfinding-and-final-1000-drawn-check).
 
 **Done when:** a stranger can download, learn and play it.
 

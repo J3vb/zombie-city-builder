@@ -76,3 +76,31 @@ func test_blocked_goal_still_seeds() -> void:
 	field.build(cost, Vector2i(3, 1), PackedInt32Array([2]))
 	assert_eq(_dir(field, 1, 0), 2, "-> E towards building")
 	assert_eq(field.direction_at(Vector2i(9, 9)), Vector2.ZERO, "out of bounds")
+
+
+func test_native_and_script_fields_agree_for_every_tile_and_tie() -> void:
+	if not ClassDB.class_exists(&"TownFlowNative"):
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 107
+	var size := Vector2i(29, 33)
+	for sample in 10:
+		var cost := _open(size.x, size.y)
+		for i in cost.size():
+			cost[i] = [-1, 1, 1, 1, 3, 8][rng.randi_range(0, 5)]
+		var physical := cost.duplicate()
+		# A closed gate can be breached but blocks a diagonal corner.
+		cost[24] = 40
+		physical[24] = B
+		var goals := PackedInt32Array([13, 14, 13, 520])
+		var actual := FlowField.new()
+		actual.build(cost, size, goals, physical)
+		var expected := FlowField.new()
+		expected.size = size
+		expected.integration = _open(size.x, size.y)
+		expected.integration.fill(FlowField.UNREACHED)
+		expected.direction.resize(cost.size())
+		expected.direction.fill(N)
+		expected._integrate(cost, goals, physical)
+		assert_true(actual.integration == expected.integration, "Distances on sample %d" % sample)
+		assert_true(actual.direction == expected.direction, "Tie-breaking on sample %d" % sample)

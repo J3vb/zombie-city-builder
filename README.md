@@ -50,7 +50,7 @@ Run `godot --headless --path . --script res://tests/play_opening.gd` to replay t
 
 Open a completed CI run under **Actions** on GitHub. Download the **HoldTheGates-Windows-x64** artifact for that commit, extract the archive and run **HoldTheGates.exe**. GitHub requires a signed-in account to download workflow artifacts. Each build starts the packaged application and settlement on Windows before it is offered for download.
 
-To reproduce the package on Windows with Python 3.12, run `python tools/windows_toolchain.py ../htg-tools`, then `./tools/package_windows.ps1 -ToolCache ../htg-tools -Render` from PowerShell. The script uses Godot 4.5.1 and writes the game under `build/windows/local/`.
+To reproduce the package on Windows with Python 3.12, Git, CMake and a C++17 compiler, run `python tools/windows_toolchain.py ../htg-tools`, then `./tools/package_windows.ps1 -ToolCache ../htg-tools -Render` from PowerShell. The script builds the pinned Godot C++ bindings, exports with Godot 4.5.1 and writes the executable, pathfinding DLL and license under `build/windows/local/`. Keep the extracted files together. For editor play, `python tools/build_flow.py` enables the same solver after reimport. A source checkout also runs with the GDScript solver.
 
 ## Run it
 

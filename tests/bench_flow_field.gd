@@ -5,6 +5,11 @@ extends SceneTree
 
 
 func _initialize() -> void:
+	var args := OS.get_cmdline_user_args()
+	if args.has("require-native") and not ClassDB.class_exists(&"TownFlowNative"):
+		push_error("The native flow-field solver did not load")
+		quit(1)
+		return
 	var size := Vector2i(128, 128)
 	var cost := PackedInt32Array()
 	cost.resize(size.x * size.y)
@@ -23,4 +28,4 @@ func _initialize() -> void:
 		field.build(cost, size, goals)
 	var ms := (Time.get_ticks_usec() - start) / 1000.0 / runs
 	print("flow field 128x128: %.2f ms per build (budget 8 ms)" % ms)
-	quit()
+	quit(1 if args.has("enforce-budget") and ms > 8.0 else 0)

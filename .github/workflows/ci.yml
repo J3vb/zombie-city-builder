@@ -39,10 +39,14 @@ jobs:
           curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
           unzip -q godot.zip -d ~/godot
           mv ~/godot/Godot_v${GODOT_VERSION}_linux.x86_64 ~/godot/godot
+      - name: Build native pathfinding
+        run: python3 tools/build_flow.py
       - name: Import project
         run: |
           ~/godot/godot --headless --import 2>&1 | tee import.log
           if grep -E "SCRIPT ERROR|Parse Error|ERROR:" import.log; then exit 1; fi
+      - name: Verify native pathfinding loads
+        run: ~/godot/godot --headless --script res://tests/bench_flow_field.gd -- require-native
       - name: Run tests
         run: |
           set -o pipefail
@@ -100,4 +104,5 @@ jobs:
             build/windows/${{ github.sha }}/*.exe
             build/windows/${{ github.sha }}/*.dll
             build/windows/${{ github.sha }}/*.pck
+            build/windows/${{ github.sha }}/*-LICENSE.txt
           if-no-files-found: error
