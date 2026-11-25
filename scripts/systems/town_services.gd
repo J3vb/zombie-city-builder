@@ -171,6 +171,8 @@ func _power(dt: float, hours: float) -> void:
 			if _fuel[gen] <= 0.0 and Economy.get_amount(&"fuel") > 0:
 				Economy.add(&"fuel", -1)
 				_fuel[gen] = generator.fuel_hours
+				if world.campaign.has_tech(&"rebuild"):
+					_fuel[gen] *= world.plots.rules.rebuild_fuel_multiplier
 			if _fuel[gen] > 0.0:
 				supply += generator.supply
 				_fuel[gen] -= hours

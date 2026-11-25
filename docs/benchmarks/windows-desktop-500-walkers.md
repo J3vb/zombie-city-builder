@@ -89,3 +89,7 @@ Seed 4 on the reference Windows desktop. The player uses starting stock, two wat
 Run the normal opening replay with the additional argument `-- basin`. A seed-4 town uses real starting stock, builds two workshops and a well, and rotates residents between daytime work, expedition duty and staffed towers. The team takes the risk at the city police post and Halbo Supermarket and leaves early with grain at Verbeek Farm. The settlement reaches dawn 16 with six people, 46 water and three rounds after five major hordes. Food is exhausted at dawn 15. Separate tests exercise the clinic, Cold Room, staffed holding pen and fuel limits.
 
 [Radio decision at Halbo Supermarket](basin-expedition.webp).
+
+## Mixed late hordes
+
+The fifteen-day Basin replay uses a southern fourth tower to cover housing. With adaptive pressure and the five Drawn types enabled, the final major wave approached from the south with 179 hostiles. Five people survived, one fewer than in the Walker-only replay. The town emptied its food stock, kept 47 water and four rounds, and held Station 4 at 500 HP.

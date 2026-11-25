@@ -104,13 +104,13 @@ Goal: the risky choices.
 
 Goal: a game you can keep playing.
 
-- All zombie types (runner, brute, screamer, crawler)
-- Adaptive horde director
-- Tech tree with blueprints
+- Walkers, Runners, Brutes, Screamers and Crawlers share the crowd simulation. Faster Runners appear from day 6, Crawlers from day 9 and the other two types from day 12.
+- The director sets wave pressure at dusk from population, recent casualties and gunfire. The announced approach remains fixed through nightfall.
+- Trade expedition blueprints and scrap for Fortify, Rebuild and Reclaim. Research improves wall repairs and fuel efficiency and unlocks the radio tower.
 - Save and load, autosave
 - Settings screen (audio, UI scale, dyslexia font, keys)
 - Main menu, pause, game over screens
-- Win condition (campaign goal) and endless mode
+- Build the researched radio tower using Relay Station parts, then call Haven Point. Continue the same settlement in endless mode.
 - Balance pass
 
 **Done when:** a 30-day run is fun and saves/loads without bugs.

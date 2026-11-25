@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ZombieDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/zombie_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"screamer"
+speed = 36.0
+health = 20
+building_damage = 3
+attack_cooldown = 1.0
+radius = 9.0
+color = Color(0.74,0.5,0.42, 1)
+first_night = 12
+scream_radius_tiles = 8.0
+scream_interval = 8.0
+height_scale = 1.12

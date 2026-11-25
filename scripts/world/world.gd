@@ -14,6 +14,7 @@ var perimeter := Perimeter.new()
 var expeditions := Expeditions.new()
 var services := TownServices.new()
 var admissions := Admissions.new()
+var campaign := Campaign.new()
 var command_post: Building
 var last_build_ms: float = 0.0
 
@@ -123,7 +124,11 @@ func can_build_on(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -
 
 ## Paid placement, shared by input and simulation callers.
 func try_place_building(def: BuildingDef, cell: Vector2i, site: FrontagePlot = null) -> Building:
-	if not can_place_building(def, cell, site) or not Economy.spend(def.cost):
+	if (
+		not campaign.permits(def)
+		or not can_place_building(def, cell, site)
+		or not Economy.spend(def.cost)
+	):
 		return null
 	var building := _place(def, cell, site, true)
 	if building == null:

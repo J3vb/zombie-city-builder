@@ -9,8 +9,13 @@ var world: World
 var queued: int = 0
 var rng := RandomNumberGenerator.new()
 var walker: ZombieDef
+var roster: Array[ZombieDef] = []
+var noise := 0.0
+var pressure := 0.0
 var warning_day := 0
 var approach := -1
+var _population := 0
+var _recent_loss := false
 var _edges: Array[Array] = [[], [], [], []]
 
 var _balance: BalanceDef = preload("res://data/balance.tres")
@@ -20,6 +25,11 @@ var _spawn_cells: Array[Vector2i] = []
 func setup(owner_world: World, seed_value: int) -> void:
 	world = owner_world
 	walker = load(WALKER_PATH) as ZombieDef
+	roster.append(walker)
+	for id in ["runner", "brute", "screamer", "crawler"]:
+		roster.append(load("res://data/zombies/%s.tres" % id) as ZombieDef)
+	_population = world.safety.people.size()
+	EventBus.day_started.connect(_dawn)
 	rng.seed = seed_value
 	_spawn_cells = _ring_cells()
 	for cell in _spawn_cells:
@@ -38,6 +48,7 @@ func setup(owner_world: World, seed_value: int) -> void:
 
 func horde_size(day: int) -> int:
 	var major := _balance.horde_base + day * _balance.horde_growth
+	major = maxi(1, roundi(major * (1.0 + pressure)))
 	return (
 		major
 		if day % _balance.major_horde_interval == 0
@@ -45,10 +56,48 @@ func horde_size(day: int) -> int:
 	)
 
 
+func _dawn(_day: int) -> void:
+	var count := world.safety.people.size()
+	_recent_loss = count < _population
+	_population = count
+	noise *= _balance.noise_daily_decay
+
+
+func gunshot() -> void:
+	noise = minf(_balance.max_horde_pressure, noise + _balance.noise_pressure_per_shot)
+
+
+func choose_type(day: int) -> ZombieDef:
+	if day < roster[1].first_night:
+		return walker
+	var total := 0
+	for kind in roster:
+		if day >= kind.first_night:
+			total += kind.appearance_weight
+	var roll := rng.randi_range(0, total - 1)
+	for kind in roster:
+		if day >= kind.first_night:
+			roll -= kind.appearance_weight
+			if roll < 0:
+				return kind
+	return walker
+
+
 func _forecast(day: int) -> void:
 	if warning_day == day:
 		return
 	approach = -1
+	if day > _balance.adaptive_after_day:
+		var surplus := maxi(0, world.safety.people.size() - _balance.pressure_population_threshold)
+		pressure = clampf(
+			(
+				surplus * _balance.pressure_per_resident
+				+ noise
+				- (_balance.loss_relief if _recent_loss else 0.0)
+			),
+			-_balance.loss_relief,
+			_balance.max_horde_pressure
+		)
 	if day % _balance.major_horde_interval == 0:
 		var available := PackedInt32Array()
 		for side in _edges.size():
@@ -92,7 +141,7 @@ func _process(_delta: float) -> void:
 		return
 	var batch := mini(queued, _balance.spawns_per_frame)
 	for i in batch:
-		if not world.zombies.spawn(random_spawn_point(), walker):
+		if not world.zombies.spawn(random_spawn_point(), choose_type(GameClock.day)):
 			queued = 0
 			return
 	queued -= batch

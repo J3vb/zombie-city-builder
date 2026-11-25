@@ -32,6 +32,8 @@ var _dying := PackedInt32Array()
 var _hash := SpatialHash.new()
 var _near := PackedInt32Array()
 var _civilians: Dictionary[int, Resident] = {}
+var _motion := CrowdMotion.new()
+var _voice := PackedFloat32Array()
 var _frame: int = 0
 var _tile: float = 32.0
 
@@ -45,6 +47,7 @@ func setup(owner_world: World) -> void:
 	_type.resize(cap)
 	_state.resize(cap)
 	_cooldown.resize(cap)
+	_voice.resize(cap)
 	_noise_left.resize(cap)
 	_noise_target.resize(cap)
 	_hash.setup(world.grid.world_size(), _tile * 2.0)
@@ -72,6 +75,7 @@ func spawn(pos: Vector2, def: ZombieDef) -> bool:
 	_state[_count] = State.HORDE
 	_cooldown[_count] = 0.0
 	_noise_left[_count] = 0.0
+	_voice[_count] = 0.0
 	_count += 1
 	return true
 
@@ -86,6 +90,11 @@ func damage(index: int, amount: int) -> void:
 	_health[index] -= amount
 	if _health[index] <= 0:
 		_dying.append(index)
+
+
+func weapon_hit(index: int, amount: int, ranged: bool) -> void:
+	var multiplier := 1.0 - _defs[_type[index]].ranged_resistance if ranged else 1.0
+	damage(index, maxi(1, roundi(amount * multiplier)))
 
 
 func kill(index: int) -> void:
@@ -183,6 +192,11 @@ func _step_all(dt: float) -> void:
 			continue
 		var def := _defs[_type[i]]
 		var p := _pos[i]
+		if def.scream_interval > 0.0:
+			_voice[i] -= dt
+			if _voice[i] <= 0.0:
+				alert(p, def.scream_radius_tiles * _tile)
+				_voice[i] = def.scream_interval
 		var cell := Vector2i(floori(p.x / _tile), floori(p.y / _tile))
 		var victim: Resident = _civilians.get(i)
 		var chasing := victim != null and victim.exposed()
@@ -213,10 +227,14 @@ func _step_all(dt: float) -> void:
 		var ahead := p + dir * _tile * 0.5
 		var ahead_cell := Vector2i(floori(ahead.x / _tile), floori(ahead.y / _tile))
 		var segment: BarrierSegment = grid.barriers.get(ahead_cell)
-		if segment != null and segment.blocks():
+		if (
+			segment != null
+			and segment.blocks()
+			and not (def.crawl_under and segment.def == Perimeter.BARRICADE)
+		):
 			_state[i] = State.ATTACK
 			if _can_strike(i, dt, def):
-				world.perimeter.hit(segment, def.building_damage)
+				world.perimeter.hit(segment, roundi(def.building_damage * def.wall_multiplier))
 			continue
 		var building := grid.building_at(ahead_cell)
 		if building:
@@ -230,8 +248,8 @@ func _step_all(dt: float) -> void:
 		_cooldown[i] = maxf(0, _cooldown[i] - dt)
 		var velocity := dir * def.speed
 		if (i + _frame) % 2 == 0:
-			velocity += _separation(i, p, sep_r) * sep_k
-		_pos[i] = _move(p, velocity * dt, grid)
+			velocity += _motion.separation(i, p, sep_r, _hash, _pos) * sep_k
+		_pos[i] = _motion.move(p, velocity * dt, grid, def)
 	_civilians.clear()
 
 
@@ -241,43 +259,6 @@ func _can_strike(i: int, dt: float, def: ZombieDef) -> bool:
 		return false
 	_cooldown[i] = def.attack_cooldown
 	return true
-
-
-func _separation(i: int, p: Vector2, radius: float) -> Vector2:
-	var push := Vector2.ZERO
-	var n := _hash.query(p, radius, _near)
-	for k in n:
-		var j := _near[k]
-		if j == i:
-			continue
-		var away := p - _pos[j]
-		var d := away.length()
-		if d > 0.001:
-			push += away / d * (1.0 - d / radius)
-		else:
-			push += Vector2.RIGHT.rotated(i)
-	return push
-
-
-## Moves in steps of at most half a tile and never ends inside a blocked tile.
-func _move(p: Vector2, motion: Vector2, grid: Grid) -> Vector2:
-	var steps := maxi(1, ceili(motion.length() / (_tile * 0.5)))
-	var step := motion / steps
-	for s in steps:
-		var next := p + step
-		if _walkable(next, grid) and grid.can_cross_corner(p, next):
-			p = next
-		elif _walkable(Vector2(next.x, p.y), grid):
-			p.x = next.x
-		elif _walkable(Vector2(p.x, next.y), grid):
-			p.y = next.y
-		else:
-			break
-	return p
-
-
-func _walkable(p: Vector2, grid: Grid) -> bool:
-	return grid.get_cost(Vector2i(floori(p.x / _tile), floori(p.y / _tile))) > 0
 
 
 func _remove_dead() -> void:
@@ -294,6 +275,7 @@ func _remove_dead() -> void:
 		_type[i] = _type[last]
 		_state[i] = _state[last]
 		_cooldown[i] = _cooldown[last]
+		_voice[i] = _voice[last]
 		_noise_left[i] = _noise_left[last]
 		_noise_target[i] = _noise_target[last]
 		_count -= 1

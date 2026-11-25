@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ZombieDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/zombie_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"runner"
+speed = 68.0
+health = 18
+building_damage = 4
+attack_cooldown = 1.0
+radius = 8.0
+color = Color(0.68,0.59,0.32, 1)
+first_night = 6
+appearance_weight = 3
+height_scale = 0.9

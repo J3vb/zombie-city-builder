@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ZombieDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/zombie_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"crawler"
+speed = 32.0
+health = 22
+building_damage = 3
+attack_cooldown = 1.0
+radius = 8.0
+color = Color(0.36,0.43,0.40, 1)
+first_night = 9
+crawl_under = true
+ranged_resistance = 0.3
+height_scale = 0.43

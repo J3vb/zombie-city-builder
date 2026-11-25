@@ -52,8 +52,8 @@ func present(
 		var o := i * STRIDE
 		_buffer[o] = diameter
 		_buffer[o + 3] = positions[i].x * _scale
-		_buffer[o + 5] = 1.0
-		_buffer[o + 7] = HEIGHT * 0.5
+		_buffer[o + 5] = def.height_scale
+		_buffer[o + 7] = HEIGHT * def.height_scale * 0.5
 		_buffer[o + 10] = diameter
 		_buffer[o + 11] = positions[i].y * _scale
 		_buffer[o + 12] = color.r
