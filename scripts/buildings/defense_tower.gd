@@ -52,6 +52,7 @@ func fire_tick(world: World, dt: float) -> void:
 	world.zombies.weapon_hit(nearest, rules.damage, rules.ammo_per_shot > 0)
 	if rules.noise_tiles > 0.0:
 		world.horde.gunshot()
+		AudioManager.effect("shot")
 	world.zombies.alert(origin, rules.noise_tiles * world.grid.tile_size)
 	shots += 1
 	_cooldown = rules.shot_interval
