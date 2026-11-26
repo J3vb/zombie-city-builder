@@ -25,7 +25,8 @@ func _roads(w: World, records: Array) -> bool:
 			if not point.is_finite() or not w.grid.in_bounds(w.grid.world_to_cell(point)):
 				return false
 		w.roads._next_id = id
-		if w.roads.add_road(points) == null:
+		var quadratic: Variant = raw.get("quadratic", false)
+		if typeof(quadratic) != TYPE_BOOL or w.roads.add_road(points, false, quadratic) == null:
 			return false
 		seen[id] = true
 	return true

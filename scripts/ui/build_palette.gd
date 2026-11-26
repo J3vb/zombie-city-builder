@@ -5,6 +5,9 @@ extends PanelContainer
 const GROUPS := ["Streets", "Housing", "Production", "Defenses", "Land"]
 var current: String = "Streets"
 var _buttons: Dictionary[String, Button] = {}
+var _modes: Array[Button] = []
+var _angle := CheckButton.new()
+var _street_tool: RoadTool
 
 
 func _ready() -> void:
@@ -17,7 +20,37 @@ func _ready() -> void:
 		button.pressed.connect(select.bind(title))
 		%Categories.add_child(button)
 		_buttons[title] = button
+	for title: String in ["Straight", "Curved", "Freeform"]:
+		var button := Button.new()
+		button.text = title
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_NONE
+		button.pressed.connect(_select_mode.bind(_modes.size()))
+		add_order("Streets", button)
+		_modes.append(button)
+	_angle.text = "Angle snap"
+	_angle.tooltip_text = "Align near 45° steps relative to the starting street."
+	_angle.focus_mode = Control.FOCUS_NONE
+	_angle.toggled.connect(_toggle_angles)
+	add_order("Streets", _angle)
 	select(current)
+
+
+func _select_mode(mode: RoadTool.Mode) -> void:
+	if _street_tool.active and _street_tool.mode == mode:
+		_street_tool.clear()
+	else:
+		_street_tool.select(mode)
+
+
+func _toggle_angles(enabled: bool) -> void:
+	_street_tool.angle_snap = enabled
+
+
+func refresh_streets() -> void:
+	for i in _modes.size():
+		_modes[i].set_pressed_no_signal(_street_tool.active and _street_tool.mode == i)
+	_angle.set_pressed_no_signal(_street_tool.angle_snap)
 
 
 func add_order(title: String, button: Button, model: String = "") -> void:
@@ -44,6 +77,7 @@ func select(title: String) -> void:
 
 
 func bind_region(menu: MenuButton, world: World) -> void:
+	_street_tool = world.road_tool
 	menu.visible = not world.map_def.places.is_empty()
 	var places: PopupMenu = menu.get_popup()
 	places.clear()

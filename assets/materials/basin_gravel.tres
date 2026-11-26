@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://assets/materials/asphalt.gdshader" id="S"]
+[ext_resource type="Texture2D" path="res://assets/materials/road_aggregate.png" id="M"]
+
+[resource]
+shader = ExtResource("S")
+shader_parameter/aggregate = ExtResource("M")
+shader_parameter/binder = Color(0.30, 0.28, 0.235, 1)
+shader_parameter/dust = Color(0.49, 0.445, 0.355, 1)
+shader_parameter/fissures = 0.0

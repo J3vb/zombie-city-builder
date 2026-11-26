@@ -115,7 +115,9 @@ static func capture(w: World, guide: Dictionary) -> Dictionary:
 		"guide": guide
 	}
 	for road: Street in w.roads.roads.values():
-		data.roads.append({"id": road.id, "points": c.encode(road.controls)})
+		data.roads.append(
+			{"id": road.id, "points": c.encode(road.controls), "quadratic": road.quadratic}
+		)
 	for plot: FrontagePlot in w.plots.plots.values():
 		data.plots.append(c.gather(plot, PLOT))
 	for b: Building in w.buildings.get_children():

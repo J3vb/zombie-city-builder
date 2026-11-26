@@ -5,10 +5,7 @@ extends PanelContainer
 const STEPS := [
 	[
 		"Day 1 · Connect Station 4",
-		(
-			"Choose Street. Start on the gold marker, click a bend and an endpoint, "
-			+ "then press Enter."
-		)
+		"Choose Straight under Streets. Click the gold marker, then click where the street ends."
 	],
 	[
 		"Day 1 · House the first workers",

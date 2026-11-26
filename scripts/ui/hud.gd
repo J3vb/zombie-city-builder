@@ -13,7 +13,6 @@ var _land_buttons: Dictionary[int, Button] = {}
 var _displayed_dawn := 0
 
 var _growth := Button.new()
-var _road_button := Button.new()
 var _build_tool: BuildTool
 var _resource_labels: Dictionary[StringName, Label] = {}
 var _speed_buttons: Array[Button] = []
@@ -56,12 +55,6 @@ func _ready() -> void:
 		button.pressed.connect(GameClock.set_speed.bind(speed))
 		_speed_box.add_child(button)
 		_speed_buttons.append(button)
-	_road_button.text = "Street"
-	_road_button.toggle_mode = true
-	_road_button.focus_mode = Control.FOCUS_NONE
-	_road_button.custom_minimum_size = Vector2(110, 64)
-	_road_button.pressed.connect(_on_street_pressed)
-	_palette.add_order("Streets", _road_button)
 	for def in CATALOG.buildings:
 		var button := Button.new()
 		match def.placement:
@@ -207,7 +200,7 @@ func _process(_delta: float) -> void:
 		%DawnReport.text = report
 	$BuildingInfo.refresh(tool.selected_building, world.grower)
 	$PerimeterInfo.refresh(world, tool.selected_segment)
-	_road_button.set_pressed_no_signal(world.road_tool.active)
+	_palette.refresh_streets()
 	_growth.text = "Resume growth" if world.grower.paused else "Pause growth"
 	_growth.set_pressed_no_signal(world.grower.paused)
 	var message := world.road_tool.hint if world.road_tool.active else tool.hint
@@ -287,10 +280,3 @@ func _land_pressed(mode: PlotTool.Mode) -> void:
 func _toggle_growth() -> void:
 	var grower := _build_tool.world.grower
 	grower.paused = not grower.paused
-
-
-func _on_street_pressed() -> void:
-	if _build_tool.world.road_tool.active:
-		_build_tool.world.road_tool.clear()
-	else:
-		_build_tool.world.road_tool.select()
