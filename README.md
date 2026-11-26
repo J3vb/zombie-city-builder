@@ -73,8 +73,8 @@ Controls:
 | Key | Action |
 |---|---|
 | WASD / screen edge | Move the camera |
-| Q / E or middle-mouse drag | Orbit |
-| R / F | Tilt up / down |
+| Q / E or middle-mouse drag left / right | Rotate around the settlement |
+| R / F or middle-mouse drag up / down | Tilt toward an overhead view / a lower angle |
 | Mouse wheel | Zoom |
 | Home plot, then left click beside a connected street | Reserve the house and its street entrance |
 | Left click a building with no tool active | Inspect its level, health, next upgrade and current blocker |
