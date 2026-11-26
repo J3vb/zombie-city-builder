@@ -28,7 +28,7 @@ func test_garden_and_workshop_can_be_built_before_any_home() -> void:
 		before[&"wood"] - 2 * GARDEN.cost[&"wood"] - WORKSHOP.cost[&"wood"]
 	)
 	assert_eq(Economy.get_amount(&"scrap"), before[&"scrap"] - WORKSHOP.cost[&"scrap"])
-	assert_true(not w.build_tool.place(Vector2i(10, 90)), "water rejects placement")
+	assert_true(not w.build_tool.place(w.map_def.lakes[0].get_center()), "water rejects placement")
 	var no_stock: Dictionary[StringName, int] = {}
 	Economy.reset(no_stock)
 	assert_true(not w.build_tool.place(anchor + Vector2i(5, 0)), "unaffordable placement")
