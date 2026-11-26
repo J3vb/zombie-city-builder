@@ -36,8 +36,7 @@ func _process(delta: float) -> void:
 	var tilt := Input.get_axis("camera_tilt_down", "camera_tilt_up")
 	rotation.y += turn * _balance.camera_turn_speed * delta
 	if tilt != 0:
-		pitch_deg = clampf(pitch_deg + tilt * _balance.camera_tilt_speed * delta, 30, 75)
-		_apply()
+		_tilt_by(tilt * _balance.camera_tilt_speed * delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -51,6 +50,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_apply()
 	elif event is InputEventMouseMotion and event.button_mask & MOUSE_BUTTON_MASK_MIDDLE:
 		rotation.y -= event.relative.x * _balance.camera_drag_speed
+		_tilt_by(rad_to_deg(-event.relative.y * _balance.camera_drag_speed))
+
+
+func _tilt_by(degrees: float) -> void:
+	pitch_deg = clampf(pitch_deg + degrees, 30, 75)
+	_apply()
 
 
 func _clamp_position() -> void:
