@@ -43,7 +43,7 @@ func test_build_and_resume_a_large_basin_district() -> void:
 					w.spawn_building(w.plots.house_def, plot.house_cells[0], plot)
 	var houses := w.plots.plots.size()
 	assert_true(houses >= 120, "Built %d houses" % houses)
-	assert_eq(w.jobs.residents.size(), houses)
+	assert_eq(w.jobs.residents.size(), houses + 1, "One starter guard and one resident per home")
 	while w.safety.people.size() < w.resident_capacity():
 		if w.jobs.arrive() == null:
 			break

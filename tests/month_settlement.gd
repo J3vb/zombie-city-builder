@@ -7,6 +7,7 @@ var second_field: Building
 var third_shop: Building
 var extra_post: Building
 var north_post: Building
+var east_post: Building
 
 
 func _order(w: World, id: String, start: Vector2i) -> Building:
@@ -45,6 +46,10 @@ func morning(w: World, posts: Array[Node], yard: Building, well: Building, shops
 		north_post = _order(w, "rifle_tower", Vector2i(61, 61))
 		if north_post != null:
 			posts.append(north_post)
+	if GameClock.day >= 18 and not is_instance_valid(east_post):
+		east_post = _order(w, "rifle_tower", Vector2i(73, 63))
+		if east_post != null:
+			posts.append(east_post)
 	if not is_instance_valid(farm):
 		farm = _order(w, "farm", Vector2i(55, 68))
 	for plot: FrontagePlot in w.plots.plots.values():
@@ -62,7 +67,8 @@ func morning(w: World, posts: Array[Node], yard: Building, well: Building, shops
 			second_field = _order(w, "farm", Vector2i(51, 73))
 		if not is_instance_valid(third_shop):
 			third_shop = _order(w, "scrap_workshop", Vector2i(59, 57))
-	var shifts: Array = [shops[0], yard, well, farm, shops[1], third_shop, second_field]
+	var garden := w.grid.building_at(Vector2i(59, 63))
+	var shifts: Array = [shops[0], farm, well, yard, shops[1], garden, second_field, third_shop]
 	var people: Array[Resident] = []
 	for person in w.jobs.residents:
 		if not person.unavailable() and person.home != null and person != w.construction.builder:
@@ -111,7 +117,8 @@ func resume(main: Main, runner: SceneTree) -> bool:
 		"second_field",
 		"third_shop",
 		"extra_post",
-		"north_post"
+		"north_post",
+		"east_post"
 	]:
 		var holder: Object = runner if field in ["yard", "shop", "second_shop", "well"] else self
 		var building := holder.get(field) as Building

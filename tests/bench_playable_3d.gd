@@ -26,6 +26,8 @@ func _run() -> void:
 	if night:
 		clock.set("time_of_day", 0.75)
 	# Use a fixed crowd in camera range. Natural waves would change the sample count.
+	var stock := root.get_node("Economy")
+	stock.add(&"ammo", -stock.get_amount(&"ammo"))
 	world.horde.set_process(false)
 	world.camera.set_process(false)
 	var center: Vector2 = world.command_post.sim_center()

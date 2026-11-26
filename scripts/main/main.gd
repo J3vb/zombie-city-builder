@@ -30,10 +30,31 @@ func new_game() -> void:
 	world = WORLD_SCENE.instantiate() as World
 	world.map_def = selected_map
 	add_child(world)
+	_place_starter_defenses()
 	move_child(world, 0)
 	AudioManager.bind(world)
 	_hud.bind(world.build_tool, guided)
 	_hud.show()
+
+
+func _place_starter_defenses() -> void:
+	var origin := world.command_post.cell
+	var yard := world.map_def.starter_yard
+	var left := origin + yard.position
+	var right := Vector2i(origin.x + yard.end.x - 1, left.y)
+	var side := Vector2i.DOWN * (yard.size.y - 1)
+	var perimeter := world.perimeter
+	perimeter.spawn_line(Perimeter.BARRICADE, left, right)
+	perimeter.spawn_line(Perimeter.BARRICADE, left + Vector2i.DOWN, left + side)
+	perimeter.spawn_line(Perimeter.BARRICADE, right + Vector2i.DOWN, right + side)
+	var tower := world.spawn_building(
+		load("res://data/buildings/watchtower.tres") as TowerDef,
+		origin + world.map_def.starter_tower
+	)
+	if tower == null or not world.jobs.assign(world.jobs.arrive(world.command_post), tower):
+		push_error(
+			"Could not staff Station 4's starter watchtower on " + world.map_def.display_name
+		)
 
 
 func restore_game(data: Dictionary) -> bool:

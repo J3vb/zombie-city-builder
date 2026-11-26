@@ -166,7 +166,7 @@ A completed gate starts open. Manual closing and the optional dusk close both wa
 
 One completed tower offers one job. An assigned resident walks to the platform, stays on duty at dusk, and gives up their production slot. The post protects its occupant until it falls. Each available shot targets the nearest living Walker within 16 tiles using the current crowd update. The watchtower deals 30 damage, has a 0.6-second cooldown and consumes one round. An empty post, empty magazine or empty range consumes nothing. The inspector shows the defender, range, shots fired and supply problems.
 
-A new town starts with 36 ammo. The Station 4 inspector exchanges 2 scrap for a batch of 24 only when there is room for the full batch. The defended opening makes supplies and assignments before the night starts.
+Every new town starts with a watchtower beside Station 4, a guard bunked at the station, and timber barricades around the rear yard. The front stays open for the first street. The guard uses the town's 72 rounds to cover the first three nights. The Station 4 inspector exchanges 2 scrap for another 24 rounds when there is room for the full batch.
 
 Palisades have an optional sentry slot in the wall inspector. A guard walks to the segment and fights within 1.8 tiles. A breach releases the guard immediately. The rifle tower reaches 23 tiles, the watchtower 16. A shot alerts nearby Walkers for up to six seconds. A visible civilian takes priority over sound.
 
@@ -328,7 +328,7 @@ Display and control settings are available from the title and pause menu. The op
 
 ## Opening guide and sound
 
-A new game shows a three-day guide. Build a connected curved street, two road-facing plots and a staffed defense before the first night. The next objectives cover a separate garden or farm, a staffed well, and a finished gate. The third day highlights the direction warning and the result at dawn four. Hide the guide at any time and reopen it with Guide.
+A new game shows a three-day guide. Build a connected curved street and two road-facing plots while the starter guard takes the first watch. The next objectives cover a separate garden or farm, a staffed well, and a finished gate. The third day highlights the direction warning and the result at dawn four. Hide the guide at any time and reopen it with Guide.
 
 The original score changes from the day watch to dusk, then to a pulse on major horde nights. The sound mixer reserves alert and button players and caps ordinary effects at ten voices. Nearby crowds share a groan cue. Gate movement, breaches, gunfire, construction and expedition radio calls have their own cues. All four bus volumes use the saved settings.
 

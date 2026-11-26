@@ -100,6 +100,8 @@ func _run() -> void:
 	w.camera.distance = 215
 	w.camera._apply()
 	# Keep the measured population constant while exercising pursuit, contact and shelter.
+	var stock := root.get_node("Economy")
+	stock.add(&"ammo", -stock.get_amount(&"ammo"))
 	var walker: Resource = load("res://data/zombies/walker.tres").duplicate()
 	walker.civilian_damage = 0
 	for i in WALKERS:

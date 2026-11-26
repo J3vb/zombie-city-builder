@@ -133,6 +133,11 @@ func test_last_resident_ends_game_and_restart_restores_the_town() -> void:
 	var tree := Engine.get_main_loop() as SceneTree
 	var main := preload("res://scenes/main/main.tscn").instantiate() as Main
 	tree.root.add_child(main)
+	var guard := main.world.jobs.residents[0]
+	guard.send([guard.cell], true)
+	guard.travel(0.1, 40.0)
+	guard.take_hit(guard.health)
+	assert_true(not GameClock.ended)
 	var builder := main.world.construction.builder
 	builder.send([builder.cell], true)
 	builder.travel(0.1, 40.0)
@@ -144,7 +149,10 @@ func test_last_resident_ends_game_and_restart_restores_the_town() -> void:
 	assert_eq(GameClock.speed, 0)
 	main.new_game()
 	assert_true(not GameClock.ended)
-	assert_eq(main.world.safety.people, [main.world.construction.builder])
+	assert_eq(
+		main.world.safety.people, [main.world.construction.builder, main.world.jobs.residents[0]]
+	)
+	assert_eq(main.world.jobs.residents[0].job, main.world.perimeter.towers[0])
 	assert_true(main.get_node("Hud").visible)
 	tree.root.remove_child(main)
 	main.free()
