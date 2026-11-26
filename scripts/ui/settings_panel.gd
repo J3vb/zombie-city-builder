@@ -14,9 +14,11 @@ var _capture: StringName
 var _nav := VBoxContainer.new()
 var _full := false
 var _size := Vector2i.ZERO
+var _fullscreen_height := 0
 var _scale := 1.0
 var _sizes: Array[Vector2i] = []
 var _resolution: OptionButton
+var _resolution_label: Label
 var _apply := Button.new()
 
 
@@ -70,8 +72,8 @@ func _ready() -> void:
 func open() -> void:
 	_full = Settings.fullscreen
 	_size = Settings.resolution
+	_fullscreen_height = Settings.fullscreen_height
 	_scale = Settings.ui_scale
-	_sizes = Settings.window_sizes()
 	_show_page("Display")
 	show()
 	(_nav.get_child(0) as Button).grab_focus()
@@ -132,29 +134,44 @@ func _display_page() -> void:
 	scale.item_selected.connect(func(i: int) -> void: _scale = Settings.SCALES[i])
 	_row("Interface scale", scale)
 	_resolution = OptionButton.new()
-	_row("Resolution", _resolution)
-	_resolution.item_selected.connect(func(i: int) -> void: _size = _sizes[i])
+	_resolution_label = _row("Resolution", _resolution)
+	_resolution.item_selected.connect(_size_selected)
 	_mode_selected(int(_full))
 
 
 func _mode_selected(index: int) -> void:
 	_full = index == 1
+	_resolution_label.text = "3D render resolution" if _full else "Window resolution"
+	var screen := Settings.screen_size()
+	_sizes = Settings.fullscreen_sizes(screen) if _full else Settings.window_sizes(screen)
 	_resolution.clear()
+	for preset in _sizes:
+		var label := "Automatic" if preset == Vector2i.ZERO else "%d × %d" % [preset.x, preset.y]
+		if _full and preset == screen:
+			label += " (native)"
+		_resolution.add_item(label)
+		if (_full and preset.y == _fullscreen_height) or (not _full and preset == _size):
+			_resolution.select(_resolution.item_count - 1)
+	_size_selected(_resolution.selected)
+	_resolution.tooltip_text = (
+		"3D rendering resolution. The interface stays at desktop resolution."
+		if _full
+		else "Size of the game window."
+	)
+
+
+func _size_selected(index: int) -> void:
 	if _full:
-		_resolution.add_item("Desktop resolution")
+		_fullscreen_height = 0 if index == 0 else _sizes[index].y
 	else:
-		for preset in _sizes:
-			_resolution.add_item(
-				"Automatic" if preset == Vector2i.ZERO else "%d × %d" % [preset.x, preset.y]
-			)
-		_resolution.select(maxi(0, _sizes.find(_size)))
-	_resolution.disabled = _full
+		_size = _sizes[index]
 
 
 func _apply_display() -> void:
 	var reset_auto := Settings.resolution != _size and _size == Vector2i.ZERO
 	Settings.fullscreen = _full
 	Settings.resolution = _size
+	Settings.fullscreen_height = _fullscreen_height
 	Settings.ui_scale = _scale
 	Settings.apply_display(reset_auto)
 	_feedback.text = (
@@ -164,7 +181,7 @@ func _apply_display() -> void:
 	)
 
 
-func _row(title: String, control: Control) -> void:
+func _row(title: String, control: Control) -> Label:
 	var row := HBoxContainer.new()
 	var label := Label.new()
 	label.text = title
@@ -172,6 +189,7 @@ func _row(title: String, control: Control) -> void:
 	row.add_child(label)
 	row.add_child(control)
 	_list.add_child(row)
+	return label
 
 
 func _toggle(title: String, key: String) -> void:
