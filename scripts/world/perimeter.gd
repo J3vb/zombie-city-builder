@@ -90,6 +90,21 @@ func order(def: BarrierDef, a: Vector2i, b: Vector2i) -> bool:
 	if not blocker(def, cells).is_empty():
 		Economy.refund(cost)
 		return false
+	_place_line(def, cells, false)
+	return true
+
+
+## Completed map defenses use the same grid claims as player-built segments.
+func spawn_line(def: BarrierDef, a: Vector2i, b: Vector2i) -> void:
+	var cells := line(a, b)
+	var reason := blocker(def, cells)
+	if not reason.is_empty():
+		push_error(reason)
+		return
+	_place_line(def, cells, true)
+
+
+func _place_line(def: BarrierDef, cells: Array[Vector2i], complete: bool) -> void:
 	for cell in cells:
 		var segment := BarrierSegment.new()
 		segment.auto_close = Settings.gate_close
@@ -98,10 +113,13 @@ func order(def: BarrierDef, a: Vector2i, b: Vector2i) -> bool:
 		segment.health = def.health
 		segment.along_z = cells.front().y != cells.back().y
 		world.grid.barriers[cell] = segment
-		world.grid.cell_edited.emit(cell)
-		orders.append(segment)
+		segment.complete = complete
+		if complete:
+			segment.progress = def.build_seconds
+		else:
+			orders.append(segment)
+		world.grid.restore_ground(cell)
 	_changed()
-	return true
 
 
 func add_work(segment: BarrierSegment, dt: float) -> void:

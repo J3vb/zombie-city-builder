@@ -1,5 +1,5 @@
 extends SceneTree
-## Same seed and normal nights for both strategies. Pass -- undefended for the pre-defense opening.
+## Same seed and normal nights for both strategies. Pass -- undefended to skip extra defenses.
 
 var world: Node
 var clock: Node
@@ -42,28 +42,23 @@ func _order(id: String, cell: Vector2i) -> Node:
 
 
 func _defenses() -> bool:
-	for cell: Vector2i in [Vector2i(64, 58), Vector2i(60, 65)]:
-		if extended and not posts.is_empty():
-			break
-		var tower := _order("watchtower", cell)
+	posts.append(world.perimeter.towers[0])
+	if not extended:
+		var tower := _order("watchtower", Vector2i(60, 65))
 		if tower == null:
 			return false
 		posts.append(tower)
 	var fence := load("res://data/defenses/barricade.tres")
 	var gate := load("res://data/defenses/gate.tres")
-	if (
-		not world.perimeter.order(fence, Vector2i(62, 67), Vector2i(63, 67))
-		or not world.perimeter.order(gate, Vector2i(64, 67), Vector2i(65, 67))
-		or not world.perimeter.order(fence, Vector2i(66, 67), Vector2i(66, 67))
-	):
-		return false
-	return true
+	return (
+		world.perimeter.order(fence, Vector2i(62, 67), Vector2i(63, 67))
+		and world.perimeter.order(gate, Vector2i(64, 67), Vector2i(65, 67))
+		and world.perimeter.order(fence, Vector2i(66, 67), Vector2i(66, 67))
+	)
 
 
 func _build(defended: bool) -> bool:
-	if not _street():
-		return false
-	if defended and not _defenses():
+	if not _street() or (defended and not _defenses()):
 		return false
 	yard = _order("lumber_yard", Vector2i(57, 63) if defended else Vector2i(72, 80))
 	if yard == null:
@@ -128,7 +123,7 @@ func _run() -> void:
 					_expand_basin()
 			_basin()
 		if defended:
-			if world.jobs.residents.size() >= 3:
+			if world.jobs.residents.size() >= 4:
 				world.grower.paused = true
 			if clock.day != previous_day and not world.jobs.residents.is_empty():
 				world.jobs.assign(world.jobs.residents[0], yard)
@@ -243,12 +238,9 @@ func _basin() -> void:
 		and trips.phase == trips.Phase.IDLE
 	):
 		var ids: Array[int] = []
-		for person in world.jobs.residents:
-			if (
-				person != world.construction.builder
-				and person != world.jobs.residents[1]
-				and ids.size() < 2
-			):
+		# Keep the watch and the first workshop staffed while the team travels.
+		for person in world.jobs.residents.slice(2):
+			if person != world.construction.builder and ids.size() < 2:
 				ids.append(person.resident_id)
 		for segment in world.grid.barriers.values():
 			if segment.def.gate:
@@ -261,6 +253,12 @@ func _basin() -> void:
 
 
 func _expand_basin() -> void:
+	var garden_cell := Vector2i(59, 63)
+	var garden: Node = world.grid.building_at(garden_cell)
+	if garden == null:
+		garden = _order("garden", garden_cell)
+	if garden != null and world.jobs.residents.size() >= 4:
+		world.jobs.assign(world.jobs.residents[3], garden)
 	if clock.day == 8 and world.jobs.residents.size() >= 4 and world.jobs.residents[3].home == null:
 		for plot in world.plots.plots.values():
 			if plot.home == null and stock.can_afford(world.plots.house_def.cost):

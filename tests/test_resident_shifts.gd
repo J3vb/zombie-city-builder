@@ -166,18 +166,18 @@ func test_five_consecutive_dawns_and_restart_isolate_the_workforce() -> void:
 			GameClock._advance(0.5)
 		assert_eq(w.jobs.last_output.get(&"food"), 4)
 		assert_eq(w.jobs.last_output.get(&"scrap"), 4)
-		assert_eq(w.jobs.last_consumed.get(&"food"), 3)
+		assert_eq(w.jobs.last_consumed.get(&"food"), 4)
 		assert_true(w.jobs.last_shortage.is_empty())
-	assert_eq(Economy.get_amount(&"food"), starting_food + 5)
-	assert_eq(Economy.get_amount(&"water"), starting_water - 15)
+	assert_eq(Economy.get_amount(&"food"), starting_food)
+	assert_eq(Economy.get_amount(&"water"), starting_water - 20)
 	main.new_game()
-	assert_eq(main.world.jobs.residents.size(), 0)
+	assert_eq(main.world.jobs.residents.size(), 1)
 	assert_true(main.world.jobs.pending.is_empty())
 	var food := Economy.get_amount(&"food")
 	GameClock.day = 2
 	EventBus.day_started.emit(2)
 	assert_eq(
-		Economy.get_amount(&"food"), food - 1, "only the new Station 4 builder eats after restart"
+		Economy.get_amount(&"food"), food - 2, "only the new builder and guard eat after restart"
 	)
 	main.free()
 

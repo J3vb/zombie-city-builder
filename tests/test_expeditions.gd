@@ -130,6 +130,7 @@ func test_restoring_a_radio_choice_keeps_the_people_rolls_and_loot() -> void:
 	_until(w.expeditions, Expeditions.Phase.CHOICE)
 	var snapshot := SaveLayout.capture(w, {"step": 4, "hidden": true})
 	var state := w.expeditions.rng.state
+	var people := w.safety.people.size()
 	var loot := w.expeditions.loot.duplicate()
 	var amount := Economy.get_amount(&"food")
 	assert_true(game.restore_game(snapshot))
@@ -143,7 +144,7 @@ func test_restoring_a_radio_choice_keeps_the_people_rolls_and_loot() -> void:
 	var shipment: int = expedition.loot[&"food"]
 	_until(expedition, Expeditions.Phase.IDLE)
 	assert_eq(Economy.get_amount(&"food"), amount + shipment)
-	assert_eq(game.world.safety.people.size(), 4)
+	assert_eq(game.world.safety.people.size(), people + 1)
 	tree.root.remove_child(game)
 	game.free()
 	GameClock.reset()

@@ -14,14 +14,14 @@ const STEPS := [
 		"Day 1 · House the first workers",
 		(
 			"Choose Home plot beside the connected street. Reserve two plots so the "
-			+ "town can staff defenses."
+			+ "first workers can move in."
 		)
 	],
 	[
 		"Day 1 · Take the first watch",
 		(
-			"Open Defenses and place a watchtower near Station 4. After Ada finishes, "
-			+ "use Manage worker to post a resident. Pack ammo at Station 4."
+			"Build a watchtower near Station 4 if you need one. Inspect it and use "
+			+ "Manage worker to post a guard. Pack more ammo at Station 4."
 		)
 	],
 	[
@@ -155,3 +155,5 @@ func _achieved() -> bool:
 func _refresh() -> void:
 	_heading.text = STEPS[step][0]
 	_body.text = STEPS[step][1]
+	if step == 0 and is_instance_valid(world) and not world.perimeter.towers.is_empty():
+		_body.text = "Station 4 has a watchtower and barricades. " + _body.text

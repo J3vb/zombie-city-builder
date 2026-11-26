@@ -5,11 +5,30 @@ const GAME := preload("res://scenes/main/main.tscn")
 const TEMP := "user://save-tests"
 
 
+func test_loading_an_older_settlement_preserves_its_undefended_start() -> void:
+	var fx := WorldFixture.new()
+	var old_world := fx.create()
+	Economy.add(&"ammo", 36 - Economy.get_amount(&"ammo"))
+	var snapshot := SaveLayout.capture(old_world, {"step": 0, "hidden": false})
+	fx.destroy()
+	var tree := Engine.get_main_loop() as SceneTree
+	var game := GAME.instantiate() as Main
+	tree.root.add_child(game)
+	assert_true(game.restore_game(snapshot))
+	assert_true(game.world.perimeter.towers.is_empty() and game.world.grid.barriers.is_empty())
+	assert_eq(game.world.safety.people.size(), 1)
+	assert_eq(Economy.get_amount(&"ammo"), 36)
+	tree.root.remove_child(game)
+	game.free()
+
+
 func test_resume_a_live_street_gate_builder_wave_and_rng() -> void:
 	var game := GAME.instantiate() as Main
 	var tree := Engine.get_main_loop() as SceneTree
 	tree.root.add_child(game)
 	var w := game.world
+	var lost: BarrierSegment = w.grid.barriers.values()[0]
+	w.perimeter.hit(lost, lost.health)
 	var entry := w.roads.entrance
 	w.roads.add_road(PackedVector2Array([entry, entry + Vector2.DOWN * 350]))
 	var p := w.plots.reserve(entry + Vector2(8, 180), w.plots.rules.plot_frontage)
@@ -46,6 +65,9 @@ func test_resume_a_live_street_gate_builder_wave_and_rng() -> void:
 	assert_eq(resumed.horde.queued, 13)
 	assert_true(resumed != w)
 	assert_true(resumed.jobs.residents[0].hungry)
+	assert_eq(resumed.perimeter.towers.size(), 1)
+	assert_eq(resumed.jobs.worker_at(resumed.perimeter.towers[0]), resumed.jobs.residents[0])
+	assert_true(not resumed.grid.barriers.has(lost.cell), "A breached starter barricade stays gone")
 	assert_eq(resumed.plots.plots.size(), 1)
 	assert_true(not resumed.grid.barriers[cell].opened)
 	assert_true(resumed.grid.building_at(Vector2i(58, 61)).target_level == 1)

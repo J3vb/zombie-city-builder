@@ -36,11 +36,11 @@ When a Walker comes within four tiles, the worker leaves their post and an amber
 
 Open **Defenses** and drag a barricade or palisade along a row or column. The preview shows the full price and flags blocked tiles. Use gates where your line crosses the street. Ada builds each paid segment. Click a finished gate with the build tool cleared to open or close it, or change its **Close at dusk** setting. A gate waits for anyone crossing to clear the tile.
 
-Place a **Watchtower** within range of the buildings you want to protect. Its placement ring shows the 16-tile reach. Use **Manage worker** to post a resident. They walk to the tower and stand watch through the night. Each shot uses one ammo. Station 4 starts with 36 ammo. Click Station 4 to pack another 24 for 2 scrap. [See the gate and staffed tower in game](docs/benchmarks/first-defense.webp).
+On every map, Station 4 starts with a staffed **Watchtower**, timber barricades around its rear yard and 72 rounds. Ada is free to build. You can draw your first street from the open station entrance while the guard covers the first three nights.
 
-The fresh-start replay reached dawn six with three people and Station 4 at 500/500 health. Two defenders used 250 rounds across five nights, leaving 2 ammo, 35 food and 35 water. This opening uses starting rations and prioritizes defense construction. The separate ten-person supply town tests food and water production.
+The first three waves bring 6, 8 and 50 Walkers. Each shot uses one round. Click Station 4 to pack another 24 for 2 scrap. As the town grows, place additional towers within 16 tiles of the buildings you want to protect and use **Manage worker** to post defenders. [See a gate and staffed tower in game](docs/benchmarks/first-defense.webp).
 
-Run `godot --headless --path . --script res://tests/play_opening.gd` to replay the defended opening. Append `-- undefended` to run the original supply-first strategy with the same seed. It loses on night one. The replay returns 0 on survival through dawn six and 1 on defeat.
+Run `godot --headless --path . --script res://tests/play_opening.gd` to replay ten nights of building, staffing and resupply. Append `-- undefended` to try a supply-first opening with the starter defenses alone.
 
 ## Docs
 

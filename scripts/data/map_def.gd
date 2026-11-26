@@ -17,3 +17,6 @@ extends Resource
 @export var overview_distance := 0.0
 @export var population_limit := 0
 @export var command_post_cell: Vector2i = Vector2i(63, 63)
+## Relative to Station 4. Barricades cover the back and sides, leaving the street entrance clear.
+@export var starter_yard := Rect2i(-2, -3, 7, 4)
+@export var starter_tower := Vector2i(3, 1)

@@ -19,7 +19,7 @@ func test_ten_people_five_days_then_water_shortage_and_recovery() -> void:
 	tree.root.add_child(trial)
 	var w: World = trial.get_node("Main").world
 	assert_eq(w.jobs.residents.size() + 1, 10)
-	assert_eq(w.jobs.sites.size(), 5)
+	assert_eq(w.jobs.sites.size(), 6, "Five production sites and the starter watchtower")
 	for day in range(2, 7):
 		_next_dawn()
 		assert_eq(w.jobs.last_dawn, day)

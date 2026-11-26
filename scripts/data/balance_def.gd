@@ -69,15 +69,7 @@ extends Resource
 @export var ammo_batch_cost: Dictionary[StringName, int] = {&"scrap": 2}
 @export var ammo_batch := 24
 @export var station_capacity: int = 100
-@export var start_resources: Dictionary[StringName, int] = {
-	&"food": 50,
-	&"water": 50,
-	&"wood": 100,
-	&"scrap": 40,
-	&"fuel": 0,
-	&"medicine": 5,
-	&"ammo": 36,
-}
+@export var start_resources: Dictionary[StringName, int] = {}
 
 @export_group("Research")
 @export var fortify_repair_multiplier := 2.0
