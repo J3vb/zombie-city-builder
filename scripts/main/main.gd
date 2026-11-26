@@ -82,7 +82,6 @@ func restore_game(data: Dictionary) -> bool:
 	for key: String in loader.clock_values:
 		GameClock.set(key, loader.clock_values[key])
 	Economy.reset(loader.stocks)
-	_hud._refresh_resources()
 	world._refresh_storage()
 	world.camera.lens.make_current()
 	_game_over.hide()

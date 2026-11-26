@@ -2,7 +2,6 @@ class_name Hud
 extends CanvasLayer
 ## Top bar (resources, day, speed) and bottom build bar.
 
-const SHOWN_RESOURCES: Array[StringName] = [&"food", &"water", &"wood", &"scrap", &"ammo"]
 const WATCHTOWER := preload("res://data/buildings/watchtower.tres")
 const RIFLE_TOWER := preload("res://data/buildings/rifle_tower.tres")
 const BARRIERS: Array[BarrierDef] = [Perimeter.BARRICADE, Perimeter.WALL, Perimeter.GATE]
@@ -14,18 +13,26 @@ var _displayed_dawn := 0
 
 var _growth := Button.new()
 var _build_tool: BuildTool
-var _resource_labels: Dictionary[StringName, Label] = {}
-var _speed_buttons: Array[Button] = []
+var _defense_buttons: Array[Button] = []
 var _build_buttons: Dictionary[BuildingDef, Button] = {}
 
-@onready var _resources_box: HBoxContainer = %Resources
-@onready var _clock_label: Label = %Clock
-@onready var _speed_box: HBoxContainer = %Speed
 @onready var _palette: BuildPalette = %Palette
 
 
 func _ready() -> void:
-	%ToggleBuild.pressed.connect(func() -> void: _palette.visible = not _palette.visible)
+	$StatusBar.resized.connect(_position_reports)
+	_position_reports.call_deferred()
+	for entry: Array in [
+		[%ToggleBuild, UiSymbols.BUILD],
+		[%Trips, UiSymbols.TRIPS],
+		[%Services, UiSymbols.SERVICES],
+		[%Places, UiSymbols.MAP],
+		[%GuideButton, UiSymbols.GUIDE],
+		[%Menu, UiSymbols.MENU]
+	]:
+		var button: Button = entry[0]
+		button.icon = UiSymbols.icon(entry[1])
+	%ToggleBuild.toggled.connect(_palette.set_visible)
 	%Places.get_popup().id_pressed.connect(
 		func(index: int) -> void: _palette.visit_place(index, _build_tool.world)
 	)
@@ -39,22 +46,6 @@ func _ready() -> void:
 	%Services.get_popup().add_item("Build checkpoint gate", _services.size() + 1)
 	%Services.get_popup().id_pressed.connect(_service)
 	%Trips.pressed.connect(_open_trips)
-	for id in SHOWN_RESOURCES:
-		var label := Label.new()
-		_resources_box.add_child(label)
-		_resource_labels[id] = label
-		_set_resource(id, Economy.get_amount(id))
-	EventBus.resource_changed.connect(_set_resource)
-	Economy.capacity_changed.connect(_refresh_resources)
-	var names: Array[String] = ["Pause", "1x", "2x", "3x"]
-	for speed in names.size():
-		var button := Button.new()
-		button.text = names[speed]
-		button.toggle_mode = true
-		button.focus_mode = Control.FOCUS_NONE
-		button.pressed.connect(GameClock.set_speed.bind(speed))
-		_speed_box.add_child(button)
-		_speed_buttons.append(button)
 	for def in CATALOG.buildings:
 		var button := Button.new()
 		match def.placement:
@@ -69,7 +60,6 @@ func _ready() -> void:
 				)
 		button.toggle_mode = true
 		button.focus_mode = Control.FOCUS_NONE
-		button.custom_minimum_size = Vector2(130, 64)
 		button.pressed.connect(_on_build_pressed.bind(def))
 		var models := {"house": "house_1", "farm": "farm_1", "storage": "storage_1"}
 		var category := "Housing" if def.id == &"house" else "Production"
@@ -103,12 +93,21 @@ func _ready() -> void:
 			var tower := WATCHTOWER if i == BARRIERS.size() else RIFLE_TOWER
 			button.text = tower.display_name
 			model = String(tower.id)
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_NONE
 		button.pressed.connect(_select_defense.bind(i))
+		_defense_buttons.append(button)
 		_palette.add_order("Defenses", button, model)
 	_growth.toggle_mode = true
 	_growth.focus_mode = Control.FOCUS_NONE
 	_growth.pressed.connect(_toggle_growth)
 	_palette.add_order("Land", _growth)
+
+
+func _position_reports() -> void:
+	var top: float = $StatusBar.size.y + 16
+	$Reports.offset_top = top
+	$OpeningGuide.offset_top = top
 
 
 func _service(index: int) -> void:
@@ -139,13 +138,18 @@ func _open_trips() -> void:
 
 
 func bind(build_tool: BuildTool, guided: bool = false) -> void:
+	%MapName.text = build_tool.world.map_def.display_name
+	$StatusBar.refresh_resources()
 	%GuideButton.visible = guided
+	$OpeningGuide.visible = guided
 	if guided:
 		$OpeningGuide.bind(build_tool.world)
 	$ResearchPanel.hide()
 	_build_tool = build_tool
 	_palette.bind_region(%Places, build_tool.world)
 	_palette.select("Streets")
+	%ToggleBuild.set_pressed_no_signal(false)
+	_palette.hide()
 	$ServicePanel.hide()
 	$BuildingInfo.reset()
 	$ExpeditionPanel.hide()
@@ -154,10 +158,6 @@ func bind(build_tool: BuildTool, guided: bool = false) -> void:
 
 
 func _process(_delta: float) -> void:
-	var phase := "Night" if GameClock.is_night() else "Day"
-	_clock_label.text = "Day %d  %s  %02d:00" % [GameClock.day, phase, _hour()]
-	for speed in _speed_buttons.size():
-		_speed_buttons[speed].set_pressed_no_signal(GameClock.speed == speed)
 	if _build_tool == null:
 		return
 	var world := _build_tool.world
@@ -170,7 +170,7 @@ func _process(_delta: float) -> void:
 		if world.expeditions.phase == Expeditions.Phase.CHOICE
 		else "Expeditions"
 	)
-	%Residents.text = "Residents %d" % world.safety.people.size()
+	$StatusBar.update_watch(world.safety.people.size())
 	var alarm := PackedStringArray()
 	if not world.horde.warning().is_empty():
 		alarm.append(world.horde.warning())
@@ -209,7 +209,6 @@ func _process(_delta: float) -> void:
 	if message.is_empty():
 		message = world.grower.status
 	%ToolHint.text = message
-	%ToolHint.visible = not message.is_empty()
 	for def: BuildingDef in _build_buttons:
 		var active := _build_tool.selected == def
 		if def.placement == BuildingDef.Placement.HOME_PLOT:
@@ -217,28 +216,17 @@ func _process(_delta: float) -> void:
 		elif def.placement == BuildingDef.Placement.ZONE:
 			active = tool.mode == PlotTool.Mode.ZONE and tool.zone == def
 		_build_buttons[def].set_pressed_no_signal(active)
+	for i in BARRIERS.size():
+		var active := tool.mode == PlotTool.Mode.PERIMETER and tool.barrier == BARRIERS[i]
+		_defense_buttons[i].set_pressed_no_signal(active)
+	_defense_buttons[BARRIERS.size()].set_pressed_no_signal(_build_tool.selected == WATCHTOWER)
+	_defense_buttons[BARRIERS.size() + 1].set_pressed_no_signal(_build_tool.selected == RIFLE_TOWER)
 	for action in _land_buttons:
 		_land_buttons[action].set_pressed_no_signal(action == tool.mode)
 
 
 func _amounts(amounts: Dictionary[StringName, int]) -> String:
 	return "0" if amounts.is_empty() else BuildingDef.format_cost(amounts)
-
-
-func _hour() -> int:
-	return int(GameClock.time_of_day * 24.0 + 6.0) % 24
-
-
-func _refresh_resources() -> void:
-	for id in SHOWN_RESOURCES:
-		_set_resource(id, Economy.get_amount(id))
-
-
-func _set_resource(id: StringName, value: int) -> void:
-	if _resource_labels.has(id):
-		_resource_labels[id].text = "%s  %d" % [String(id).capitalize(), value]
-		_resource_labels[id].tooltip_text = "%d / %d in storage" % [value, Economy.capacity]
-		_resource_labels[id].mouse_filter = Control.MOUSE_FILTER_PASS
 
 
 func _on_build_pressed(def: BuildingDef) -> void:

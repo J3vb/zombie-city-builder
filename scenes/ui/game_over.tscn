@@ -27,12 +27,14 @@ theme_override_constants/separation = 24
 [node name="Message" type="Label" parent="Center/Panel/Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"Heading"
 theme_override_font_sizes/font_size = 36
 horizontal_alignment = 1
 
 [node name="NewGame" type="Button" parent="Center/Panel/Box"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"Primary"
 theme_override_font_sizes/font_size = 28
 text = "New game"
 
