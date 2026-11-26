@@ -1,73 +1,48 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/session_front.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/models/command_post_1.tscn" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/station_at_dusk.webp" id="Art"]
 
-[ext_resource type="Material" path="res://assets/materials/basin_ground.tres" id="Meadow"]
+[sub_resource type="Gradient" id="Fade"]
+offsets = PackedFloat32Array(0, 0.27, 0.52, 0.78, 1)
+colors = PackedColorArray(0.025, 0.049, 0.047, 0.97, 0.025, 0.049, 0.047, 0.88, 0.025, 0.049, 0.047, 0.34, 0.025, 0.049, 0.047, 0.02, 0.025, 0.049, 0.047, 0)
 
-[ext_resource type="Script" path="res://scripts/main/station_grounds.gd" id="Grounds"]
+[sub_resource type="GradientTexture2D" id="Scrim"]
+gradient = SubResource("Fade")
+width = 512
+height = 4
 
-[sub_resource type="PlaneMesh" id="Ground"]
-size = Vector2(180, 180)
-material = ExtResource("Meadow")
-
-[sub_resource type="Environment" id="Dusk"]
-background_mode = 1
-background_color = Color(0.24, 0.31, 0.33, 1)
-ambient_light_source = 2
-ambient_light_color = Color(0.79, 0.84, 0.92, 1)
-ambient_light_energy = 0.7
-fog_enabled = true
-fog_density = 0.009
-fog_light_color = Color(0.41, 0.47, 0.48, 1)
-
-[sub_resource type="StyleBoxFlat" id="MenuStyle"]
-content_margin_left = 38.0
-content_margin_right = 38.0
-content_margin_top = 28.0
-content_margin_bottom = 28.0
-bg_color = Color(0.105,0.154,0.175,0.98)
-border_width_left = 5
-border_color = Color(0.87,0.43,0.23,1)
+[sub_resource type="StyleBoxEmpty" id="Clear"]
 
 [node name="SessionFront" type="Node"]
 process_mode = 3
 script = ExtResource("1")
 
-[node name="TitleSet" type="Node3D" parent="."]
-
-[node name="Sky" type="WorldEnvironment" parent="TitleSet"]
-environment = SubResource("Dusk")
-
-[node name="Verge" type="Node3D" parent="TitleSet"]
-script = ExtResource("Grounds")
-
-[node name="Ground" type="MeshInstance3D" parent="TitleSet"]
-position = Vector3(0, -0.04, 0)
-mesh = SubResource("Ground")
-
-[node name="Sun" type="DirectionalLight3D" parent="TitleSet"]
-rotation_degrees = Vector3(-32, -30, 0)
-light_color = Color(1, 0.81, 0.55, 1)
-light_energy = 1.5
-shadow_enabled = true
-
-[node name="Station" parent="TitleSet" instance=ExtResource("2")]
-position = Vector3(5, 0, -3)
-
-[node name="Camera" type="Camera3D" parent="TitleSet"]
-position = Vector3(15, 10, 28)
-projection = 1
-size = 20.5
-
 [node name="Overlay" type="CanvasLayer" parent="."]
 layer = 10
+
+[node name="KeyArt" type="TextureRect" parent="Overlay"]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture_filter = 2
+texture = ExtResource("Art")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="Shade" type="ColorRect" parent="Overlay"]
 unique_name_in_owner = true
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.035, 0.05, 0.05, 0.22)
+color = Color(0.03, 0.05, 0.045, 0)
+
+[node name="Fade" type="TextureRect" parent="Overlay/Shade"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = SubResource("Scrim")
+expand_mode = 1
 
 [node name="SettingsCenter" type="CenterContainer" parent="Overlay"]
 unique_name_in_owner = true
@@ -75,67 +50,139 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="Panel" type="PanelContainer" parent="Overlay"]
-unique_name_in_owner = true
-anchor_left = 0.03
-anchor_top = 0.5
-anchor_right = 0.03
-anchor_bottom = 0.5
-offset_top = -300.0
-offset_right = 505.0
-grow_vertical = 2
-theme_override_styles/panel = SubResource("MenuStyle")
+[node name="MenuRail" type="VBoxContainer" parent="Overlay"]
+anchor_left = 0.06
+anchor_right = 0.06
+anchor_bottom = 1.0
+offset_right = 465.0
+alignment = 1
+mouse_filter = 2
 
-[node name="Box" type="VBoxContainer" parent="Overlay/Panel"]
+[node name="Panel" type="PanelContainer" parent="Overlay/MenuRail"]
+unique_name_in_owner = true
+theme_override_styles/panel = SubResource("Clear")
+
+[node name="Box" type="VBoxContainer" parent="Overlay/MenuRail/Panel"]
 theme_override_constants/separation = 13
 
-[node name="Heading" type="Label" parent="Overlay/Panel/Box"]
+[node name="Wordmark" type="VBoxContainer" parent="Overlay/MenuRail/Panel/Box"]
+unique_name_in_owner = true
+theme_override_constants/separation = -33
+
+[node name="FirstLine" type="HBoxContainer" parent="Overlay/MenuRail/Panel/Box/Wordmark"]
+theme_override_constants/separation = 13
+
+[node name="Emblem" type="TextureRect" parent="Overlay/MenuRail/Panel/Box/Wordmark/FirstLine"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36,36)
+size_flags_vertical = 4
+modulate = Color(0.94, 0.70, 0.41, 1)
+texture_filter = 2
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="HoldThe" type="Label" parent="Overlay/MenuRail/Panel/Box/Wordmark/FirstLine"]
 theme_type_variation = &"Heading"
+theme_override_font_sizes/font_size = 50
+text = "HOLD THE"
+
+[node name="Gates" type="Label" parent="Overlay/MenuRail/Panel/Box/Wordmark"]
+theme_type_variation = &"Heading"
+theme_override_font_sizes/font_size = 134
+text = "GATES"
+
+[node name="Heading" type="Label" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
-theme_override_font_sizes/font_size = 67
+theme_type_variation = &"Heading"
+theme_override_font_sizes/font_size = 53
+autowrap_mode = 3
 
-[node name="Rule" type="HSeparator" parent="Overlay/Panel/Box"]
+[node name="Rule" type="HSeparator" parent="Overlay/MenuRail/Panel/Box"]
 
-[node name="Continue" type="Button" parent="Overlay/Panel/Box"]
+[node name="MapLabel" type="Label" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
-text = "Continue"
+theme_type_variation = &"Caption"
+theme_override_colors/font_color = Color(0.96, 0.77, 0.51, 1)
+text = "SETTLEMENT MAP"
 
-[node name="Map" type="OptionButton" parent="Overlay/Panel/Box"]
+[node name="Map" type="OptionButton" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
 
-
-[node name="Description" type="Label" parent="Overlay/Panel/Box"]
+[node name="Description" type="Label" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
 autowrap_mode = 3
 
-[node name="Start" type="Button" parent="Overlay/Panel/Box"]
+[node name="Continue" type="Button" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
+theme_type_variation = &"Primary"
+custom_minimum_size = Vector2(0, 50)
+alignment = 0
+icon_alignment = 2
+text = "Continue"
+
+[node name="Start" type="Button" parent="Overlay/MenuRail/Panel/Box"]
+unique_name_in_owner = true
+theme_type_variation = &"Primary"
+custom_minimum_size = Vector2(0, 50)
+alignment = 0
+icon_alignment = 2
 text = "New settlement"
 
-[node name="Resume" type="Button" parent="Overlay/Panel/Box"]
+[node name="Resume" type="Button" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
-text = "Resume"
+theme_type_variation = &"Primary"
+custom_minimum_size = Vector2(0, 50)
+alignment = 0
+icon_alignment = 2
+text = "Resume settlement"
 
-[node name="Return" type="Button" parent="Overlay/Panel/Box"]
+[node name="Confirm" type="Button" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
-text = "Main menu"
-
-[node name="Confirm" type="Button" parent="Overlay/Panel/Box"]
-unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+alignment = 0
+icon_alignment = 2
 text = "Leave settlement"
 
-[node name="Back" type="Button" parent="Overlay/Panel/Box"]
+[node name="Back" type="Button" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
+theme_type_variation = &"Primary"
+custom_minimum_size = Vector2(0, 50)
+alignment = 0
+icon_alignment = 2
 text = "Keep playing"
 
-[node name="Saves" type="Button" parent="Overlay/Panel/Box"]
+[node name="Saves" type="Button" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
+theme_type_variation = &"Quiet"
+custom_minimum_size = Vector2(0, 50)
+alignment = 0
+icon_alignment = 2
 text = "Saved settlements"
 
-[node name="Options" type="Button" parent="Overlay/Panel/Box"]
+[node name="Return" type="Button" parent="Overlay/MenuRail/Panel/Box"]
 unique_name_in_owner = true
+theme_type_variation = &"Quiet"
+custom_minimum_size = Vector2(0, 50)
+alignment = 0
+icon_alignment = 2
+text = "Main menu"
+
+[node name="Footer" type="HBoxContainer" parent="Overlay/MenuRail/Panel/Box"]
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+
+[node name="Options" type="Button" parent="Overlay/MenuRail/Panel/Box/Footer"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+alignment = 0
+flat = true
 text = "Settings"
 
-[node name="Quit" type="Button" parent="Overlay/Panel/Box"]
+[node name="Quit" type="Button" parent="Overlay/MenuRail/Panel/Box/Footer"]
 unique_name_in_owner = true
+size_flags_horizontal = 3
+alignment = 0
+flat = true
 text = "Quit to desktop"

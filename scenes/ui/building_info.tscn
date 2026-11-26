@@ -1,15 +1,7 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/building_info.gd" id="1_info"]
 
-[sub_resource type="StyleBoxFlat" id="Panel"]
-content_margin_left = 20.0
-content_margin_top = 14.0
-content_margin_right = 20.0
-content_margin_bottom = 15.0
-bg_color = Color(0.071, 0.098, 0.092, 0.97)
-border_width_left = 3
-border_color = Color(0.68, 0.60, 0.40, 1)
 
 [sub_resource type="StyleBoxFlat" id="BarBack"]
 bg_color = Color(0.23, 0.28, 0.26, 1)
@@ -28,7 +20,6 @@ offset_right = -16.0
 offset_bottom = -132.0
 offset_top = -132.0
 grow_vertical = 0
-theme_override_styles/panel = SubResource("Panel")
 script = ExtResource("1_info")
 
 [node name="Rows" type="VBoxContainer" parent="."]
@@ -44,7 +35,8 @@ theme_override_colors/font_color = Color(0.78, 0.80, 0.74, 1)
 [node name="Title" type="Label" parent="Rows"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 25
+theme_type_variation = &"Heading"
+theme_override_font_sizes/font_size = 28
 
 [node name="Health" type="Label" parent="Rows"]
 unique_name_in_owner = true

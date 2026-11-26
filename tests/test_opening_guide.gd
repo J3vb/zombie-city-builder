@@ -12,9 +12,7 @@ func test_connected_street_advances_and_guide_can_be_reopened() -> void:
 	assert_eq(guide.step, 0)
 	var start := w.roads.entrance
 	var tiles := float(w.grid.tile_size)
-	var path := PackedVector2Array(
-		[start, start + Vector2(0, 4) * tiles, start + Vector2(3, 8) * tiles]
-	)
+	var path := PackedVector2Array([start, start + Vector2(0, 4) * tiles])
 	assert_true(w.roads.add_road(path) != null)
 	guide.advance()
 	assert_eq(guide.step, 1)

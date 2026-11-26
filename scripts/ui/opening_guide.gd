@@ -5,7 +5,7 @@ extends PanelContainer
 const STEPS := [
 	[
 		"Day 1 · Connect Station 4",
-		"Choose Straight under Streets. Click the gold marker, then click where the street ends."
+		"Open Build and choose Straight under Streets. Click the gold marker, then the endpoint."
 	],
 	[
 		"Day 1 · House the first workers",
@@ -62,31 +62,59 @@ const STEPS := [
 var step := 0
 var dismissed := false
 var world: World
+var _section := Label.new()
 var _heading := Label.new()
+var _steps: Array[ColorRect] = []
 var _body := Label.new()
 var _timer := 0.0
 
 
 func _ready() -> void:
-	anchor_top = 0.0
-	anchor_bottom = 0.0
-	offset_left = 16
-	offset_right = 407
-	offset_top = 156
-	grow_vertical = GROW_DIRECTION_END
+	anchor_left = 1.0
+	anchor_right = 1.0
+	grow_horizontal = GROW_DIRECTION_BEGIN
+	offset_left = -436
+	offset_right = -18
+	offset_top = 99
 	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
 	add_child(box)
 	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 9)
 	box.add_child(top)
-	_heading.size_flags_horizontal = SIZE_EXPAND_FILL
-	top.add_child(_heading)
+	var flag := TextureRect.new()
+	flag.texture = UiSymbols.icon(UiSymbols.FLAG)
+	flag.custom_minimum_size = Vector2(21, 21)
+	flag.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	flag.size_flags_vertical = SIZE_SHRINK_CENTER
+	flag.modulate = Color("#edb269")
+	top.add_child(flag)
+	_section.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_section.theme_type_variation = &"Caption"
+	_section.size_flags_horizontal = SIZE_EXPAND_FILL
+	top.add_child(_section)
 	var close := Button.new()
 	close.text = "Hide"
+	close.flat = true
+	close.add_theme_font_size_override("font_size", 18)
 	close.pressed.connect(toggle)
 	top.add_child(close)
+	_heading.theme_type_variation = &"Heading"
+	_heading.add_theme_font_size_override("font_size", 29)
+	_heading.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(_heading)
 	_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body.mouse_filter = MOUSE_FILTER_IGNORE
 	box.add_child(_body)
+	var progress := HBoxContainer.new()
+	box.add_child(progress)
+	for i in STEPS.size() - 1:
+		var mark := ColorRect.new()
+		mark.custom_minimum_size.y = 4
+		mark.size_flags_horizontal = SIZE_EXPAND_FILL
+		mark.mouse_filter = MOUSE_FILTER_IGNORE
+		progress.add_child(mark)
+		_steps.append(mark)
 	_refresh()
 
 
@@ -121,7 +149,7 @@ func _achieved() -> bool:
 	match step:
 		0:
 			for road: Street in world.roads.roads.values():
-				if road.controls.size() >= 3 and world.roads.reachable.has(road.line[0]):
+				if world.roads.reachable.has(road.line[0]):
 					done = true
 					break
 		1:
@@ -150,7 +178,14 @@ func _achieved() -> bool:
 
 
 func _refresh() -> void:
-	_heading.text = STEPS[step][0]
+	var title: String = STEPS[step][0]
+	var parts := title.split(" · ")
+	_heading.text = parts[-1]
+	_section.text = "OPENING GUIDE   %d / %d" % [mini(step + 1, _steps.size()), _steps.size()]
+	if parts.size() > 1:
+		_section.text = "%s   /   GOAL %d OF %d" % [parts[0].to_upper(), step + 1, _steps.size()]
+	for i in _steps.size():
+		_steps[i].color = Color("#edb269") if i <= step else Color("#49554e")
 	_body.text = STEPS[step][1]
 	if step == 0 and is_instance_valid(world) and not world.perimeter.towers.is_empty():
 		_body.text = "Station 4 has a watchtower and barricades. " + _body.text

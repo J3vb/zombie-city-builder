@@ -14,17 +14,19 @@ func _ready() -> void:
 	for title: String in GROUPS:
 		var button := Button.new()
 		button.text = title
-		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_font_size_override("font_size", 21)
 		button.toggle_mode = true
 		button.focus_mode = Control.FOCUS_NONE
 		button.pressed.connect(select.bind(title))
 		%Categories.add_child(button)
 		_buttons[title] = button
+	var road_icons := [UiSymbols.STREET, UiSymbols.CURVE, UiSymbols.FREEFORM]
 	for title: String in ["Straight", "Curved", "Freeform"]:
 		var button := Button.new()
 		button.text = title
 		button.toggle_mode = true
 		button.focus_mode = Control.FOCUS_NONE
+		button.icon = UiSymbols.icon(road_icons[_modes.size()])
 		button.pressed.connect(_select_mode.bind(_modes.size()))
 		add_order("Streets", button)
 		_modes.append(button)
@@ -32,7 +34,8 @@ func _ready() -> void:
 	_angle.tooltip_text = "Align near 45° steps relative to the starting street."
 	_angle.focus_mode = Control.FOCUS_NONE
 	_angle.toggled.connect(_toggle_angles)
-	add_order("Streets", _angle)
+	_angle.add_theme_font_size_override("font_size", 19)
+	%PaletteHeader.add_child(_angle)
 	select(current)
 
 
@@ -55,20 +58,22 @@ func refresh_streets() -> void:
 
 func add_order(title: String, button: Button, model: String = "") -> void:
 	button.set_meta("section", title)
-	button.custom_minimum_size = Vector2(134, 48)
-	button.add_theme_font_size_override("font_size", 19)
+	button.custom_minimum_size = Vector2(154, 54)
+	button.add_theme_font_size_override("font_size", 21)
 	if not model.is_empty():
 		button.icon = load("res://assets/ui/orders/%s.png" % model)
+	if button.icon != null:
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-		button.add_theme_constant_override("icon_max_width", 66)
-		button.custom_minimum_size.y = 84
+		button.add_theme_constant_override("icon_max_width", 32 if model.is_empty() else 66)
+		button.custom_minimum_size.y = 88
 	%Build.add_child(button)
 	button.visible = title == current
 
 
 func select(title: String) -> void:
 	current = title
+	_angle.visible = title == "Streets"
 	for key in _buttons:
 		_buttons[key].set_pressed_no_signal(key == title)
 	for order in %Build.get_children():
