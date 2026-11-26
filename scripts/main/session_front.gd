@@ -43,6 +43,7 @@ func _ready() -> void:
 
 
 func show_title() -> void:
+	AudioManager.play_title_music()
 	get_tree().paused = true
 	if _set.get_parent() == null:
 		add_child(_set)

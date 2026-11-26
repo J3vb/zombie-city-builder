@@ -4,6 +4,7 @@ extends Node
 const TRACKS := ["day_watch", "dusk_watch", "horde_watch"]
 const EFFECTS := ["gate", "breach", "radio", "warning", "work", "shot", "groan", "select"]
 const POOL_SIZE := 10
+const TITLE_MUSIC_GAIN := 0.85
 
 var town: World
 var track := ""
@@ -41,6 +42,11 @@ func _ready() -> void:
 		_voices.append(player)
 	EventBus.building_placed.connect(_building)
 	get_tree().node_added.connect(_new_control)
+	play_title_music()
+
+
+func play_title_music() -> void:
+	_music.volume_linear = TITLE_MUSIC_GAIN
 	_play_track("day_watch")
 
 
@@ -63,6 +69,7 @@ func bind(world: World) -> void:
 	_radio_pending = false
 	_groan_in = 3.0
 	_phase_timer = 0.0
+	_music.volume_linear = 1.0
 	_play_track("day_watch")
 
 

@@ -21,17 +21,34 @@ const SCALES := [0.85, 1.0, 1.15, 1.3]
 const FONT_PATH := "res://assets/fonts/OpenDyslexic-Regular.otf"
 
 const RESOLUTIONS := [
+	Vector2i(1024, 768),
 	Vector2i(1280, 720),
+	Vector2i(1280, 800),
+	Vector2i(1280, 1024),
+	Vector2i(1366, 768),
+	Vector2i(1440, 900),
 	Vector2i(1600, 900),
+	Vector2i(1680, 1050),
 	Vector2i(1920, 1080),
+	Vector2i(1920, 1200),
+	Vector2i(2560, 1080),
 	Vector2i(2560, 1440),
+	Vector2i(2560, 1600),
 	Vector2i(3440, 1440),
-	Vector2i(3840, 2160)
+	Vector2i(3840, 1080),
+	Vector2i(3840, 1600),
+	Vector2i(3840, 2160),
+	Vector2i(5120, 1440),
+	Vector2i(5120, 2160),
+	Vector2i(5120, 2880),
+	Vector2i(7680, 2160)
 ]
+const RENDER_HEIGHTS := [540, 720, 900, 1080, 1200, 1440, 1600, 1800, 2160, 2880]
 var edge_scroll := true
 var gate_close := true
 var dyslexic_font := false
 var resolution := Vector2i.ZERO
+var fullscreen_height := 0
 var fullscreen := false
 var ui_scale := 1.0
 var _theme: Theme = preload("res://data/settlement_theme.tres")
@@ -40,6 +57,7 @@ var _default_keys: Dictionary[StringName, int] = {}
 
 
 func _ready() -> void:
+	get_window().size_changed.connect(_apply_render_scale)
 	for action in ACTIONS:
 		_default_keys[action] = key_for(action)
 	load_preferences(PATH)
@@ -57,7 +75,12 @@ func load_preferences(path: String) -> void:
 	var scale: Variant = config.get_value("display", "ui_scale", 1.0)
 	ui_scale = float(scale) if scale in SCALES else 1.0
 	var stored: Variant = config.get_value("display", "resolution", Vector2i.ZERO)
-	resolution = stored if stored is Vector2i and stored in window_sizes() else Vector2i.ZERO
+	var screen := screen_size()
+	resolution = stored if stored is Vector2i and stored in window_sizes(screen) else Vector2i.ZERO
+	var height: Variant = config.get_value("display", "fullscreen_height", 0)
+	fullscreen_height = (
+		height if height is int and height in RENDER_HEIGHTS and height < screen.y else 0
+	)
 	apply_display()
 	for bus: String in BUSES:
 		var level: Variant = config.get_value("audio", bus, 1.0)
@@ -80,17 +103,38 @@ func _flag(key: String, fallback: bool) -> bool:
 	return value if typeof(value) == TYPE_BOOL else fallback
 
 
-func window_sizes() -> Array[Vector2i]:
+func screen_size() -> Vector2i:
+	if DisplayServer.get_name() == "headless":
+		return Vector2i(3840, 2160)
+	return DisplayServer.screen_get_size(get_window().current_screen)
+
+
+func window_sizes(screen: Vector2i) -> Array[Vector2i]:
 	var options: Array[Vector2i] = [Vector2i.ZERO]
-	var screen := Vector2i(3840, 2160)
-	if DisplayServer.get_name() != "headless":
-		screen = DisplayServer.screen_get_size(get_window().current_screen)
 	for preset: Vector2i in RESOLUTIONS:
 		if preset.x <= screen.x and preset.y <= screen.y:
 			options.append(preset)
 	if screen.x >= 800 and screen.y >= 600 and not options.has(screen):
 		options.append(screen)
 	return options
+
+
+func fullscreen_sizes(screen: Vector2i) -> Array[Vector2i]:
+	var options: Array[Vector2i] = [screen]
+	for height: int in RENDER_HEIGHTS:
+		if height < screen.y:
+			options.append(Vector2i(int(float(screen.x) * height / screen.y), height))
+	return options
+
+
+func _apply_render_scale() -> void:
+	var window := get_window()
+	var height := window.size.y
+	window.scaling_3d_scale = (
+		float(fullscreen_height) / height
+		if fullscreen and fullscreen_height > 0 and height > fullscreen_height
+		else 1.0
+	)
 
 
 func apply_display(reset_window: bool = false) -> void:
@@ -110,19 +154,24 @@ func apply_display(reset_window: bool = false) -> void:
 	)
 	if DisplayServer.get_name() != "headless":
 		var mode := Window.MODE_FULLSCREEN if fullscreen else Window.MODE_WINDOWED
-		if get_window().mode != mode:
+		var mode_changed := get_window().mode != mode
+		if mode_changed:
 			get_window().mode = mode
-		if not fullscreen and (reset_window or resolution != Vector2i.ZERO):
-			var usable := DisplayServer.screen_get_usable_rect(get_window().current_screen)
-			var target := (
-				resolution
-				if resolution != Vector2i.ZERO
-				else get_window().content_scale_size.min(usable.size - Vector2i(32, 64))
-			)
-			get_window().size = target
-			get_window().position = (
-				usable.position + ((usable.size - target) / 2).max(Vector2i.ZERO)
-			)
+		if not fullscreen:
+			_apply_window_size(reset_window or mode_changed)
+	_apply_render_scale()
+
+
+func _apply_window_size(reset_window: bool) -> void:
+	var window := get_window()
+	var usable := DisplayServer.screen_get_usable_rect(window.current_screen)
+	var target := resolution
+	if target == Vector2i.ZERO or target not in window_sizes(screen_size()):
+		if not reset_window and window.size.x <= usable.size.x and window.size.y <= usable.size.y:
+			return
+		target = window.content_scale_size.min(usable.size - Vector2i(32, 64))
+	window.size = target
+	window.position = usable.position + ((usable.size - target) / 2).max(Vector2i.ZERO)
 
 
 func volume(bus: String) -> float:
@@ -186,7 +235,13 @@ func save_preferences(path: String = PATH) -> Error:
 	for bus: String in BUSES:
 		_config.set_value("audio", bus, volume(bus))
 	for key: String in [
-		"edge_scroll", "gate_close", "fullscreen", "dyslexic_font", "ui_scale", "resolution"
+		"edge_scroll",
+		"gate_close",
+		"fullscreen",
+		"dyslexic_font",
+		"ui_scale",
+		"resolution",
+		"fullscreen_height"
 	]:
 		_config.set_value("display", key, get(key))
 	for action in ACTIONS:
