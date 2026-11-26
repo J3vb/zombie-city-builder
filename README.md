@@ -82,8 +82,10 @@ Controls:
 | Farm zone / Storage zone, then drag | Paint land for automatic construction |
 | Land tools | Demolish a building, release an empty plot, remove a street or erase zoning |
 | Pause growth / Resume growth | Control automatic building and upgrades |
-| Street, then left clicks | Set street points, starting at the gold Station 4 marker or open ground |
-| Enter / Backspace | Finish a street / undo its last point |
+| Streets, then Straight | Click the start, then click each endpoint to build consecutive segments |
+| Curved / Freeform | Click the start, bend handle and end. Freeform carries the last tangent into the next segment |
+| Angle snap | Align to 45° increments from the starting street. Connections take priority |
+| Right click / Esc while drawing | Step back one click or end the chain / close the tool |
 | Right click / Esc | Cancel construction |
 | Space | Pause |
 | 1 / 2 / 3 | Game speed |

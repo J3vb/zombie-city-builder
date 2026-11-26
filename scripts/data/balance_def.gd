@@ -47,6 +47,8 @@ extends Resource
 @export var road_width: float = 32.0
 @export var road_min_length: float = 48.0
 @export var road_snap_radius: float = 16.0
+@export var road_angle_step: float = 45.0
+@export var road_angle_tolerance: float = 4.0
 
 @export_group("Plots and growth")
 @export var plot_frontage: float = 64.0

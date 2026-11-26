@@ -53,7 +53,11 @@ Code layout and patterns are in [DESIGN.md](DESIGN.md).
 
 ### Streets
 
-Select Street and click control points on the ground. Enter commits the preview, Backspace removes the last point and Esc cancels. The gold marker identifies the Station 4 entrance. A street endpoint can join an existing end or branch from the middle of a street. The junction splits the routing graph while the original street retains its ID. The grid reserves the full corridor against construction and gives its cells a walking cost of one. Removing the last street on a cell restores the terrain cost.
+Choose Straight, Curved or Freeform under Streets. Click a start and an endpoint to build a straight street. A curve also takes a bend handle between the two clicks. Every completed segment starts the next one at its endpoint. Freeform carries the outgoing tangent into the next curve. Right-click backs up one unbuilt step or releases the endpoint. Esc closes the tool.
+
+The gold disc marks Station 4. A mint disc marks a nearby connection. Angle snap aligns close to 45° increments relative to the starting street or previous segment. The preview shows the footprint, bend guides, length in metres and local angle. A message explains an invalid placement, and blocked corridors turn red.
+
+Drawing across an existing street creates a routing junction. T-junctions and crossings preserve the underlying street IDs and attached plots. Overlapping corridors and blocked land prevent construction. The grid reserves the full road width and restores terrain costs when its last street is removed. Asphalt and gravel continue through shared corners.
 
 ### Road-facing plots and automatic growth
 

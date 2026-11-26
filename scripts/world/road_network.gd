@@ -9,6 +9,8 @@ var entrance: Vector2
 var width: float
 var min_segment: float
 var snap_radius: float
+var angle_step: float
+var angle_tolerance: float
 var grid: Grid
 var graph: Dictionary[Vector2, PackedVector2Array] = {}
 var reachable: Dictionary[Vector2, bool] = {}
@@ -23,6 +25,8 @@ func setup(owner_grid: Grid, post: Building, balance: BalanceDef) -> void:
 	width = balance.road_width
 	min_segment = balance.road_min_length
 	snap_radius = balance.road_snap_radius
+	angle_step = deg_to_rad(balance.road_angle_step)
+	angle_tolerance = deg_to_rad(balance.road_angle_tolerance)
 	var bounds := post.sim_bounds()
 	entrance = Vector2(bounds.get_center().x, bounds.end.y + width * 0.5)
 
@@ -30,6 +34,8 @@ func setup(owner_grid: Grid, post: Building, balance: BalanceDef) -> void:
 func nearest(point: Vector2, limit: float) -> Dictionary:
 	var hit := {}
 	for road: Street in roads.values():
+		if not road.bounds.grow(limit + StreetCrossings.EPSILON).has_point(point):
+			continue
 		var candidate := road.nearest(point)
 		if candidate.distance <= limit:
 			limit = candidate.distance
@@ -37,37 +43,40 @@ func nearest(point: Vector2, limit: float) -> Dictionary:
 	return hit
 
 
+func connection_point(point: Vector2) -> Vector2:
+	var best := Vector2.INF
+	var limit := snap_radius * snap_radius
+	if point.distance_squared_to(entrance) <= limit:
+		best = entrance
+		limit = point.distance_squared_to(entrance)
+	for node: Vector2 in graph:
+		var distance := point.distance_squared_to(node)
+		if distance < limit or (distance == limit and node < best):
+			best = node
+			limit = distance
+	if best.is_finite():
+		return best
+	return nearest(point, snap_radius).get("point", Vector2.INF)
+
+
 func snap_endpoint(point: Vector2) -> Vector2:
-	if point.distance_to(entrance) <= snap_radius:
-		return entrance
-	var hit := nearest(point, snap_radius)
-	if hit.is_empty():
-		return point
-	var road: Street = hit.road
-	for end: Vector2 in [road.line[0], road.line[-1]]:
-		if point.distance_to(end) <= snap_radius:
-			return end
-	return hit.point
+	var target := connection_point(point)
+	return target if target.is_finite() else point
 
 
-func preview(points: PackedVector2Array) -> Street:
+func preview(points: PackedVector2Array, snap: bool = true, quadratic: bool = false) -> Street:
 	var road := Street.new()
 	road.controls = points.duplicate()
-	if points.size() < 2:
+	road.quadratic = quadratic
+	if points.size() < 2 or (quadratic and points.size() != 3):
 		road.error = "Click at least two points."
 		return road
-	road.controls[0] = snap_endpoint(points[0])
-	road.controls[-1] = snap_endpoint(points[-1])
-	for i in range(1, points.size()):
-		if road.controls[i].distance_to(road.controls[i - 1]) < min_segment:
-			road.error = "Street points are too close."
-			return road
-	for i in range(1, road.controls.size() - 1):
-		var incoming := road.controls[i - 1].direction_to(road.controls[i])
-		var outgoing := road.controls[i].direction_to(road.controls[i + 1])
-		if incoming.dot(outgoing) < -0.94:
-			road.error = "The street turns back on itself."
-			return road
+	if snap:
+		road.controls[0] = snap_endpoint(points[0])
+		road.controls[-1] = snap_endpoint(points[-1])
+	road.error = _control_error(road)
+	if not road.error.is_empty():
+		return road
 	road.bake(width, width / 4.0)
 	if road.crosses_itself(width):
 		road.error = "The street crosses or doubles back on itself."
@@ -80,13 +89,30 @@ func preview(points: PackedVector2Array) -> Street:
 				return road
 			covered[cell] = true
 	road.cells.assign(covered.keys())
-	if _overlaps_street(road):
-		road.error = "Join an existing street at an endpoint or a T-junction."
+	for existing: Street in roads.values():
+		if not StreetCrossings.collect(road, existing, width):
+			road.error = "Streets overlap. Move farther away or cross at a wider angle."
+			break
 	return road
 
 
-func add_road(points: PackedVector2Array) -> Street:
-	var road := preview(points)
+func _control_error(road: Street) -> String:
+	if road.quadratic and road.controls[0].distance_to(road.controls[-1]) < min_segment:
+		return "Move the endpoint farther from the start."
+	var minimum := width * 0.15 if road.quadratic else min_segment
+	for i in range(1, road.controls.size()):
+		if road.controls[i].distance_to(road.controls[i - 1]) < minimum:
+			return "Street points are too close."
+	for i in range(1, road.controls.size() - 1):
+		var incoming := road.controls[i - 1].direction_to(road.controls[i])
+		var outgoing := road.controls[i].direction_to(road.controls[i + 1])
+		if incoming.dot(outgoing) < -0.94:
+			return "The street turns back on itself."
+	return ""
+
+
+func add_road(points: PackedVector2Array, snap: bool = true, quadratic: bool = false) -> Street:
+	var road := preview(points, snap, quadratic)
 	if not road.error.is_empty():
 		return null
 	road.id = _next_id
@@ -109,35 +135,11 @@ func remove_road(id: int) -> bool:
 		return false
 	grid.mark_road(roads[id].cells, -1)
 	roads.erase(id)
+	for road: Street in roads.values():
+		road.crossings.erase(id)
 	_rebuild_graph()
 	changed.emit()
 	return true
-
-
-func _overlaps_street(road: Street) -> bool:
-	for existing: Street in roads.values():
-		var joints := PackedVector2Array()
-		for end: Vector2 in [road.line[0], road.line[-1]]:
-			if existing.nearest(end).distance < 0.05:
-				joints.append(end)
-		for i in road.line.size() - 1:
-			for j in existing.line.size() - 1:
-				var pair := Geometry2D.get_closest_points_between_segments(
-					road.line[i], road.line[i + 1], existing.line[j], existing.line[j + 1]
-				)
-				if pair[0].distance_to(pair[1]) >= width:
-					continue
-				var at_joint := false
-				for joint in joints:
-					if (
-						pair[0].distance_to(joint) <= width * 1.5
-						and pair[1].distance_to(joint) <= width * 1.5
-					):
-						at_joint = true
-						break
-				if not at_joint:
-					return true
-	return false
 
 
 func _rebuild_graph() -> void:
@@ -160,9 +162,18 @@ func _graph_without(exclude: int) -> Dictionary[Vector2, PackedVector2Array]:
 	for road: Street in roads.values():
 		if road.id == exclude:
 			continue
+		for other: int in road.crossings:
+			if other != exclude:
+				for junction in road.crossings[other]:
+					StreetCrossings.append_joint(ends, junction)
+	for road: Street in roads.values():
+		if road.id == exclude:
+			continue
 		# Order endpoints and interior T-junctions along the original street.
 		var offsets: Dictionary[Vector2, float] = {}
 		for point in ends:
+			if not road.bounds.grow(StreetCrossings.EPSILON).has_point(point):
+				continue
 			var hit := road.nearest(point)
 			if hit.distance < 0.05:
 				offsets[point] = (
