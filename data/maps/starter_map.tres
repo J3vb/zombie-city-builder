@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_map")
-water_rects = Array[Rect2i]([Rect2i(10, 90, 30, 12), Rect2i(95, 15, 14, 25)])
+lakes = Array[Rect2i]([Rect2i(10, 90, 30, 12), Rect2i(95, 15, 14, 25)])
 rubble_rects = Array[Rect2i]([Rect2i(40, 30, 8, 6), Rect2i(80, 85, 10, 5)])

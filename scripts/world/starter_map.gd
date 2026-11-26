@@ -11,15 +11,17 @@ static func generate(def: MapDef) -> PackedByteArray:
 			terrain[y * def.size.x + x] = _terrain_at(Vector2i(x, y), def)
 	for lake in def.lakes:
 		var radius := Vector2(lake.size) * 0.5
+		var center := Vector2(lake.position) + radius
+		var phase := fmod(def.map_seed * 0.37 + center.x * 0.13 + center.y * 0.21, TAU)
 		for y in range(lake.position.y, lake.end.y):
 			for x in range(lake.position.x, lake.end.x):
-				if (
-					(
-						((Vector2(x + 0.5, y + 0.5) - Vector2(lake.position) - radius) / radius)
-						. length_squared()
-					)
-					< 1.0
-				):
+				var point := (Vector2(x + 0.5, y + 0.5) - center) / radius
+				var angle := point.angle()
+				# Form broad coves inside the old footprint so existing dry sites stay buildable.
+				var cove := 0.5 + 0.5 * sin(3.0 * angle + phase)
+				var flank := sin(2.0 * angle)
+				var bank := 1.0 - 0.19 * cove * flank * flank
+				if point.length_squared() < bank * bank:
 					terrain[y * def.size.x + x] = TerrainSet.Kind.WATER
 	for highway in def.highways:
 		for i in range(1, highway.size()):

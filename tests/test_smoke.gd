@@ -18,6 +18,11 @@ func test_starter_map_loads() -> void:
 	var map := load("res://data/maps/starter_map.tres") as MapDef
 	assert_true(map != null, "starter_map.tres did not load as MapDef")
 	assert_eq(map.size, Vector2i(128, 128), "map size")
+	var terrain := StarterMap.generate(map)
+	for lake in map.lakes:
+		var center := lake.get_center()
+		assert_eq(terrain[center.y * map.size.x + center.x], TerrainSet.Kind.WATER)
+		assert_eq(terrain[lake.position.y * map.size.x + lake.position.x], TerrainSet.Kind.GROUND)
 
 
 func test_world_scene_loads() -> void:
@@ -44,8 +49,15 @@ func test_playable_world_draws_generated_terrain() -> void:
 	assert_eq(last.end.x, world.grid.size.x * world.view_tile(), "full width")
 	assert_eq(last.end.z, world.grid.size.y * world.view_tile(), "full depth")
 	var has_water := false
+	var has_bank := false
 	for chunk: MeshInstance3D in chunks:
 		if chunk.mesh.get_aabb().position.y < -0.25:
 			has_water = true
+			var vertices: PackedVector3Array = chunk.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+			for vertex in vertices:
+				if vertex.y < -0.01 and vertex.y > -0.24:
+					has_bank = true
+					break
 	assert_true(has_water, "water is recessed in the playable mesh")
+	assert_true(has_bank, "the shore slopes between land and water")
 	fixture.destroy()
